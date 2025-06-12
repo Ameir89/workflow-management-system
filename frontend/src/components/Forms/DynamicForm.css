@@ -1,0 +1,476 @@
+/* Dynamic Form Layout */
+.dynamic-form {
+  @apply max-w-2xl mx-auto bg-white rounded-lg shadow-sm border border-gray-200 p-6;
+}
+
+/* Form header */
+.form-header {
+  @apply mb-6 text-center;
+}
+
+.form-title {
+  @apply text-2xl font-bold text-gray-900 mb-2;
+}
+
+.form-description {
+  @apply text-gray-600 leading-relaxed;
+}
+
+/* Form fields container */
+.form-fields {
+  @apply space-y-6;
+}
+
+/* Form group */
+.form-group {
+  @apply space-y-1;
+}
+
+.form-group.wide {
+  @apply md:col-span-2;
+}
+
+.form-group.narrow {
+  @apply md:col-span-1;
+}
+
+/* Form labels */
+.form-label {
+  @apply block text-sm font-medium text-gray-700 mb-1;
+}
+
+.required-indicator {
+  @apply text-red-500 ml-1;
+}
+
+/* Form inputs */
+.form-input {
+  @apply block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm transition-colors duration-200;
+}
+
+.form-input.error {
+  @apply border-red-300 focus:border-red-500 focus:ring-red-500 bg-red-50;
+}
+
+.form-input:disabled {
+  @apply bg-gray-50 text-gray-500 cursor-not-allowed;
+}
+
+/* Textarea */
+.form-textarea {
+  @apply block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm resize-vertical transition-colors duration-200;
+}
+
+.form-textarea.error {
+  @apply border-red-300 focus:border-red-500 focus:ring-red-500 bg-red-50;
+}
+
+/* Select inputs */
+.form-select {
+  @apply block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm transition-colors duration-200;
+}
+
+.form-select.error {
+  @apply border-red-300 focus:border-red-500 focus:ring-red-500 bg-red-50;
+}
+
+/* React Select customization */
+.react-select-container {
+  @apply relative;
+}
+
+.react-select-container.error .react-select__control {
+  @apply border-red-300 bg-red-50;
+}
+
+.react-select__control {
+  @apply border-gray-300 shadow-sm;
+  min-height: 38px;
+}
+
+.react-select__control:hover {
+  @apply border-gray-400;
+}
+
+.react-select__control--is-focused {
+  @apply border-indigo-500 ring-2 ring-indigo-500;
+  box-shadow: 0 0 0 1px #6366f1;
+}
+
+.react-select__menu {
+  @apply bg-white border border-gray-200 shadow-lg z-50;
+}
+
+.react-select__option {
+  @apply text-gray-900 px-3 py-2;
+}
+
+.react-select__option--is-focused {
+  @apply bg-indigo-50 text-indigo-900;
+}
+
+.react-select__option--is-selected {
+  @apply bg-indigo-600 text-white;
+}
+
+.react-select__placeholder {
+  @apply text-gray-400;
+}
+
+.react-select__single-value {
+  @apply text-gray-900;
+}
+
+.react-select__multi-value {
+  @apply bg-gray-100 rounded;
+}
+
+.react-select__multi-value__label {
+  @apply text-gray-800 px-2 py-1;
+}
+
+.react-select__multi-value__remove {
+  @apply text-gray-400 hover:text-gray-600 hover:bg-gray-200 rounded-r px-1;
+}
+
+/* Radio and checkbox groups */
+.radio-group,
+.checkbox-group {
+  @apply space-y-3;
+}
+
+.radio-label,
+.checkbox-label {
+  @apply flex items-center cursor-pointer;
+}
+
+.radio-input,
+.checkbox-input {
+  @apply h-4 w-4 text-indigo-600 focus:ring-indigo-500 border-gray-300 mr-3;
+}
+
+.radio-input {
+  @apply rounded-full;
+}
+
+.checkbox-input {
+  @apply rounded;
+}
+
+.radio-text,
+.checkbox-text {
+  @apply text-sm text-gray-700 select-none;
+}
+
+.radio-label:hover .radio-text,
+.checkbox-label:hover .checkbox-text {
+  @apply text-gray-900;
+}
+
+/* Form description */
+.form-description {
+  @apply mt-1 text-sm text-gray-500;
+}
+
+/* Form errors */
+.form-error {
+  @apply mt-1 text-sm text-red-600 flex items-center space-x-1;
+}
+
+.form-error-icon {
+  @apply h-4 w-4 text-red-500 flex-shrink-0;
+}
+
+/* Form actions */
+.form-actions {
+  @apply flex justify-end space-x-3 pt-6 mt-6 border-t border-gray-200;
+}
+
+.form-actions.center {
+  @apply justify-center;
+}
+
+.form-actions.left {
+  @apply justify-start;
+}
+
+.form-actions.space-between {
+  @apply justify-between;
+}
+
+/* Button styles */
+.btn {
+  @apply inline-flex items-center justify-center px-4 py-2 text-sm font-medium rounded-md transition-colors duration-200 focus:outline-none focus:ring-2 focus:ring-offset-2 disabled:opacity-50 disabled:cursor-not-allowed;
+}
+
+.btn-primary {
+  @apply bg-indigo-600 text-white hover:bg-indigo-700 focus:ring-indigo-500;
+}
+
+.btn-secondary {
+  @apply bg-gray-200 text-gray-900 hover:bg-gray-300 focus:ring-gray-500;
+}
+
+.btn-outline {
+  @apply border border-gray-300 bg-white text-gray-700 hover:bg-gray-50 focus:ring-indigo-500;
+}
+
+.btn-danger {
+  @apply bg-red-600 text-white hover:bg-red-700 focus:ring-red-500;
+}
+
+.btn-success {
+  @apply bg-green-600 text-white hover:bg-green-700 focus:ring-green-500;
+}
+
+.btn-sm {
+  @apply px-3 py-1.5 text-xs;
+}
+
+.btn-lg {
+  @apply px-6 py-3 text-base;
+}
+
+/* Loading states */
+.form-loading {
+  @apply flex items-center justify-center py-8;
+}
+
+.form-spinner {
+  @apply animate-spin rounded-full h-8 w-8 border-b-2 border-indigo-600;
+}
+
+/* File upload styles */
+.file-upload-area {
+  @apply border-2 border-dashed border-gray-300 rounded-lg p-6 text-center hover:border-gray-400 transition-colors duration-200 cursor-pointer;
+}
+
+.file-upload-area.dragover {
+  @apply border-indigo-500 bg-indigo-50;
+}
+
+.file-upload-icon {
+  @apply mx-auto h-12 w-12 text-gray-400 mb-4;
+}
+
+.file-upload-text {
+  @apply text-sm text-gray-600;
+}
+
+.file-upload-hint {
+  @apply text-xs text-gray-500 mt-2;
+}
+
+.file-list {
+  @apply mt-4 space-y-2;
+}
+
+.file-item {
+  @apply flex items-center justify-between p-2 bg-gray-50 rounded border;
+}
+
+.file-item-info {
+  @apply flex items-center space-x-2;
+}
+
+.file-item-icon {
+  @apply h-4 w-4 text-gray-600;
+}
+
+.file-item-name {
+  @apply text-sm text-gray-900 truncate;
+}
+
+.file-item-size {
+  @apply text-xs text-gray-500;
+}
+
+.file-item-remove {
+  @apply text-red-600 hover:text-red-800 cursor-pointer;
+}
+
+/* Grid layouts */
+.form-grid {
+  @apply grid gap-6;
+}
+
+.form-grid.cols-1 {
+  @apply grid-cols-1;
+}
+
+.form-grid.cols-2 {
+  @apply md:grid-cols-2;
+}
+
+.form-grid.cols-3 {
+  @apply md:grid-cols-3;
+}
+
+.form-grid.cols-4 {
+  @apply md:grid-cols-4;
+}
+
+/* Responsive design */
+@media (max-width: 640px) {
+  .dynamic-form {
+    @apply p-4 m-4;
+  }
+
+  .form-actions {
+    @apply flex-col space-y-3 space-x-0;
+  }
+
+  .form-grid {
+    @apply grid-cols-1;
+  }
+}
+
+/* Dark mode support */
+@media (prefers-color-scheme: dark) {
+  .dynamic-form {
+    @apply bg-gray-800 border-gray-700;
+  }
+
+  .form-title {
+    @apply text-white;
+  }
+
+  .form-description,
+  .form-label {
+    @apply text-gray-300;
+  }
+
+  .form-input,
+  .form-textarea,
+  .form-select {
+    @apply bg-gray-700 border-gray-600 text-white placeholder-gray-400;
+  }
+
+  .form-input:focus,
+  .form-textarea:focus,
+  .form-select:focus {
+    @apply border-indigo-500 ring-indigo-500;
+  }
+
+  .radio-text,
+  .checkbox-text {
+    @apply text-gray-300;
+  }
+
+  .file-upload-area {
+    @apply border-gray-600 bg-gray-700;
+  }
+
+  .file-item {
+    @apply bg-gray-700 border-gray-600;
+  }
+
+  .file-item-name {
+    @apply text-gray-200;
+  }
+
+  .file-item-size {
+    @apply text-gray-400;
+  }
+}
+
+/* Accessibility improvements */
+.form-input:focus,
+.form-textarea:focus,
+.form-select:focus,
+.radio-input:focus,
+.checkbox-input:focus {
+  @apply outline-none;
+}
+
+/* High contrast mode */
+@media (prefers-contrast: high) {
+  .form-input,
+  .form-textarea,
+  .form-select {
+    @apply border-2;
+  }
+
+  .btn {
+    @apply border-2;
+  }
+}
+
+/* Reduced motion */
+@media (prefers-reduced-motion: reduce) {
+  .form-input,
+  .form-textarea,
+  .form-select,
+  .btn {
+    transition: none;
+  }
+}
+
+/* Custom field types */
+.date-picker-wrapper {
+  @apply relative;
+}
+
+.date-picker-input {
+  @apply w-full;
+}
+
+.date-picker-calendar {
+  @apply absolute top-full left-0 mt-1 bg-white border border-gray-300 rounded-lg shadow-lg z-50;
+}
+
+/* Validation states */
+.form-group.valid .form-input,
+.form-group.valid .form-textarea,
+.form-group.valid .form-select {
+  @apply border-green-300 focus:border-green-500 focus:ring-green-500;
+}
+
+.form-group.invalid .form-input,
+.form-group.invalid .form-textarea,
+.form-group.invalid .form-select {
+  @apply border-red-300 focus:border-red-500 focus:ring-red-500;
+}
+
+/* Form section dividers */
+.form-section {
+  @apply py-6 border-b border-gray-200 last:border-b-0 last:pb-0;
+}
+
+.form-section-title {
+  @apply text-lg font-medium text-gray-900 mb-4;
+}
+
+.form-section-description {
+  @apply text-sm text-gray-600 mb-6;
+}
+
+/* Progress indicator */
+.form-progress {
+  @apply w-full bg-gray-200 rounded-full h-2 mb-6;
+}
+
+.form-progress-bar {
+  @apply bg-indigo-600 h-2 rounded-full transition-all duration-300;
+}
+
+/* Help text and tooltips */
+.form-help {
+  @apply mt-1 text-sm text-gray-500 flex items-start space-x-1;
+}
+
+.form-help-icon {
+  @apply h-4 w-4 text-gray-400 flex-shrink-0 mt-0.5;
+}
+
+.form-tooltip {
+  @apply relative inline-block;
+}
+
+.form-tooltip-content {
+  @apply absolute bottom-full left-1/2 transform -translate-x-1/2 mb-2 px-3 py-2 text-sm text-white bg-gray-900 rounded-lg shadow-lg max-w-xs z-50 opacity-0 pointer-events-none transition-opacity duration-200;
+}
+
+.form-tooltip:hover .form-tooltip-content {
+  @apply opacity-100 pointer-events-auto;
+}

@@ -1,0 +1,116 @@
+/* Workflow Designer Layout */
+.workflow-designer {
+  @apply h-full flex flex-col bg-gray-50;
+}
+
+.workflow-designer-toolbar {
+  @apply bg-white border-b border-gray-200 px-4 py-3 flex items-center justify-between shadow-sm;
+}
+
+.workflow-designer-main {
+  @apply flex-1 flex overflow-hidden;
+}
+
+/* Toolbar styles */
+.designer-toolbar {
+  @apply flex items-center space-x-4;
+}
+
+.designer-toolbar-left {
+  @apply flex items-center space-x-4;
+}
+
+.designer-toolbar-center {
+  @apply flex-1 flex items-center justify-center space-x-2;
+}
+
+.designer-toolbar-right {
+  @apply flex items-center space-x-2;
+}
+
+.designer-toolbar-title {
+  @apply text-lg font-semibold text-gray-900;
+}
+
+.designer-toolbar-subtitle {
+  @apply text-sm text-gray-600;
+}
+
+.designer-toolbar-button {
+  @apply inline-flex items-center px-3 py-2 border border-gray-300 rounded-md text-sm font-medium text-gray-700 bg-white hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 disabled:opacity-50;
+}
+
+.designer-toolbar-button.primary {
+  @apply bg-indigo-600 text-white border-indigo-600 hover:bg-indigo-700;
+}
+
+.designer-toolbar-button.success {
+  @apply bg-green-600 text-white border-green-600 hover:bg-green-700;
+}
+
+.designer-toolbar-button.danger {
+  @apply bg-red-600 text-white border-red-600 hover:bg-red-700;
+}
+
+.zoom-controls {
+  @apply flex items-center space-x-1 bg-white border border-gray-300 rounded-md px-2 py-1;
+}
+
+.zoom-button {
+  @apply p-1 text-gray-600 hover:text-gray-900 hover:bg-gray-100 rounded;
+}
+
+.zoom-level {
+  @apply px-2 py-1 text-sm font-medium text-gray-700 min-w-12 text-center;
+}
+
+/* Loading and saving states */
+.designer-saving {
+  @apply flex items-center space-x-2 text-blue-600;
+}
+
+.designer-saved {
+  @apply flex items-center space-x-2 text-green-600;
+}
+
+.designer-error {
+  @apply flex items-center space-x-2 text-red-600;
+}
+
+/* Keyboard shortcuts tooltip */
+.keyboard-shortcuts {
+  @apply absolute top-full right-0 mt-2 w-64 bg-white border border-gray-200 rounded-lg shadow-lg p-4 z-50;
+}
+
+.keyboard-shortcut {
+  @apply flex items-center justify-between py-1 text-sm;
+}
+
+.keyboard-shortcut-key {
+  @apply bg-gray-100 px-2 py-1 rounded text-xs font-mono;
+}
+
+.keyboard-shortcut-description {
+  @apply text-gray-600;
+}
+
+/* Responsive design */
+@media (max-width: 768px) {
+  .designer-toolbar {
+    @apply flex-col space-y-2 space-x-0;
+  }
+
+  .designer-toolbar-left,
+  .designer-toolbar-center,
+  .designer-toolbar-right {
+    @apply w-full justify-center;
+  }
+
+  .designer-toolbar-center {
+    @apply flex-none;
+  }
+
+  .zoom-controls {
+    @apply w-full justify-center;
+  }
+}

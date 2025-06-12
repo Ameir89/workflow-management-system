@@ -18,7 +18,7 @@ const DesignerCanvas = forwardRef(
       onAddTransition,
       onDeleteTransition,
       onPan,
-      onAddNode,
+      onAddNode, // Added this prop
     },
     ref
   ) => {
@@ -41,6 +41,7 @@ const DesignerCanvas = forwardRef(
           y: (offset.y - canvasRect.top - panOffset.y) / zoom,
         };
 
+        // This should now work correctly
         onAddNode(item.nodeType, position);
       },
       collect: (monitor) => ({
@@ -67,10 +68,11 @@ const DesignerCanvas = forwardRef(
     // Handle mouse events for panning
     const handleMouseDown = useCallback(
       (e) => {
+        // Only pan when clicking on the canvas background
         if (e.target === canvasRef.current) {
           setIsPanning(true);
           setLastPanPoint({ x: e.clientX, y: e.clientY });
-          onSelectNode(null);
+          onSelectNode(null); // Deselect any node when starting a pan
         }
       },
       [onSelectNode]
@@ -93,7 +95,7 @@ const DesignerCanvas = forwardRef(
       setIsPanning(false);
     }, []);
 
-    // Add event listeners
+    // Add event listeners for panning
     useEffect(() => {
       const canvas = canvasRef.current;
       if (canvas) {
@@ -109,7 +111,7 @@ const DesignerCanvas = forwardRef(
       }
     }, [handleMouseMove, handleMouseUp]);
 
-    // Handle node connection
+    // Handle node connection logic
     const handleStartConnection = useCallback((nodeId) => {
       setConnectionMode(true);
       setConnectionStart(nodeId);
@@ -146,6 +148,7 @@ const DesignerCanvas = forwardRef(
       return () => document.removeEventListener("keydown", handleKeyDown);
     }, [selectedNode, onDeleteNode, onSelectNode, handleCancelConnection]);
 
+    // Render connection lines between nodes
     const renderConnections = () => {
       const transitions = workflow.definition.transitions || [];
       const steps = workflow.definition.steps || [];
@@ -163,7 +166,7 @@ const DesignerCanvas = forwardRef(
             from={fromStep.position}
             to={toStep.position}
             condition={transition.condition}
-            selected={false}
+            selected={false} // You might want to enhance this to select connections
             onDelete={() => onDeleteTransition(transition.id)}
             zoom={zoom}
           />
@@ -189,7 +192,7 @@ const DesignerCanvas = forwardRef(
           {/* Grid background */}
           <div className="canvas-grid" />
 
-          {/* Connection lines */}
+          {/* Connection lines rendered as SVG */}
           <svg className="connections-layer">{renderConnections()}</svg>
 
           {/* Workflow nodes */}
@@ -209,7 +212,7 @@ const DesignerCanvas = forwardRef(
             />
           ))}
 
-          {/* Connection mode indicator */}
+          {/* UI Indicator for when connection mode is active */}
           {connectionMode && (
             <div className="connection-indicator">
               <p>
@@ -227,7 +230,7 @@ const DesignerCanvas = forwardRef(
           )}
         </div>
 
-        {/* Drop indicator */}
+        {/* UI Indicator for when dragging a new node over the canvas */}
         {isOver && (
           <div className="drop-indicator">
             <p>{t("designer.dropNodeHere")}</p>

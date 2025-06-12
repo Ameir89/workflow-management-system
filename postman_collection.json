@@ -1,0 +1,702 @@
+{
+  "info": {
+    "name": "Workflow Management System API",
+    "description": "Complete API collection for the Workflow Management System",
+    "version": "1.0.0",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+  },
+  "auth": {
+    "type": "bearer",
+    "bearer": [
+      {
+        "key": "token",
+        "value": "{{access_token}}",
+        "type": "string"
+      }
+    ]
+  },
+  "variable": [
+    {
+      "key": "base_url",
+      "value": "http://localhost:5000/api",
+      "type": "string"
+    },
+    {
+      "key": "access_token",
+      "value": "",
+      "type": "string"
+    },
+    {
+      "key": "workflow_id",
+      "value": "",
+      "type": "string"
+    },
+    {
+      "key": "instance_id",
+      "value": "",
+      "type": "string"
+    },
+    {
+      "key": "task_id",
+      "value": "",
+      "type": "string"
+    },
+    {
+      "key": "user_id",
+      "value": "",
+      "type": "string"
+    }
+  ],
+  "item": [
+    {
+      "name": "Authentication",
+      "item": [
+        {
+          "name": "Login",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "if (pm.response.code === 200) {",
+                  "    const response = pm.response.json();",
+                  "    pm.collectionVariables.set('access_token', response.access_token);",
+                  "    pm.collectionVariables.set('user_id', response.user.id);",
+                  "}"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ],
+          "request": {
+            "auth": {
+              "type": "noauth"
+            },
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"username\": \"admin@example.com\",\n  \"password\": \"admin123!\"\n}"
+            },
+            "url": {
+              "raw": "{{base_url}}/auth/login",
+              "host": ["{{base_url}}"],
+              "path": ["auth", "login"]
+            }
+          }
+        },
+        {
+          "name": "Register",
+          "request": {
+            "auth": {
+              "type": "noauth"
+            },
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"username\": \"newuser\",\n  \"email\": \"newuser@example.com\",\n  \"password\": \"SecurePass123!\",\n  \"first_name\": \"New\",\n  \"last_name\": \"User\"\n}"
+            },
+            "url": {
+              "raw": "{{base_url}}/auth/register",
+              "host": ["{{base_url}}"],
+              "path": ["auth", "register"]
+            }
+          }
+        },
+        {
+          "name": "Get Profile",
+          "request": {
+            "method": "GET",
+            "url": {
+              "raw": "{{base_url}}/auth/profile",
+              "host": ["{{base_url}}"],
+              "path": ["auth", "profile"]
+            }
+          }
+        },
+        {
+          "name": "Setup 2FA",
+          "request": {
+            "method": "POST",
+            "url": {
+              "raw": "{{base_url}}/auth/setup-2fa",
+              "host": ["{{base_url}}"],
+              "path": ["auth", "setup-2fa"]
+            }
+          }
+        },
+        {
+          "name": "Logout",
+          "request": {
+            "method": "POST",
+            "url": {
+              "raw": "{{base_url}}/auth/logout",
+              "host": ["{{base_url}}"],
+              "path": ["auth", "logout"]
+            }
+          }
+        }
+      ]
+    },
+    {
+      "name": "Workflows",
+      "item": [
+        {
+          "name": "Get Workflows",
+          "request": {
+            "method": "GET",
+            "url": {
+              "raw": "{{base_url}}/workflows?page=1&limit=20",
+              "host": ["{{base_url}}"],
+              "path": ["workflows"],
+              "query": [
+                {
+                  "key": "page",
+                  "value": "1"
+                },
+                {
+                  "key": "limit",
+                  "value": "20"
+                }
+              ]
+            }
+          }
+        },
+        {
+          "name": "Create Workflow",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "if (pm.response.code === 201) {",
+                  "    const response = pm.response.json();",
+                  "    pm.collectionVariables.set('workflow_id', response.workflow_id);",
+                  "}"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"name\": \"Sample Approval Workflow\",\n  \"description\": \"A simple approval workflow for testing\",\n  \"category\": \"Testing\",\n  \"tags\": [\"test\", \"approval\"],\n  \"definition\": {\n    \"steps\": [\n      {\n        \"id\": \"submit_request\",\n        \"name\": \"Submit Request\",\n        \"type\": \"task\",\n        \"isStart\": true,\n        \"position\": { \"x\": 100, \"y\": 100 },\n        \"properties\": {\n          \"assignee\": \"{{initiator}}\",\n          \"dueHours\": 24\n        }\n      },\n      {\n        \"id\": \"approve_request\",\n        \"name\": \"Approve Request\",\n        \"type\": \"approval\",\n        \"position\": { \"x\": 300, \"y\": 100 },\n        \"properties\": {\n          \"approvers\": [\"{{manager}}\"],\n          \"approvalType\": \"any\",\n          \"dueHours\": 48\n        }\n      }\n    ],\n    \"transitions\": [\n      {\n        \"id\": \"submit_to_approve\",\n        \"from\": \"submit_request\",\n        \"to\": \"approve_request\"\n      }\n    ]\n  }\n}"
+            },
+            "url": {
+              "raw": "{{base_url}}/workflows",
+              "host": ["{{base_url}}"],
+              "path": ["workflows"]
+            }
+          }
+        },
+        {
+          "name": "Get Workflow by ID",
+          "request": {
+            "method": "GET",
+            "url": {
+              "raw": "{{base_url}}/workflows/{{workflow_id}}",
+              "host": ["{{base_url}}"],
+              "path": ["workflows", "{{workflow_id}}"]
+            }
+          }
+        },
+        {
+          "name": "Execute Workflow",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "if (pm.response.code === 201) {",
+                  "    const response = pm.response.json();",
+                  "    pm.collectionVariables.set('instance_id', response.instance_id);",
+                  "}"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"data\": {\n    \"requester_name\": \"John Doe\",\n    \"request_type\": \"equipment\",\n    \"amount\": 1500,\n    \"description\": \"New laptop for development work\"\n  }\n}"
+            },
+            "url": {
+              "raw": "{{base_url}}/workflows/{{workflow_id}}/execute",
+              "host": ["{{base_url}}"],
+              "path": ["workflows", "{{workflow_id}}", "execute"]
+            }
+          }
+        },
+        {
+          "name": "Get Workflow Instances",
+          "request": {
+            "method": "GET",
+            "url": {
+              "raw": "{{base_url}}/workflows/{{workflow_id}}/instances",
+              "host": ["{{base_url}}"],
+              "path": ["workflows", "{{workflow_id}}", "instances"]
+            }
+          }
+        },
+        {
+          "name": "Get Workflow Instance",
+          "request": {
+            "method": "GET",
+            "url": {
+              "raw": "{{base_url}}/workflows/instances/{{instance_id}}",
+              "host": ["{{base_url}}"],
+              "path": ["workflows", "instances", "{{instance_id}}"]
+            }
+          }
+        }
+      ]
+    },
+    {
+      "name": "Tasks",
+      "item": [
+        {
+          "name": "Get Tasks",
+          "request": {
+            "method": "GET",
+            "url": {
+              "raw": "{{base_url}}/tasks?assigned_to_me=true&status=pending",
+              "host": ["{{base_url}}"],
+              "path": ["tasks"],
+              "query": [
+                {
+                  "key": "assigned_to_me",
+                  "value": "true"
+                },
+                {
+                  "key": "status",
+                  "value": "pending"
+                }
+              ]
+            }
+          }
+        },
+        {
+          "name": "Get Task by ID",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "if (pm.response.code === 200) {",
+                  "    const response = pm.response.json();",
+                  "    if (response.task && response.task.id) {",
+                  "        pm.collectionVariables.set('task_id', response.task.id);",
+                  "    }",
+                  "}"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ],
+          "request": {
+            "method": "GET",
+            "url": {
+              "raw": "{{base_url}}/tasks/{{task_id}}",
+              "host": ["{{base_url}}"],
+              "path": ["tasks", "{{task_id}}"]
+            }
+          }
+        },
+        {
+          "name": "Complete Task",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"result\": {\n    \"decision\": \"approved\",\n    \"comments\": \"Request approved after review\",\n    \"approved_amount\": 1500\n  }\n}"
+            },
+            "url": {
+              "raw": "{{base_url}}/tasks/{{task_id}}/complete",
+              "host": ["{{base_url}}"],
+              "path": ["tasks", "{{task_id}}", "complete"]
+            }
+          }
+        },
+        {
+          "name": "Assign Task",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"assigned_to\": \"{{user_id}}\"\n}"
+            },
+            "url": {
+              "raw": "{{base_url}}/tasks/{{task_id}}/assign",
+              "host": ["{{base_url}}"],
+              "path": ["tasks", "{{task_id}}", "assign"]
+            }
+          }
+        },
+        {
+          "name": "Submit Form Response",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"form_data\": {\n    \"employee_name\": \"John Doe\",\n    \"equipment_type\": \"laptop\",\n    \"justification\": \"Current laptop is outdated and causing productivity issues\",\n    \"estimated_cost\": 1500\n  }\n}"
+            },
+            "url": {
+              "raw": "{{base_url}}/tasks/{{task_id}}/form-response",
+              "host": ["{{base_url}}"],
+              "path": ["tasks", "{{task_id}}", "form-response"]
+            }
+          }
+        }
+      ]
+    },
+    {
+      "name": "Forms",
+      "item": [
+        {
+          "name": "Get Forms",
+          "request": {
+            "method": "GET",
+            "url": {
+              "raw": "{{base_url}}/forms",
+              "host": ["{{base_url}}"],
+              "path": ["forms"]
+            }
+          }
+        },
+        {
+          "name": "Create Form",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"name\": \"Equipment Request Form\",\n  \"description\": \"Form for requesting office equipment\",\n  \"schema\": {\n    \"title\": \"Equipment Request\",\n    \"fields\": [\n      {\n        \"name\": \"employee_name\",\n        \"type\": \"text\",\n        \"label\": \"Employee Name\",\n        \"required\": true\n      },\n      {\n        \"name\": \"equipment_type\",\n        \"type\": \"select\",\n        \"label\": \"Equipment Type\",\n        \"required\": true,\n        \"options\": [\n          {\"value\": \"laptop\", \"label\": \"Laptop\"},\n          {\"value\": \"monitor\", \"label\": \"Monitor\"},\n          {\"value\": \"phone\", \"label\": \"Phone\"}\n        ]\n      },\n      {\n        \"name\": \"justification\",\n        \"type\": \"textarea\",\n        \"label\": \"Justification\",\n        \"required\": true\n      }\n    ]\n  }\n}"
+            },
+            "url": {
+              "raw": "{{base_url}}/forms",
+              "host": ["{{base_url}}"],
+              "path": ["forms"]
+            }
+          }
+        }
+      ]
+    },
+    {
+      "name": "Files",
+      "item": [
+        {
+          "name": "Upload File",
+          "request": {
+            "method": "POST",
+            "body": {
+              "mode": "formdata",
+              "formdata": [
+                {
+                  "key": "file",
+                  "type": "file",
+                  "src": ""
+                },
+                {
+                  "key": "workflow_instance_id",
+                  "value": "{{instance_id}}",
+                  "type": "text"
+                },
+                {
+                  "key": "description",
+                  "value": "Supporting document",
+                  "type": "text"
+                }
+              ]
+            },
+            "url": {
+              "raw": "{{base_url}}/files/upload",
+              "host": ["{{base_url}}"],
+              "path": ["files", "upload"]
+            }
+          }
+        },
+        {
+          "name": "Get Files",
+          "request": {
+            "method": "GET",
+            "url": {
+              "raw": "{{base_url}}/files",
+              "host": ["{{base_url}}"],
+              "path": ["files"]
+            }
+          }
+        }
+      ]
+    },
+    {
+      "name": "Reports",
+      "item": [
+        {
+          "name": "Dashboard Stats",
+          "request": {
+            "method": "GET",
+            "url": {
+              "raw": "{{base_url}}/reports/dashboard-stats",
+              "host": ["{{base_url}}"],
+              "path": ["reports", "dashboard-stats"]
+            }
+          }
+        },
+        {
+          "name": "Performance Report",
+          "request": {
+            "method": "GET",
+            "url": {
+              "raw": "{{base_url}}/reports/performance?start_date=2024-01-01&end_date=2024-01-31",
+              "host": ["{{base_url}}"],
+              "path": ["reports", "performance"],
+              "query": [
+                {
+                  "key": "start_date",
+                  "value": "2024-01-01"
+                },
+                {
+                  "key": "end_date",
+                  "value": "2024-01-31"
+                }
+              ]
+            }
+          }
+        },
+        {
+          "name": "SLA Compliance Report",
+          "request": {
+            "method": "GET",
+            "url": {
+              "raw": "{{base_url}}/reports/sla-compliance",
+              "host": ["{{base_url}}"],
+              "path": ["reports", "sla-compliance"]
+            }
+          }
+        }
+      ]
+    },
+    {
+      "name": "Admin",
+      "item": [
+        {
+          "name": "Get Users",
+          "request": {
+            "method": "GET",
+            "url": {
+              "raw": "{{base_url}}/admin/users",
+              "host": ["{{base_url}}"],
+              "path": ["admin", "users"]
+            }
+          }
+        },
+        {
+          "name": "Create User",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"username\": \"newuser\",\n  \"email\": \"newuser@company.com\",\n  \"password\": \"SecurePass123!\",\n  \"first_name\": \"New\",\n  \"last_name\": \"User\",\n  \"roles\": [\"User\"]\n}"
+            },
+            "url": {
+              "raw": "{{base_url}}/admin/users",
+              "host": ["{{base_url}}"],
+              "path": ["admin", "users"]
+            }
+          }
+        },
+        {
+          "name": "Get Roles",
+          "request": {
+            "method": "GET",
+            "url": {
+              "raw": "{{base_url}}/admin/roles",
+              "host": ["{{base_url}}"],
+              "path": ["admin", "roles"]
+            }
+          }
+        },
+        {
+          "name": "System Health",
+          "request": {
+            "method": "GET",
+            "url": {
+              "raw": "{{base_url}}/admin/health",
+              "host": ["{{base_url}}"],
+              "path": ["admin", "health"]
+            }
+          }
+        }
+      ]
+    },
+    {
+      "name": "Webhooks",
+      "item": [
+        {
+          "name": "Get Webhooks",
+          "request": {
+            "method": "GET",
+            "url": {
+              "raw": "{{base_url}}/webhooks",
+              "host": ["{{base_url}}"],
+              "path": ["webhooks"]
+            }
+          }
+        },
+        {
+          "name": "Create Webhook",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"name\": \"Test Webhook\",\n  \"url\": \"https://webhook.site/your-unique-url\",\n  \"events\": [\"workflow_completed\", \"task_assigned\"],\n  \"headers\": {\n    \"Content-Type\": \"application/json\"\n  }\n}"
+            },
+            "url": {
+              "raw": "{{base_url}}/webhooks",
+              "host": ["{{base_url}}"],
+              "path": ["webhooks"]
+            }
+          }
+        }
+      ]
+    },
+    {
+      "name": "Notifications",
+      "item": [
+        {
+          "name": "Get Notifications",
+          "request": {
+            "method": "GET",
+            "url": {
+              "raw": "{{base_url}}/notifications",
+              "host": ["{{base_url}}"],
+              "path": ["notifications"]
+            }
+          }
+        },
+        {
+          "name": "Mark All Read",
+          "request": {
+            "method": "PUT",
+            "url": {
+              "raw": "{{base_url}}/notifications/mark-all-read",
+              "host": ["{{base_url}}"],
+              "path": ["notifications", "mark-all-read"]
+            }
+          }
+        }
+      ]
+    },
+    {
+      "name": "Utilities",
+      "item": [
+        {
+          "name": "Health Check",
+          "request": {
+            "auth": {
+              "type": "noauth"
+            },
+            "method": "GET",
+            "url": {
+              "raw": "{{base_url}}/../health",
+              "host": ["{{base_url}}"],
+              "path": ["..", "health"]
+            }
+          }
+        }
+      ]
+    }
+  ],
+  "event": [
+    {
+      "listen": "prerequest",
+      "script": {
+        "type": "text/javascript",
+        "exec": [
+          "// Auto-refresh token if needed",
+          "if (pm.collectionVariables.get('access_token') === '') {",
+          "    console.log('No access token found. Please login first.');",
+          "}"
+        ]
+      }
+    },
+    {
+      "listen": "test",
+      "script": {
+        "type": "text/javascript",
+        "exec": [
+          "// Global test to log response status",
+          "console.log('Response Status:', pm.response.status);",
+          "",
+          "// Handle token expiration",
+          "if (pm.response.code === 401) {",
+          "    console.log('Token expired or invalid. Please login again.');",
+          "    pm.collectionVariables.set('access_token', '');",
+          "}"
+        ]
+      }
+    }
+  ]
+}

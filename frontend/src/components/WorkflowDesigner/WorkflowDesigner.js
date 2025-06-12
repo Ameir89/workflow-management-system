@@ -273,6 +273,7 @@ const WorkflowDesigner = () => {
               onSelectNode={setSelectedNode}
               onUpdateNode={handleUpdateNode}
               onDeleteNode={handleDeleteNode}
+              onAddNode={handleAddNode}
               onAddTransition={handleAddTransition}
               onDeleteTransition={handleDeleteTransition}
               onPan={handlePan}

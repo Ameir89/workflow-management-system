@@ -1,0 +1,313 @@
+[2025-06-12 12:36:31,670] [INFO] app: Application startup
+[2025-06-12 12:36:31,683] [INFO] app.utils.file_handler: python-magic not available, using alternative MIME detection
+[2025-06-12 12:36:35,032] [INFO] app: Application startup
+[2025-06-12 12:36:35,049] [INFO] app.utils.file_handler: python-magic not available, using alternative MIME detection
+[2025-06-12 12:36:35,869] [INFO] app: Application startup
+[2025-06-12 12:36:35,886] [INFO] app.utils.file_handler: python-magic not available, using alternative MIME detection
+[2025-06-12 12:36:44,404] [INFO] app.middleware: Request 28092288-b80e-4806-ba18-383eebdede5a: POST /api/auth/login
+[2025-06-12 12:36:44,553] [INFO] app.database: Connected to DB postgresql://postgres:CodeSD.com@localhost (connection open: True)
+[2025-06-12 12:36:44,728] [INFO] app.middleware: Response 28092288-b80e-4806-ba18-383eebdede5a: 401 (0.324s)
+[2025-06-12 12:40:43,634] [INFO] app.middleware: Request b8482798-d776-4e96-861d-b919765cc6b5: POST /api/auth/login
+[2025-06-12 12:40:43,666] [INFO] app.database: Connected to DB postgresql://postgres:CodeSD.com@localhost (connection open: True)
+[2025-06-12 12:40:43,892] [INFO] app.middleware: Response b8482798-d776-4e96-861d-b919765cc6b5: 401 (0.258s)
+[2025-06-12 12:41:29,493] [INFO] app: Application startup
+[2025-06-12 12:41:29,510] [INFO] app.utils.file_handler: python-magic not available, using alternative MIME detection
+[2025-06-12 12:41:41,602] [INFO] app.middleware: Request d269cc5e-4adb-478b-9828-0d0156fa6705: POST /api/auth/login
+[2025-06-12 12:41:41,696] [INFO] app.database: Connected to DB postgresql://postgres:CodeSD.com@localhost (connection open: True)
+[2025-06-12 12:41:41,930] [INFO] app.middleware: Response d269cc5e-4adb-478b-9828-0d0156fa6705: 200 (0.327s)
+[2025-06-12 13:04:59,992] [INFO] app.middleware: Request e9dca516-c1b7-4938-9bbb-5beab6f5523d: POST /api/auth/login
+[2025-06-12 13:05:00,039] [INFO] app.database: Connected to DB postgresql://postgres:CodeSD.com@localhost (connection open: True)
+[2025-06-12 13:05:00,289] [INFO] app.middleware: Response e9dca516-c1b7-4938-9bbb-5beab6f5523d: 200 (0.297s)
+[2025-06-12 13:05:25,330] [INFO] app: Application startup
+[2025-06-12 13:05:25,359] [INFO] app.utils.file_handler: python-magic not available, using alternative MIME detection
+[2025-06-12 13:05:48,891] [INFO] app.middleware: Request 07721089-2782-426b-b3da-a133e9a87429: POST /api/auth/login
+[2025-06-12 13:05:48,957] [INFO] app.database: Connected to DB postgresql://postgres:CodeSD.com@localhost (connection open: True)
+[2025-06-12 13:05:49,193] [INFO] app.middleware: Response 07721089-2782-426b-b3da-a133e9a87429: 401 (0.302s)
+[2025-06-12 13:13:45,019] [INFO] app.middleware: Request ff75c75b-c916-4139-a04c-41ace8775c88: POST /api/auth/login
+[2025-06-12 13:13:45,050] [INFO] app.database: Connected to DB postgresql://postgres:CodeSD.com@localhost (connection open: True)
+[2025-06-12 13:13:45,766] [INFO] app.middleware: Response ff75c75b-c916-4139-a04c-41ace8775c88: 200 (0.747s)
+[2025-06-12 13:14:16,699] [INFO] app.middleware: Request 25dd9147-b6a2-48fa-90a1-2dfb5afa10f7: POST /api/auth/register
+[2025-06-12 13:14:16,735] [INFO] app.database: Connected to DB postgresql://postgres:CodeSD.com@localhost (connection open: True)
+[2025-06-12 13:14:16,963] [INFO] app.middleware: Response 25dd9147-b6a2-48fa-90a1-2dfb5afa10f7: 201 (0.264s)
+[2025-06-12 14:43:24,967] [INFO] app: Application startup
+[2025-06-12 14:44:44,710] [INFO] app: Application startup
+[2025-06-12 14:44:44,730] [INFO] app.utils.file_handler: python-magic not available, using alternative MIME detection
+[2025-06-12 14:44:45,285] [INFO] app: Application startup
+[2025-06-12 14:44:45,299] [INFO] app.utils.file_handler: python-magic not available, using alternative MIME detection
+[2025-06-12 14:53:00,369] [INFO] app.middleware: Request 451d1338-7d39-47ed-80c2-cb31390da631: POST /api/auth/login
+[2025-06-12 14:53:00,412] [INFO] app.database: Connected to DB postgresql://postgres:CodeSD.com@localhost (connection open: True)
+[2025-06-12 14:53:00,769] [INFO] app.middleware: Response 451d1338-7d39-47ed-80c2-cb31390da631: 200 (0.400s)
+[2025-06-12 14:53:11,733] [INFO] app.middleware: Request a4157ab7-6463-46bb-9b21-5d37a7228895: GET /health
+[2025-06-12 14:53:11,733] [INFO] app.middleware: Response a4157ab7-6463-46bb-9b21-5d37a7228895: 200 (0.000s)
+[2025-06-12 14:53:11,738] [INFO] app.middleware: Request ff469514-4639-4709-860d-346d3a75c874: GET /api/auth/profile
+[2025-06-12 14:53:11,941] [INFO] app.database: Connected to DB postgresql://postgres:CodeSD.com@localhost (connection open: True)
+[2025-06-12 14:53:11,944] [INFO] app.middleware: Response ff469514-4639-4709-860d-346d3a75c874: 401 (0.206s)
+[2025-06-12 14:53:11,974] [INFO] app.middleware: Request b6ead301-7c59-4526-af6a-81f6e392c7e8: GET /api/workflows
+[2025-06-12 14:53:12,176] [INFO] app.database: Connected to DB postgresql://postgres:CodeSD.com@localhost (connection open: True)
+[2025-06-12 14:53:12,177] [INFO] app.middleware: Response b6ead301-7c59-4526-af6a-81f6e392c7e8: 401 (0.203s)
+[2025-06-12 14:53:12,182] [INFO] app.middleware: Request 3d1b2d59-c740-4e35-a601-b6275b96b0c3: GET /api/tasks
+[2025-06-12 14:53:12,381] [INFO] app.database: Connected to DB postgresql://postgres:CodeSD.com@localhost (connection open: True)
+[2025-06-12 14:53:12,382] [INFO] app.middleware: Response 3d1b2d59-c740-4e35-a601-b6275b96b0c3: 401 (0.199s)
+[2025-06-12 14:53:12,388] [INFO] app.middleware: Request c84e9c12-85e3-4d9f-b691-1956e20bbd60: GET /api/reports/dashboard-stats
+[2025-06-12 14:53:12,586] [INFO] app.database: Connected to DB postgresql://postgres:CodeSD.com@localhost (connection open: True)
+[2025-06-12 14:53:12,588] [INFO] app.middleware: Response c84e9c12-85e3-4d9f-b691-1956e20bbd60: 401 (0.200s)
+[2025-06-12 14:53:43,758] [INFO] app.middleware: Request 644719ca-4db2-4d84-94d7-e3dea89d4c44: POST /api/workflows
+[2025-06-12 14:53:43,958] [INFO] app.database: Connected to DB postgresql://postgres:CodeSD.com@localhost (connection open: True)
+[2025-06-12 14:53:43,959] [INFO] app.middleware: Response 644719ca-4db2-4d84-94d7-e3dea89d4c44: 401 (0.201s)
+[2025-06-12 16:01:39,553] [INFO] app.middleware: Request 53e7d9e3-f3ed-4728-a279-ad7bc9384485: POST /api/workflows
+[2025-06-12 16:01:39,848] [INFO] app.database: Connected to DB postgresql://postgres:CodeSD.com@localhost (connection open: True)
+[2025-06-12 16:01:39,848] [INFO] app.middleware: Response 53e7d9e3-f3ed-4728-a279-ad7bc9384485: 401 (0.295s)
+[2025-06-12 16:01:47,236] [INFO] app.middleware: Request 9f6d2970-10e1-4ea4-8b07-114ba4d8eb96: POST /api/auth/login
+[2025-06-12 16:01:47,293] [INFO] app.database: Connected to DB postgresql://postgres:CodeSD.com@localhost (connection open: True)
+[2025-06-12 16:01:47,749] [INFO] app.middleware: Response 9f6d2970-10e1-4ea4-8b07-114ba4d8eb96: 200 (0.512s)
+[2025-06-12 16:01:54,873] [INFO] app.middleware: Request 7510ea88-f16f-47bf-8b1d-06ac60a646eb: POST /api/workflows
+[2025-06-12 16:01:55,154] [INFO] app.database: Connected to DB postgresql://postgres:CodeSD.com@localhost (connection open: True)
+[2025-06-12 16:01:55,154] [INFO] app.middleware: Response 7510ea88-f16f-47bf-8b1d-06ac60a646eb: 401 (0.281s)
+[2025-06-12 16:02:08,164] [INFO] app.middleware: Request 578b5c0e-fa17-4961-ad82-b83809bed38b: POST /api/workflows
+[2025-06-12 16:02:08,180] [INFO] app.middleware: Response 578b5c0e-fa17-4961-ad82-b83809bed38b: 401 (0.016s)
+[2025-06-12 16:03:01,956] [INFO] app.middleware: Request 603939a3-2c64-4449-8cfc-3150d0bcfb4a: POST /api/workflows
+[2025-06-12 16:03:02,239] [INFO] app.database: Connected to DB postgresql://postgres:CodeSD.com@localhost (connection open: True)
+[2025-06-12 16:03:02,244] [INFO] app.middleware: Response 603939a3-2c64-4449-8cfc-3150d0bcfb4a: 401 (0.288s)
+[2025-06-12 16:03:58,837] [INFO] app.middleware: Request 489c03ae-a531-44d0-bae7-d2406103ae3f: POST /api/workflows
+[2025-06-12 16:03:59,096] [INFO] app.database: Connected to DB postgresql://postgres:CodeSD.com@localhost (connection open: True)
+[2025-06-12 16:03:59,099] [INFO] app.middleware: Response 489c03ae-a531-44d0-bae7-d2406103ae3f: 401 (0.262s)
+[2025-06-12 16:05:24,274] [INFO] app.middleware: Request 159e3195-9377-4098-9737-ea95f8f1c5f8: POST /api/workflows
+[2025-06-12 16:05:24,274] [INFO] app.middleware: Response 159e3195-9377-4098-9737-ea95f8f1c5f8: 401 (0.000s)
+[2025-06-12 16:08:19,544] [INFO] app.middleware: Request 4fb737b1-b364-4ef4-9686-9c9c8547a996: POST /api/workflows
+[2025-06-12 16:08:19,783] [INFO] app.database: Connected to DB postgresql://postgres:CodeSD.com@localhost (connection open: True)
+[2025-06-12 16:08:19,783] [INFO] app.middleware: Response 4fb737b1-b364-4ef4-9686-9c9c8547a996: 401 (0.239s)
+[2025-06-12 16:12:49,851] [INFO] app.middleware: Request 6a8b6983-da4c-4eaf-9a5a-04898a31ef71: POST /api/auth/login
+[2025-06-12 16:12:49,885] [INFO] app.database: Connected to DB postgresql://postgres:CodeSD.com@localhost (connection open: True)
+[2025-06-12 16:12:50,340] [INFO] app.middleware: Response 6a8b6983-da4c-4eaf-9a5a-04898a31ef71: 200 (0.489s)
+[2025-06-12 16:15:16,576] [INFO] app.middleware: Request 8b8e3a10-3d91-42e3-8e0c-35fe59f41f73: POST /api/workflows
+[2025-06-12 16:15:16,874] [INFO] app.database: Connected to DB postgresql://postgres:CodeSD.com@localhost (connection open: True)
+[2025-06-12 16:15:16,874] [INFO] app.middleware: Response 8b8e3a10-3d91-42e3-8e0c-35fe59f41f73: 401 (0.298s)
+[2025-06-12 16:16:43,831] [INFO] app: Application startup
+[2025-06-12 16:16:43,854] [INFO] app.utils.file_handler: python-magic not available, using alternative MIME detection
+[2025-06-12 16:17:29,675] [INFO] app.middleware: Request 357af2c9-1aaf-41b8-84d9-7f70b6517732: POST /api/workflows
+[2025-06-12 16:17:29,707] [INFO] app.middleware: Response 357af2c9-1aaf-41b8-84d9-7f70b6517732: 401 (0.032s)
+[2025-06-12 16:18:25,181] [INFO] app: Application startup
+[2025-06-12 16:18:25,196] [INFO] app.utils.file_handler: python-magic not available, using alternative MIME detection
+[2025-06-12 16:19:15,469] [INFO] app.middleware: Request 72aba725-302b-40ea-b031-e2bb33c27d86: POST /api/auth/login
+[2025-06-12 16:19:15,511] [INFO] app.database: Connected to DB postgresql://postgres:CodeSD.com@localhost (connection open: True)
+[2025-06-12 16:19:15,876] [INFO] app.middleware: Response 72aba725-302b-40ea-b031-e2bb33c27d86: 200 (0.406s)
+[2025-06-12 16:19:56,575] [INFO] app.middleware: Request 9453ea69-0b2a-4106-82d0-94792f18a86b: POST /api/workflows
+[2025-06-12 16:19:56,780] [INFO] app.database: Connected to DB postgresql://postgres:CodeSD.com@localhost (connection open: True)
+[2025-06-12 16:19:56,782] [INFO] app.middleware: Response 9453ea69-0b2a-4106-82d0-94792f18a86b: 401 (0.207s)
+[2025-06-12 16:22:49,643] [INFO] app.middleware: Request efd4387d-692a-4468-9eb8-01bb6c2aab04: POST /api/workflows
+[2025-06-12 16:22:49,941] [INFO] app.database: Connected to DB postgresql://postgres:CodeSD.com@localhost (connection open: True)
+[2025-06-12 16:22:49,949] [INFO] app.middleware: Response efd4387d-692a-4468-9eb8-01bb6c2aab04: 401 (0.306s)
+[2025-06-12 16:23:11,336] [INFO] app.middleware: Request f537b236-91d3-42c1-aafc-5c1502e6edb8: POST /api/workflows
+[2025-06-12 16:23:11,616] [INFO] app.database: Connected to DB postgresql://postgres:CodeSD.com@localhost (connection open: True)
+[2025-06-12 16:23:11,616] [INFO] app.middleware: Response f537b236-91d3-42c1-aafc-5c1502e6edb8: 401 (0.280s)
+[2025-06-12 16:23:14,643] [INFO] app.middleware: Request 1de017fb-a632-4d2d-8d60-9abfb7fa2e82: POST /api/workflows
+[2025-06-12 16:23:14,939] [INFO] app.database: Connected to DB postgresql://postgres:CodeSD.com@localhost (connection open: True)
+[2025-06-12 16:23:14,940] [INFO] app.middleware: Response 1de017fb-a632-4d2d-8d60-9abfb7fa2e82: 401 (0.297s)
+[2025-06-12 16:26:04,382] [INFO] app.middleware: Request 4dc62c5f-007d-4d46-a749-c9656ce7fc3f: POST /api/auth/login
+[2025-06-12 16:26:04,427] [INFO] app.database: Connected to DB postgresql://postgres:CodeSD.com@localhost (connection open: True)
+[2025-06-12 16:26:04,910] [INFO] app.middleware: Response 4dc62c5f-007d-4d46-a749-c9656ce7fc3f: 200 (0.529s)
+[2025-06-12 16:28:42,666] [INFO] app.middleware: Request ddef0aed-cd89-4aea-ae7c-0275727dd103: POST /api/auth/login
+[2025-06-12 16:28:42,723] [INFO] app.database: Connected to DB postgresql://postgres:CodeSD.com@localhost (connection open: True)
+[2025-06-12 16:28:43,169] [INFO] app.middleware: Response ddef0aed-cd89-4aea-ae7c-0275727dd103: 200 (0.504s)
+[2025-06-12 16:28:58,316] [INFO] app.middleware: Request 92bfd47b-62fd-44af-b098-90e9e44189a2: GET /api/workflows
+[2025-06-12 16:28:58,316] [INFO] app.middleware: Response 92bfd47b-62fd-44af-b098-90e9e44189a2: 401 (0.000s)
+[2025-06-12 16:29:18,225] [INFO] app.middleware: Request 6208822c-a479-451d-b8e6-1b6609270c2c: POST /api/workflows
+[2025-06-12 16:29:18,225] [INFO] app.middleware: Response 6208822c-a479-451d-b8e6-1b6609270c2c: 401 (0.000s)
+[2025-06-12 16:29:48,355] [INFO] app.middleware: Request f6be4c54-0d63-4f85-b42f-09e00462acf1: POST /api/workflows
+[2025-06-12 16:29:48,620] [INFO] app.database: Connected to DB postgresql://postgres:CodeSD.com@localhost (connection open: True)
+[2025-06-12 16:29:48,620] [INFO] app.middleware: Response f6be4c54-0d63-4f85-b42f-09e00462acf1: 401 (0.265s)
+[2025-06-12 16:30:09,985] [INFO] app.middleware: Request 27245806-3773-4619-9467-f26246eef0bb: POST /api/workflows
+[2025-06-12 16:30:10,407] [INFO] app.database: Connected to DB postgresql://postgres:CodeSD.com@localhost (connection open: True)
+[2025-06-12 16:30:10,407] [INFO] app.middleware: Response 27245806-3773-4619-9467-f26246eef0bb: 401 (0.422s)
+[2025-06-12 16:34:02,648] [INFO] app.middleware: Request 96e54ac8-9c77-4149-a31b-4e8429aa93b5: POST /api/workflows
+[2025-06-12 16:34:02,922] [INFO] app.database: Connected to DB postgresql://postgres:CodeSD.com@localhost (connection open: True)
+[2025-06-12 16:34:02,930] [INFO] app.middleware: Response 96e54ac8-9c77-4149-a31b-4e8429aa93b5: 401 (0.282s)
+[2025-06-12 16:35:07,352] [INFO] app.middleware: Request 05d42cc1-8a18-4fa1-be65-689c86289e14: POST /api/workflows
+[2025-06-12 16:35:07,632] [INFO] app.database: Connected to DB postgresql://postgres:CodeSD.com@localhost (connection open: True)
+[2025-06-12 16:35:07,632] [INFO] app.middleware: Response 05d42cc1-8a18-4fa1-be65-689c86289e14: 401 (0.280s)
+[2025-06-12 17:08:44,746] [INFO] app: Application startup
+[2025-06-12 17:08:44,765] [INFO] app.utils.file_handler: python-magic not available, using alternative MIME detection
+[2025-06-12 17:10:22,800] [INFO] app.middleware: Request a81d66c0-4670-42ed-8c21-c5cf34da33cd: POST /api/workflows
+[2025-06-12 17:10:23,041] [INFO] app.database: Connected to DB postgresql://postgres:CodeSD.com@localhost (connection open: True)
+[2025-06-12 17:10:23,045] [INFO] app.middleware: Response a81d66c0-4670-42ed-8c21-c5cf34da33cd: 401 (0.245s)
+[2025-06-12 17:10:27,004] [INFO] app.middleware: Request 4f3616b0-58b2-43b7-bd9e-07107895b35f: POST /api/auth/login
+[2025-06-12 17:10:27,043] [INFO] app.database: Connected to DB postgresql://postgres:CodeSD.com@localhost (connection open: True)
+[2025-06-12 17:10:27,432] [INFO] app.middleware: Response 4f3616b0-58b2-43b7-bd9e-07107895b35f: 200 (0.428s)
+[2025-06-12 17:10:45,635] [INFO] app.middleware: Request 2bfb1cf1-efd8-4143-be75-01b5d706943a: POST /api/workflows
+[2025-06-12 17:10:45,840] [INFO] app.database: Connected to DB postgresql://postgres:CodeSD.com@localhost (connection open: True)
+[2025-06-12 17:10:45,842] [INFO] app.middleware: Response 2bfb1cf1-efd8-4143-be75-01b5d706943a: 401 (0.208s)
+[2025-06-12 17:11:03,727] [INFO] app.middleware: Request f3d36a4d-abb1-413d-9bb7-84e96715a262: POST /api/workflows
+[2025-06-12 17:11:03,990] [INFO] app.database: Connected to DB postgresql://postgres:CodeSD.com@localhost (connection open: True)
+[2025-06-12 17:11:03,993] [INFO] app.middleware: Response f3d36a4d-abb1-413d-9bb7-84e96715a262: 401 (0.265s)
+[2025-06-12 17:17:29,629] [INFO] app: Application startup
+[2025-06-12 17:17:29,647] [INFO] app.utils.file_handler: python-magic not available, using alternative MIME detection
+[2025-06-12 17:17:33,502] [INFO] app.middleware: Request 8b4509a9-a5e9-4df3-b6a0-e26ee35a1caa: POST /api/workflows
+[2025-06-12 17:17:33,565] [INFO] app.database: Connected to DB postgresql://postgres:CodeSD.com@localhost (connection open: True)
+[2025-06-12 17:17:33,578] [INFO] app.middleware: Response 8b4509a9-a5e9-4df3-b6a0-e26ee35a1caa: 201 (0.077s)
+[2025-06-12 17:38:44,530] [INFO] app: Application startup
+[2025-06-12 17:38:44,545] [INFO] app.utils.file_handler: python-magic not available, using alternative MIME detection
+[2025-06-12 17:39:07,303] [INFO] app: Application startup
+[2025-06-12 17:39:07,317] [INFO] app.utils.file_handler: python-magic not available, using alternative MIME detection
+[2025-06-12 17:41:30,623] [INFO] app: Application startup
+[2025-06-12 17:41:30,637] [INFO] app.utils.file_handler: python-magic not available, using alternative MIME detection
+[2025-06-12 17:41:34,196] [INFO] app: Application startup
+[2025-06-12 17:41:34,215] [INFO] app.utils.file_handler: python-magic not available, using alternative MIME detection
+[2025-06-12 17:42:21,420] [INFO] app: Application startup
+[2025-06-12 17:42:21,436] [INFO] app.utils.file_handler: python-magic not available, using alternative MIME detection
+[2025-06-12 17:42:37,105] [INFO] app: Application startup
+[2025-06-12 17:42:37,123] [INFO] app.utils.file_handler: python-magic not available, using alternative MIME detection
+[2025-06-12 17:43:00,046] [INFO] app.middleware: Request a23f35ef-91fd-4e63-8608-bb03ee5eeb86: POST /api/auth/login
+[2025-06-12 17:43:00,143] [INFO] app.database: Connected to DB postgresql://postgres:CodeSD.com@localhost (connection open: True)
+[2025-06-12 17:43:00,375] [INFO] app.middleware: Response a23f35ef-91fd-4e63-8608-bb03ee5eeb86: 200 (0.328s)
+[2025-06-12 17:43:28,978] [INFO] app.middleware: Request 32013067-6d1e-46e1-bba8-b841a21fa650: GET /api/workflows
+[2025-06-12 17:43:29,014] [INFO] app.database: Connected to DB postgresql://postgres:CodeSD.com@localhost (connection open: True)
+[2025-06-12 17:43:29,024] [INFO] app.middleware: Response 32013067-6d1e-46e1-bba8-b841a21fa650: 200 (0.046s)
+[2025-06-12 17:45:00,941] [INFO] app.middleware: Request dfee30e6-2817-445c-9d5b-9604ef5e1295: GET /api/workflows/91253eac-ff58-4342-b5dc-de013919f675
+[2025-06-12 17:45:00,988] [INFO] app.database: Connected to DB postgresql://postgres:CodeSD.com@localhost (connection open: True)
+[2025-06-12 17:45:00,989] [ERROR] app.blueprints.workflows: Error getting workflow 91253eac-ff58-4342-b5dc-de013919f675: the JSON object must be str, bytes or bytearray, not dict
+[2025-06-12 17:45:00,989] [INFO] app.middleware: Response dfee30e6-2817-445c-9d5b-9604ef5e1295: 500 (0.048s)
+[2025-06-12 17:45:19,170] [INFO] app.middleware: Request c2f2caab-2d37-4e3b-a135-7e9cb187be5e: GET /api/workflows/NaN
+[2025-06-12 17:45:19,205] [INFO] app.database: Connected to DB postgresql://postgres:CodeSD.com@localhost (connection open: True)
+[2025-06-12 17:45:19,205] [INFO] app.middleware: Response c2f2caab-2d37-4e3b-a135-7e9cb187be5e: 400 (0.034s)
+[2025-06-12 17:46:21,381] [INFO] app.middleware: Request 2882729a-fb57-4fd6-9ccc-ec092700bd50: POST /api/auth/login
+[2025-06-12 17:46:21,414] [INFO] app.database: Connected to DB postgresql://postgres:CodeSD.com@localhost (connection open: True)
+[2025-06-12 17:46:21,649] [INFO] app.middleware: Response 2882729a-fb57-4fd6-9ccc-ec092700bd50: 200 (0.268s)
+[2025-06-12 17:47:12,586] [INFO] app.middleware: Request c22e482b-1a21-4884-a536-bde5153ca618: GET /api/workflows
+[2025-06-12 17:47:12,622] [INFO] app.database: Connected to DB postgresql://postgres:CodeSD.com@localhost (connection open: True)
+[2025-06-12 17:47:12,627] [INFO] app.middleware: Response c22e482b-1a21-4884-a536-bde5153ca618: 200 (0.041s)
+[2025-06-12 17:47:43,155] [INFO] app.middleware: Request 8f87982c-36cd-45a0-8f5a-a3189817911d: GET /api/workflows/91253eac-ff58-4342-b5dc-de013919f675
+[2025-06-12 17:47:43,203] [INFO] app.database: Connected to DB postgresql://postgres:CodeSD.com@localhost (connection open: True)
+[2025-06-12 17:47:43,207] [ERROR] app.blueprints.workflows: Error getting workflow 91253eac-ff58-4342-b5dc-de013919f675: the JSON object must be str, bytes or bytearray, not dict
+[2025-06-12 17:47:43,207] [INFO] app.middleware: Response 8f87982c-36cd-45a0-8f5a-a3189817911d: 500 (0.051s)
+[2025-06-12 18:18:47,487] [INFO] app: Application startup
+[2025-06-12 18:18:47,506] [INFO] app.utils.file_handler: python-magic not available, using alternative MIME detection
+[2025-06-12 18:18:52,942] [INFO] app.middleware: Request 6c1efff8-dc83-4c83-8de9-e036b91b8c2e: GET /api/workflows/91253eac-ff58-4342-b5dc-de013919f675
+[2025-06-12 18:18:52,982] [INFO] app.database: Connected to DB postgresql://postgres:CodeSD.com@localhost (connection open: True)
+[2025-06-12 18:18:52,985] [INFO] app.middleware: Response 6c1efff8-dc83-4c83-8de9-e036b91b8c2e: 200 (0.043s)
+[2025-06-12 18:19:37,169] [INFO] app.middleware: Request 05c74db6-3b4f-4d22-b31e-fdb778d04a95: POST /api/workflows/91253eac-ff58-4342-b5dc-de013919f675/execute
+[2025-06-12 18:19:37,209] [INFO] app.database: Connected to DB postgresql://postgres:CodeSD.com@localhost (connection open: True)
+[2025-06-12 18:19:37,220] [ERROR] app.services.workflow_engine: Failed to execute workflow 91253eac-ff58-4342-b5dc-de013919f675: the JSON object must be str, bytes or bytearray, not dict
+[2025-06-12 18:19:37,220] [ERROR] app.blueprints.workflows: Error executing workflow 91253eac-ff58-4342-b5dc-de013919f675: the JSON object must be str, bytes or bytearray, not dict
+[2025-06-12 18:19:37,222] [INFO] app.middleware: Response 05c74db6-3b4f-4d22-b31e-fdb778d04a95: 500 (0.053s)
+[2025-06-12 18:42:40,103] [INFO] app: Application startup
+[2025-06-12 18:42:40,120] [INFO] app.utils.file_handler: python-magic not available, using alternative MIME detection
+[2025-06-12 18:42:45,778] [INFO] app.middleware: Request 93e368fe-c208-48d8-9f09-318fabdb2138: POST /api/workflows/91253eac-ff58-4342-b5dc-de013919f675/execute
+[2025-06-12 18:42:45,827] [INFO] app.database: Connected to DB postgresql://postgres:CodeSD.com@localhost (connection open: True)
+[2025-06-12 18:42:45,845] [INFO] app.middleware: Response 93e368fe-c208-48d8-9f09-318fabdb2138: 201 (0.067s)
+[2025-06-12 18:43:08,199] [INFO] app.middleware: Request 7782bafb-a492-404b-a545-a17fc706c74f: GET /api/workflows/91253eac-ff58-4342-b5dc-de013919f675/instances
+[2025-06-12 18:43:08,237] [INFO] app.database: Connected to DB postgresql://postgres:CodeSD.com@localhost (connection open: True)
+[2025-06-12 18:43:08,244] [INFO] app.middleware: Response 7782bafb-a492-404b-a545-a17fc706c74f: 200 (0.045s)
+[2025-06-12 18:43:33,733] [INFO] app.middleware: Request 15e31c1c-c1fe-42c0-b476-77eb8eeda3db: GET /api/workflows/instances/8cad95c8-ead0-4ce9-a6ad-8c7ef92c3e36
+[2025-06-12 18:43:33,780] [INFO] app.database: Connected to DB postgresql://postgres:CodeSD.com@localhost (connection open: True)
+[2025-06-12 18:43:33,785] [ERROR] app.blueprints.workflows: Error getting workflow instance 8cad95c8-ead0-4ce9-a6ad-8c7ef92c3e36: the JSON object must be str, bytes or bytearray, not dict
+[2025-06-12 18:43:33,786] [INFO] app.middleware: Response 15e31c1c-c1fe-42c0-b476-77eb8eeda3db: 500 (0.053s)
+[2025-06-12 18:47:31,130] [INFO] app: Application startup
+[2025-06-12 18:47:31,146] [INFO] app.utils.file_handler: python-magic not available, using alternative MIME detection
+[2025-06-12 18:47:35,796] [INFO] app.middleware: Request bf8d2dd7-f1a3-4701-bb10-7b35789937a8: GET /api/workflows/instances/8cad95c8-ead0-4ce9-a6ad-8c7ef92c3e36
+[2025-06-12 18:47:35,855] [INFO] app.database: Connected to DB postgresql://postgres:CodeSD.com@localhost (connection open: True)
+[2025-06-12 18:47:35,866] [INFO] app.middleware: Response bf8d2dd7-f1a3-4701-bb10-7b35789937a8: 200 (0.070s)
+[2025-06-12 18:48:10,378] [INFO] app.middleware: Request 049ef68c-30bf-481f-ac7e-52660d767a45: GET /api/auth/profile
+[2025-06-12 18:48:10,419] [INFO] app.database: Connected to DB postgresql://postgres:CodeSD.com@localhost (connection open: True)
+[2025-06-12 18:48:10,426] [INFO] app.middleware: Response 049ef68c-30bf-481f-ac7e-52660d767a45: 200 (0.048s)
+[2025-06-12 18:48:17,598] [INFO] app.middleware: Request c37e8eba-f3ac-4a40-8d59-d845a7b464f7: POST /api/auth/setup-2fa
+[2025-06-12 18:48:17,635] [INFO] app.database: Connected to DB postgresql://postgres:CodeSD.com@localhost (connection open: True)
+[2025-06-12 18:48:17,662] [INFO] app.middleware: Response c37e8eba-f3ac-4a40-8d59-d845a7b464f7: 200 (0.064s)
+[2025-06-12 18:48:34,069] [INFO] app.middleware: Request 570a687d-4a68-47f8-915d-995c8ea077c2: GET /api/tasks
+[2025-06-12 18:48:34,104] [INFO] app.database: Connected to DB postgresql://postgres:CodeSD.com@localhost (connection open: True)
+[2025-06-12 18:48:34,110] [INFO] app.middleware: Response 570a687d-4a68-47f8-915d-995c8ea077c2: 200 (0.041s)
+[2025-06-12 18:48:39,336] [INFO] app.middleware: Request f9cb5f34-d1a6-47b2-8d1e-12194dcd1027: GET /api/tasks/
+[2025-06-12 18:48:39,338] [WARNING] app: 404 Not Found: 404 Not Found: The requested URL was not found on the server. If you entered the URL manually please check your spelling and try again.
+[2025-06-12 18:48:39,338] [INFO] app.middleware: Response f9cb5f34-d1a6-47b2-8d1e-12194dcd1027: 404 (0.002s)
+[2025-06-12 18:50:27,434] [INFO] app.middleware: Request d0d6fc93-6e38-47da-9cb7-2a18896f8625: POST /api/tasks//complete
+[2025-06-12 18:50:27,444] [INFO] app.middleware: Response d0d6fc93-6e38-47da-9cb7-2a18896f8625: 405 (0.010s)
+[2025-06-12 18:50:42,297] [INFO] app.middleware: Request ed7d50c1-6e2e-45fd-95a0-48a492aa3e13: POST /api/tasks//assign
+[2025-06-12 18:50:42,298] [INFO] app.middleware: Response ed7d50c1-6e2e-45fd-95a0-48a492aa3e13: 405 (0.001s)
+[2025-06-12 18:50:50,786] [INFO] app.middleware: Request ffb46b67-2996-4b87-b852-ac7998d13ded: POST /api/tasks//form-response
+[2025-06-12 18:50:50,787] [INFO] app.middleware: Response ffb46b67-2996-4b87-b852-ac7998d13ded: 405 (0.001s)
+[2025-06-12 18:51:29,662] [INFO] app.middleware: Request 963697d9-1d1e-481a-b27c-3d76d6292eeb: POST /api/forms
+[2025-06-12 18:51:29,701] [INFO] app.database: Connected to DB postgresql://postgres:CodeSD.com@localhost (connection open: True)
+[2025-06-12 18:51:29,717] [INFO] app.middleware: Response 963697d9-1d1e-481a-b27c-3d76d6292eeb: 201 (0.055s)
+[2025-06-12 18:51:35,301] [INFO] app.middleware: Request cb5ee647-4ff2-4bd4-88cd-00c47cea95ef: GET /api/forms
+[2025-06-12 18:51:35,343] [INFO] app.database: Connected to DB postgresql://postgres:CodeSD.com@localhost (connection open: True)
+[2025-06-12 18:51:35,348] [ERROR] app.blueprints.forms: Error getting form definitions: column reference "tenant_id" is ambiguous
+LINE 9:             WHERE tenant_id = '00000000-0000-0000-0000-00000...
+                          ^
+
+[2025-06-12 18:51:35,348] [INFO] app.middleware: Response cb5ee647-4ff2-4bd4-88cd-00c47cea95ef: 500 (0.046s)
+[2025-06-12 18:55:58,483] [INFO] app: Application startup
+[2025-06-12 18:55:58,504] [INFO] app.utils.file_handler: python-magic not available, using alternative MIME detection
+[2025-06-12 18:56:33,468] [INFO] app: Application startup
+[2025-06-12 18:56:33,491] [INFO] app.utils.file_handler: python-magic not available, using alternative MIME detection
+[2025-06-12 18:56:36,048] [INFO] app: Application startup
+[2025-06-12 18:56:36,066] [INFO] app.utils.file_handler: python-magic not available, using alternative MIME detection
+[2025-06-12 18:56:39,521] [INFO] app.middleware: Request 6b3f64ce-9db0-4cb3-9646-bf1090d4bf26: GET /api/forms
+[2025-06-12 18:56:39,560] [INFO] app.database: Connected to DB postgresql://postgres:CodeSD.com@localhost (connection open: True)
+[2025-06-12 18:56:39,567] [INFO] app.middleware: Response 6b3f64ce-9db0-4cb3-9646-bf1090d4bf26: 200 (0.046s)
+[2025-06-12 19:00:01,506] [INFO] app: Application startup
+[2025-06-12 19:00:01,523] [INFO] app.utils.file_handler: python-magic not available, using alternative MIME detection
+[2025-06-12 19:00:33,514] [INFO] app: Application startup
+[2025-06-12 19:00:33,534] [INFO] app.utils.file_handler: python-magic not available, using alternative MIME detection
+[2025-06-12 19:00:57,413] [INFO] app.middleware: Request 89604cc4-77e5-4b84-b700-44a5a1893fb3: GET /api/files
+[2025-06-12 19:00:57,461] [INFO] app.database: Connected to DB postgresql://postgres:CodeSD.com@localhost (connection open: True)
+[2025-06-12 19:00:57,470] [INFO] app.middleware: Response 89604cc4-77e5-4b84-b700-44a5a1893fb3: 200 (0.058s)
+[2025-06-12 19:01:15,791] [INFO] app.middleware: Request 270cc2f1-0869-4eb4-87bc-7a22c9e9d42f: POST /api/files/upload
+[2025-06-12 19:01:15,857] [INFO] app.database: Connected to DB postgresql://postgres:CodeSD.com@localhost (connection open: True)
+[2025-06-12 19:01:15,889] [INFO] app.middleware: Response 270cc2f1-0869-4eb4-87bc-7a22c9e9d42f: 400 (0.099s)
+[2025-06-12 19:02:13,041] [INFO] app.middleware: Request ca2e1a0b-6655-42ed-90b5-78df280c56d3: POST /api/files/upload
+[2025-06-12 19:02:13,076] [INFO] app.database: Connected to DB postgresql://postgres:CodeSD.com@localhost (connection open: True)
+[2025-06-12 19:02:13,086] [INFO] app.middleware: Response ca2e1a0b-6655-42ed-90b5-78df280c56d3: 400 (0.045s)
+[2025-06-12 19:02:48,497] [INFO] app.middleware: Request 90704f53-f82a-4117-a534-0a41bbbebb18: POST /api/files/upload
+[2025-06-12 19:02:48,535] [INFO] app.database: Connected to DB postgresql://postgres:CodeSD.com@localhost (connection open: True)
+[2025-06-12 19:02:48,543] [INFO] app.middleware: Response 90704f53-f82a-4117-a534-0a41bbbebb18: 400 (0.046s)
+[2025-06-12 19:04:10,803] [INFO] app.middleware: Request bdd62a9e-3638-48bb-a3a4-f10e6af30e0c: GET /api/reports/dashboard-stats
+[2025-06-12 19:04:10,834] [INFO] app.database: Connected to DB postgresql://postgres:CodeSD.com@localhost (connection open: True)
+[2025-06-12 19:04:10,843] [INFO] app.middleware: Response bdd62a9e-3638-48bb-a3a4-f10e6af30e0c: 200 (0.039s)
+[2025-06-12 19:04:19,606] [INFO] app.middleware: Request 13567870-dba9-41d3-a66e-13b895c87bbc: GET /api/reports/performance
+[2025-06-12 19:04:19,643] [INFO] app.database: Connected to DB postgresql://postgres:CodeSD.com@localhost (connection open: True)
+[2025-06-12 19:04:19,655] [INFO] app.middleware: Response 13567870-dba9-41d3-a66e-13b895c87bbc: 200 (0.049s)
+[2025-06-12 19:04:28,069] [INFO] app.middleware: Request 548a610b-f831-4fd8-8785-7a80eb7e5845: GET /api/reports/sla-compliance
+[2025-06-12 19:04:28,104] [INFO] app.database: Connected to DB postgresql://postgres:CodeSD.com@localhost (connection open: True)
+[2025-06-12 19:04:28,114] [INFO] app.middleware: Response 548a610b-f831-4fd8-8785-7a80eb7e5845: 200 (0.046s)
+[2025-06-12 19:04:37,831] [INFO] app.middleware: Request 854ec515-14e6-4e6f-9f7c-bc104b4ba4c4: GET /api/admin/users
+[2025-06-12 19:04:37,865] [INFO] app.database: Connected to DB postgresql://postgres:CodeSD.com@localhost (connection open: True)
+[2025-06-12 19:04:37,870] [INFO] app.middleware: Response 854ec515-14e6-4e6f-9f7c-bc104b4ba4c4: 200 (0.039s)
+[2025-06-12 19:04:49,203] [INFO] app.middleware: Request 45fdf4f6-d2bf-400f-a7d5-31b01e117baa: GET /api/admin/roles
+[2025-06-12 19:04:49,247] [INFO] app.database: Connected to DB postgresql://postgres:CodeSD.com@localhost (connection open: True)
+[2025-06-12 19:04:49,251] [ERROR] app.blueprints.admin: Error getting roles: the JSON object must be str, bytes or bytearray, not list
+[2025-06-12 19:04:49,251] [INFO] app.middleware: Response 45fdf4f6-d2bf-400f-a7d5-31b01e117baa: 500 (0.048s)
+[2025-06-12 19:04:53,935] [INFO] app.middleware: Request eb68509b-0cb6-4233-9012-e9eec73d47b0: GET /api/admin/health
+[2025-06-12 19:04:53,983] [INFO] app.database: Connected to DB postgresql://postgres:CodeSD.com@localhost (connection open: True)
+[2025-06-12 19:04:53,988] [INFO] app.middleware: Response eb68509b-0cb6-4233-9012-e9eec73d47b0: 200 (0.053s)
+[2025-06-12 19:08:50,325] [INFO] app: Application startup
+[2025-06-12 19:08:50,339] [INFO] app.utils.file_handler: python-magic not available, using alternative MIME detection
+[2025-06-12 19:08:54,904] [INFO] app.middleware: Request 7134a4b9-8ecf-4e97-897a-6f3bf8f58fa3: GET /api/admin/roles
+[2025-06-12 19:08:54,949] [INFO] app.database: Connected to DB postgresql://postgres:CodeSD.com@localhost (connection open: True)
+[2025-06-12 19:08:54,953] [INFO] app.middleware: Response 7134a4b9-8ecf-4e97-897a-6f3bf8f58fa3: 200 (0.049s)
+[2025-06-12 19:10:08,474] [INFO] app.middleware: Request c9a4d15e-2ab0-4af9-8ed0-f49746c171b5: POST /api/admin/users
+[2025-06-12 19:10:08,524] [INFO] app.database: Connected to DB postgresql://postgres:CodeSD.com@localhost (connection open: True)
+[2025-06-12 19:10:08,716] [INFO] app.middleware: Response c9a4d15e-2ab0-4af9-8ed0-f49746c171b5: 201 (0.241s)
+[2025-06-12 19:10:28,979] [INFO] app.middleware: Request eca793bb-0684-4a08-b131-87f100b10f93: GET /api/notifications
+[2025-06-12 19:10:29,017] [INFO] app.database: Connected to DB postgresql://postgres:CodeSD.com@localhost (connection open: True)
+[2025-06-12 19:10:29,022] [INFO] app.middleware: Response eca793bb-0684-4a08-b131-87f100b10f93: 200 (0.043s)
+[2025-06-12 19:10:46,791] [INFO] app.middleware: Request 4cedee05-3e74-4b31-8abe-75575a5be30b: PUT /api/notifications/mark-all-read
+[2025-06-12 19:10:46,835] [INFO] app.database: Connected to DB postgresql://postgres:CodeSD.com@localhost (connection open: True)
+[2025-06-12 19:10:46,845] [INFO] app.middleware: Response 4cedee05-3e74-4b31-8abe-75575a5be30b: 200 (0.054s)
+[2025-06-12 19:10:59,971] [INFO] app.middleware: Request a4956f89-6390-42b0-bd56-3698e86e1aaa: GET /api/../health
+[2025-06-12 19:10:59,971] [WARNING] app: 404 Not Found: 404 Not Found: The requested URL was not found on the server. If you entered the URL manually please check your spelling and try again.
+[2025-06-12 19:10:59,971] [INFO] app.middleware: Response a4956f89-6390-42b0-bd56-3698e86e1aaa: 404 (0.000s)
+[2025-06-12 19:11:11,571] [INFO] app.middleware: Request 154dcf9e-52e4-4611-835a-87a678c6de43: GET /api/webhooks
+[2025-06-12 19:11:11,610] [INFO] app.database: Connected to DB postgresql://postgres:CodeSD.com@localhost (connection open: True)
+[2025-06-12 19:11:11,614] [ERROR] app.blueprints.webhooks: Error getting webhooks: column w.updated_at does not exist
+LINE 3: ...                 w.timeout_seconds, w.created_at, w.updated_...
+                                                             ^
+HINT:  Perhaps you meant to reference the column "u.updated_at".
+
+[2025-06-12 19:11:11,614] [INFO] app.middleware: Response 154dcf9e-52e4-4611-835a-87a678c6de43: 500 (0.044s)
+[2025-06-12 19:11:27,151] [INFO] app.middleware: Request f93325d3-70e6-41a4-a935-7d287904e302: POST /api/webhooks
+[2025-06-12 19:11:27,185] [INFO] app.database: Connected to DB postgresql://postgres:CodeSD.com@localhost (connection open: True)
+[2025-06-12 19:11:27,195] [INFO] app.middleware: Response f93325d3-70e6-41a4-a935-7d287904e302: 201 (0.044s)
+[2025-06-12 19:15:44,118] [INFO] app.middleware: Request 6f90205f-3595-415c-9ca5-2c543ab14286: GET /api/webhooks
+[2025-06-12 19:15:44,259] [INFO] app.database: Connected to DB postgresql://postgres:CodeSD.com@localhost (connection open: True)
+[2025-06-12 19:15:44,265] [INFO] app.middleware: Response 6f90205f-3595-415c-9ca5-2c543ab14286: 200 (0.147s)
+[2025-06-12 19:30:14,478] [INFO] app: Application startup
+[2025-06-12 19:30:14,507] [INFO] app.utils.file_handler: python-magic not available, using alternative MIME detection

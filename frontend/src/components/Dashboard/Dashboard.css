@@ -1,0 +1,275 @@
+/* Dashboard specific styles */
+.dashboard-container {
+  @apply space-y-6 p-6;
+}
+
+.dashboard-header {
+  @apply mb-8;
+}
+
+.dashboard-title {
+  @apply text-3xl font-bold text-gray-900 mb-2;
+}
+
+.dashboard-subtitle {
+  @apply text-gray-600;
+}
+
+/* Stats cards grid */
+.stats-grid {
+  @apply grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8;
+}
+
+.stats-card {
+  @apply bg-white rounded-lg shadow-sm border border-gray-200 p-6 hover:shadow-md transition-shadow duration-200;
+}
+
+.stats-card-header {
+  @apply flex items-center justify-between;
+}
+
+.stats-card-title {
+  @apply text-sm font-medium text-gray-500;
+}
+
+.stats-card-value {
+  @apply text-2xl font-semibold text-gray-900 mt-2;
+}
+
+.stats-card-icon {
+  @apply h-8 w-8 text-indigo-500;
+}
+
+.stats-card-link {
+  @apply text-indigo-600 hover:text-indigo-800 transition-colors duration-200;
+}
+
+.stats-card-change {
+  @apply flex items-center text-sm;
+}
+
+.stats-card-change.positive {
+  @apply text-green-600;
+}
+
+.stats-card-change.negative {
+  @apply text-red-600;
+}
+
+.stats-card-change.neutral {
+  @apply text-gray-500;
+}
+
+/* Charts section */
+.charts-container {
+  @apply grid grid-cols-1 lg:grid-cols-2 gap-6 mb-8;
+}
+
+.chart-card {
+  @apply bg-white p-6 rounded-lg shadow-sm border border-gray-200;
+}
+
+.chart-title {
+  @apply text-lg font-semibold text-gray-900 mb-4;
+}
+
+.chart-wrapper {
+  @apply h-64 relative;
+}
+
+/* Content grid */
+.dashboard-content-grid {
+  @apply grid grid-cols-1 lg:grid-cols-3 gap-6;
+}
+
+.dashboard-main-content {
+  @apply lg:col-span-2 space-y-6;
+}
+
+.dashboard-sidebar {
+  @apply space-y-6;
+}
+
+/* Quick actions card */
+.quick-actions-card {
+  @apply bg-white p-6 rounded-lg shadow-sm border border-gray-200;
+}
+
+.quick-actions-title {
+  @apply text-lg font-semibold text-gray-900 mb-4;
+}
+
+.quick-actions-list {
+  @apply space-y-3;
+}
+
+.quick-action-item {
+  @apply flex items-center p-3 rounded-lg border border-gray-200 hover:bg-gray-50 transition-colors duration-200 cursor-pointer;
+}
+
+.quick-action-icon {
+  @apply flex-shrink-0 w-8 h-8 rounded-lg flex items-center justify-center mr-3;
+}
+
+.quick-action-icon.primary {
+  @apply bg-indigo-100 text-indigo-600;
+}
+
+.quick-action-icon.success {
+  @apply bg-green-100 text-green-600;
+}
+
+.quick-action-icon.warning {
+  @apply bg-yellow-100 text-yellow-600;
+}
+
+.quick-action-icon.purple {
+  @apply bg-purple-100 text-purple-600;
+}
+
+.quick-action-content {
+  @apply flex-1 min-w-0;
+}
+
+.quick-action-title {
+  @apply text-sm font-medium text-gray-900;
+}
+
+.quick-action-description {
+  @apply text-xs text-gray-500;
+}
+
+/* Recent activity */
+.recent-activity-card {
+  @apply bg-white p-6 rounded-lg shadow-sm border border-gray-200;
+}
+
+.recent-activity-title {
+  @apply text-lg font-semibold text-gray-900 mb-4;
+}
+
+.recent-activity-list {
+  @apply space-y-3;
+}
+
+.recent-activity-item {
+  @apply flex items-start space-x-3 p-3 rounded-lg hover:bg-gray-50 transition-colors duration-200;
+}
+
+.recent-activity-icon {
+  @apply flex-shrink-0 w-8 h-8 rounded-full flex items-center justify-center mt-0.5;
+}
+
+.recent-activity-content {
+  @apply flex-1 min-w-0;
+}
+
+.recent-activity-message {
+  @apply text-sm text-gray-900;
+}
+
+.recent-activity-time {
+  @apply text-xs text-gray-500 mt-1;
+}
+
+/* Empty states */
+.dashboard-empty {
+  @apply text-center py-12;
+}
+
+.dashboard-empty-icon {
+  @apply mx-auto h-12 w-12 text-gray-400 mb-4;
+}
+
+.dashboard-empty-title {
+  @apply text-lg font-medium text-gray-900 mb-2;
+}
+
+.dashboard-empty-description {
+  @apply text-gray-500 mb-6;
+}
+
+.dashboard-empty-action {
+  @apply inline-flex items-center px-4 py-2 border border-transparent text-sm font-medium rounded-md text-white bg-indigo-600 hover:bg-indigo-700 transition-colors duration-200;
+}
+
+/* Loading states */
+.dashboard-loading {
+  @apply flex items-center justify-center h-64;
+}
+
+.dashboard-spinner {
+  @apply animate-spin rounded-full h-8 w-8 border-b-2 border-indigo-600;
+}
+
+/* Responsive adjustments */
+@media (max-width: 768px) {
+  .dashboard-container {
+    @apply p-4 space-y-4;
+  }
+
+  .stats-grid {
+    @apply grid-cols-1 gap-4;
+  }
+
+  .charts-container {
+    @apply grid-cols-1 gap-4;
+  }
+
+  .dashboard-content-grid {
+    @apply grid-cols-1 gap-4;
+  }
+
+  .chart-wrapper {
+    @apply h-48;
+  }
+}
+
+/* Dark mode support */
+@media (prefers-color-scheme: dark) {
+  .dashboard-container {
+    @apply bg-gray-900;
+  }
+
+  .stats-card,
+  .chart-card,
+  .quick-actions-card,
+  .recent-activity-card {
+    @apply bg-gray-800 border-gray-700;
+  }
+
+  .dashboard-title,
+  .stats-card-value,
+  .chart-title,
+  .quick-actions-title,
+  .recent-activity-title {
+    @apply text-white;
+  }
+
+  .dashboard-subtitle,
+  .stats-card-title {
+    @apply text-gray-300;
+  }
+
+  .quick-action-item,
+  .recent-activity-item {
+    @apply hover:bg-gray-700 border-gray-700;
+  }
+}
+
+/* Animation for cards */
+.dashboard-card-enter {
+  @apply opacity-0 transform translate-y-4;
+}
+
+.dashboard-card-enter-active {
+  @apply opacity-100 transform translate-y-0 transition-all duration-300 ease-out;
+}
+
+.dashboard-card-exit {
+  @apply opacity-100 transform translate-y-0;
+}
+
+.dashboard-card-exit-active {
+  @apply opacity-0 transform translate-y-4 transition-all duration-300 ease-in;
+}
