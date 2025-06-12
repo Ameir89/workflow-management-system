@@ -9,7 +9,7 @@ import {
   HomeIcon,
   Cog8ToothIcon,
   DocumentTextIcon,
-  TaskIcon,
+  ClipboardDocumentListIcon, // Use this instead of TaskIcon
   ChartBarIcon,
   UserGroupIcon,
   BellIcon,
@@ -38,7 +38,7 @@ const Layout = () => {
   const navigation = [
     { name: t("nav.dashboard"), href: "/dashboard", icon: HomeIcon },
     { name: t("nav.workflows"), href: "/workflows", icon: Cog8ToothIcon },
-    { name: t("nav.tasks"), href: "/tasks", icon: TaskIcon },
+    { name: t("nav.tasks"), href: "/tasks", icon: ClipboardDocumentListIcon },
     { name: t("nav.forms"), href: "/forms", icon: DocumentTextIcon },
     { name: t("nav.files"), href: "/files", icon: FolderIcon },
     { name: t("nav.webhooks"), href: "/webhooks", icon: LinkIcon },

@@ -7,9 +7,8 @@ import {
   XCircleIcon,
   ExclamationTriangleIcon,
   ServerIcon,
-  DatabaseIcon,
+  CircleStackIcon, // Use this instead of DatabaseIcon
   CpuChipIcon,
-  CircleStackIcon,
 } from "@heroicons/react/24/outline";
 
 const SystemHealth = () => {
@@ -109,7 +108,7 @@ const SystemHealth = () => {
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
         <div className="bg-white p-4 rounded-lg shadow">
           <div className="flex items-center space-x-3">
-            <DatabaseIcon className="h-8 w-8 text-blue-500" />
+            <CircleStackIcon className="h-8 w-8 text-blue-500" />
             <div>
               <p className="text-sm font-medium text-gray-500">
                 {t("admin.health.database")}
