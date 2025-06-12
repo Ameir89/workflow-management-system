@@ -268,8 +268,13 @@ def get_roles():
 
         # Parse permissions JSON
         for role in roles:
-            if role['permissions']:
-                role['permissions'] = json.loads(role['permissions'])
+            try:
+                if role.get('permissions') and isinstance(role['permissions'], str):
+                    role['permissions'] = json.loads(role['permissions'])
+            except Exception as parse_err:
+                logger.warning(f"Could not parse permissions for role {role['id']}: {parse_err}")
+            # if role['permissions']:
+            #     role['permissions'] = json.loads(role['permissions'])
 
         return jsonify({'roles': [dict(r) for r in roles]}), 200
 

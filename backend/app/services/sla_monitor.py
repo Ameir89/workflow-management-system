@@ -3,6 +3,7 @@
 """
 SLA monitoring service for tracking deadlines and escalations
 """
+import json
 from datetime import datetime, timedelta
 from app.database import Database
 from app.services.notification_service import NotificationService
@@ -56,41 +57,82 @@ class SLAMonitor:
         except Exception as e:
             logger.error(f"Error checking SLA breaches: {e}")
     
+    # @staticmethod
+    # def _handle_sla_breach(task):
+    #     """Handle SLA breach for a task"""
+    #     try:
+    #         # Check if breach already recorded
+    #         existing_breach = Database.execute_one("""
+    #             SELECT id, escalation_level FROM sla_breaches
+    #             WHERE task_id = %s AND resolved_at IS NULL
+    #         """, (task['id'],))
+    #
+    #         if existing_breach:
+    #             # Handle escalation
+    #             SLAMonitor._handle_escalation(existing_breach, task)
+    #         else:
+    #             # Record new breach
+    #             breach_id = Database.execute_insert("""
+    #                 INSERT INTO sla_breaches
+    #                 (sla_definition_id, workflow_instance_id, task_id, escalation_level)
+    #                 VALUES (%s, %s, %s, 1)
+    #             """, (task['sla_id'], task['workflow_instance_id'], task['id']))
+    #
+    #             # Send initial notifications
+    #             SLAMonitor._send_breach_notifications(task, 1)
+    #
+    #             # Log audit
+    #             AuditLogger.log_action(
+    #                 user_id=None,
+    #                 action='sla_breach_created',
+    #                 resource_type='task',
+    #                 resource_id=task['id']
+    #             )
+    #
+    #     except Exception as e:
+    #         logger.error(f"Error handling SLA breach for task {task['id']}: {e}")
+    #
+
     @staticmethod
     def _handle_sla_breach(task):
         """Handle SLA breach for a task"""
         try:
+            # Deserialize escalation_rules if it's a string
+            if isinstance(task.get('escalation_rules'), str):
+                try:
+                    task['escalation_rules'] = json.loads(task['escalation_rules'])
+                except json.JSONDecodeError:
+                    task['escalation_rules'] = []
+            elif task.get('escalation_rules') is None:
+                task['escalation_rules'] = []
+
             # Check if breach already recorded
             existing_breach = Database.execute_one("""
                 SELECT id, escalation_level FROM sla_breaches
                 WHERE task_id = %s AND resolved_at IS NULL
             """, (task['id'],))
-            
+
             if existing_breach:
-                # Handle escalation
                 SLAMonitor._handle_escalation(existing_breach, task)
             else:
-                # Record new breach
                 breach_id = Database.execute_insert("""
                     INSERT INTO sla_breaches 
                     (sla_definition_id, workflow_instance_id, task_id, escalation_level)
                     VALUES (%s, %s, %s, 1)
                 """, (task['sla_id'], task['workflow_instance_id'], task['id']))
-                
-                # Send initial notifications
+
                 SLAMonitor._send_breach_notifications(task, 1)
-                
-                # Log audit
+
                 AuditLogger.log_action(
                     user_id=None,
                     action='sla_breach_created',
                     resource_type='task',
                     resource_id=task['id']
                 )
-                
+
         except Exception as e:
             logger.error(f"Error handling SLA breach for task {task['id']}: {e}")
-    
+
     @staticmethod
     def _handle_escalation(breach, task):
         """Handle SLA escalation"""

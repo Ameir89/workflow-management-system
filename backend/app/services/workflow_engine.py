@@ -33,7 +33,11 @@ class WorkflowEngine:
             )
             
             # Execute first step
-            definition = json.loads(workflow['definition'])
+            # definition = json.loads(workflow['definition'])
+            if isinstance(workflow['definition'], str):
+                definition = json.loads(workflow['definition'])
+            else:
+                definition = workflow['definition']
             first_step = WorkflowEngine._get_first_step(definition)
             
             if first_step:

@@ -2,6 +2,8 @@
 """
 Authentication utilities
 """
+import hashlib
+
 import jwt
 import bcrypt
 import pyotp
@@ -49,24 +51,48 @@ class AuthUtils:
         
         return jwt.encode(payload, current_app.config['JWT_SECRET_KEY'], algorithm='HS256')
     
+    # @staticmethod
+    # def verify_jwt_token(token):
+    #     """Verify and decode JWT token"""
+    #     try:
+    #         payload = jwt.decode(token, current_app.config['JWT_SECRET_KEY'], algorithms=['HS256'])
+    #
+    #         # Check if token is expired
+    #         if datetime.utcnow() > datetime.fromtimestamp(payload['exp']):
+    #             return None
+    #
+    #         # Verify session exists and is active
+    #         if not AuthUtils.verify_session(payload['user_id'], token):
+    #             return None
+    #
+    #         return payload
+    #     except jwt.InvalidTokenError:
+    #         return None
     @staticmethod
     def verify_jwt_token(token):
         """Verify and decode JWT token"""
         try:
-            payload = jwt.decode(token, current_app.config['JWT_SECRET_KEY'], algorithms=['HS256'])
-            
-            # Check if token is expired
-            if datetime.utcnow() > datetime.fromtimestamp(payload['exp']):
-                return None
-            
-            # Verify session exists and is active
+            payload = jwt.decode(
+                token,
+                current_app.config['JWT_SECRET_KEY'],
+                algorithms=['HS256']
+            )
+
+            # Optional: verify session
             if not AuthUtils.verify_session(payload['user_id'], token):
                 return None
-            
+
             return payload
-        except jwt.InvalidTokenError:
+
+        except jwt.ExpiredSignatureError:
+            logger.info("Token expired")
+            print("Token expired")
             return None
-    
+        except jwt.InvalidTokenError as e:
+            logger.error(f"Invalid token: {str(e)}")
+            print(f"Invalid token: {str(e)}")
+            return None
+
     @staticmethod
     def verify_session(user_id, token):
         """Verify user session exists and is active"""
@@ -89,6 +115,9 @@ class AuthUtils:
             VALUES (%s, %s, %s, %s, %s)
         """
         Database.execute_query(query, (user_id, token_hash, ip_address, user_agent, expires_at))
+        logger.debug(f"Token: {token}")
+        logger.debug(f"Token hash: {token_hash}")
+        logger.debug(f"User ID: {user_id}")
     
     @staticmethod
     def revoke_session(user_id, token):
@@ -100,7 +129,11 @@ class AuthUtils:
     @staticmethod
     def hash_token(token):
         """Hash token for storage"""
-        return bcrypt.hashpw(token.encode('utf-8'), bcrypt.gensalt()).decode('utf-8')
+        # return bcrypt.hashpw(token.encode('utf-8'), bcrypt.gensalt()).decode('utf-8')
+        """Deterministically hash the token for session lookup"""
+        return hashlib.sha256(token.encode('utf-8')).hexdigest()
+
+
     
     @staticmethod
     def generate_2fa_secret():

@@ -284,3 +284,18 @@ INSERT INTO users (id, tenant_id, username, email, password_hash, first_name, la
 
 INSERT INTO user_roles (user_id, role_id) VALUES 
 ('00000000-0000-0000-0000-000000000001', '00000000-0000-0000-0000-000000000001');
+
+ALTER TABLE webhooks ADD COLUMN updated_at TIMESTAMP;
+
+CREATE OR REPLACE FUNCTION update_updated_at_column()
+RETURNS TRIGGER AS $$
+BEGIN
+    NEW.updated_at = NOW();
+    RETURN NEW;
+END;
+$$ language 'plpgsql';
+
+CREATE TRIGGER update_webhooks_updated_at
+BEFORE UPDATE ON webhooks
+FOR EACH ROW
+EXECUTE FUNCTION update_updated_at_column();

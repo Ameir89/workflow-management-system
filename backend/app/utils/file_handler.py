@@ -5,8 +5,10 @@ File handling utilities for secure upload and management
 import os
 import hashlib
 import mimetypes
-import filetype
+# import filetype
 from datetime import datetime
+
+from filetype import filetype
 from flask import current_app
 from werkzeug.utils import secure_filename
 from app.utils.security import secure_filename as custom_secure_filename

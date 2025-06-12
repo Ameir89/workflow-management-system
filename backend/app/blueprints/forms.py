@@ -27,7 +27,7 @@ def get_form_definitions():
         search = request.args.get('search', '')
 
         # Build query
-        where_conditions = ["tenant_id = %s"]
+        where_conditions = ["fd.tenant_id = %s"]
         params = [tenant_id]
 
         if search:
@@ -95,8 +95,13 @@ def get_form_definition(form_id):
 
         # Parse schema JSON
         form_dict = dict(form)
-        if form_dict['schema']:
-            form_dict['schema'] = json.loads(form_dict['schema'])
+        # if form_dict['schema']:
+        #     form_dict['schema'] = json.loads(form_dict['schema'])
+        try:
+            if form_dict.get('schema') and isinstance(form_dict['schema'], str):
+                form_dict['schema'] = json.loads(form_dict['schema'])
+        except Exception as json_err:
+            logger.warning(f"Failed to parse form schema JSON: {json_err}")
 
         return jsonify({'form': form_dict}), 200
 

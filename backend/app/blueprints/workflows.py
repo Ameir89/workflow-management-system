@@ -84,7 +84,9 @@ def get_workflow(workflow_id):
         
         # Parse definition JSON
         workflow_dict = dict(workflow)
-        if workflow_dict['definition']:
+        # if workflow_dict['definition']:
+        #     workflow_dict['definition'] = json.loads(workflow_dict['definition'])
+        if workflow_dict['definition'] and isinstance(workflow_dict['definition'], str):
             workflow_dict['definition'] = json.loads(workflow_dict['definition'])
         
         return jsonify({'workflow': workflow_dict}), 200
@@ -324,11 +326,12 @@ def get_workflow_instance(instance_id):
             WHERE t.workflow_instance_id = %s
             ORDER BY t.created_at
         """, (instance_id,))
-        
+
         instance_dict = dict(instance)
-        if instance_dict['data']:
+        if instance_dict.get('data') and isinstance(instance_dict['data'], str):
             instance_dict['data'] = json.loads(instance_dict['data'])
-        if instance_dict['definition']:
+
+        if instance_dict.get('definition') and isinstance(instance_dict['definition'], str):
             instance_dict['definition'] = json.loads(instance_dict['definition'])
         
         return jsonify({

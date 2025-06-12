@@ -69,6 +69,7 @@ def require_auth(f):
         
         token = auth_header.split(' ')[1]
         user_data = verify_jwt_token(token)
+        # logger.error(user_data)
         if not user_data:
             return jsonify({'error': 'Invalid or expired token'}), 401
         
