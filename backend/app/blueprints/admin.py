@@ -2,10 +2,10 @@
 """
 Admin blueprint - handles administrative functions
 """
-from flask import Blueprint, request, jsonify, g
+from flask import Blueprint, request, jsonify, g,json
 from app.middleware import require_auth, require_permissions, audit_log
 from app.database import Database
-from app.utils.security import sanitize_input, validate_uuid, validate_email_format
+from app.utils.security import sanitize_input, validate_uuid, validate_email
 from app.utils.validators import validate_required_fields, validate_pagination_params
 from app.utils.auth import AuthUtils
 from app.services.audit_logger import AuditLogger
@@ -105,7 +105,7 @@ def create_user():
         if not validate_required_fields(data, required_fields):
             return jsonify({'error': 'Missing required fields'}), 400
 
-        if not validate_email_format(data['email']):
+        if not validate_email(data['email']):
             return jsonify({'error': 'Invalid email format'}), 400
 
         tenant_id = g.current_user['tenant_id']
@@ -191,7 +191,7 @@ def update_user(user_id):
             params.append(data['last_name'])
 
         if 'email' in data:
-            if not validate_email_format(data['email']):
+            if not validate_email(data['email']):
                 return jsonify({'error': 'Invalid email format'}), 400
             update_fields.append('email = %s')
             params.append(data['email'])

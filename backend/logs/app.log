@@ -100,3 +100,13 @@ KeyError: False
 [2025-06-12 02:51:54,213] [INFO] app: App startup
 [2025-06-12 02:53:49,640] [INFO] app: App startup
 [2025-06-12 02:57:08,406] [INFO] app: App startup
+[2025-06-12 12:18:28,297] [INFO] app: App startup
+[2025-06-12 12:20:39,095] [INFO] app: App startup
+[2025-06-12 12:24:20,063] [INFO] app: App startup
+[2025-06-12 12:24:21,018] [INFO] app.utils.file_handler: python-magic not available, using alternative MIME detection
+[2025-06-12 12:26:10,079] [INFO] app: App startup
+[2025-06-12 12:26:10,092] [INFO] app.utils.file_handler: python-magic not available, using alternative MIME detection
+[2025-06-12 12:26:10,556] [INFO] app: App startup
+[2025-06-12 12:26:10,571] [INFO] app.utils.file_handler: python-magic not available, using alternative MIME detection
+[2025-06-12 12:26:16,649] [INFO] app.middleware: Request 52d70b96-fb30-414f-8840-fe6c86b6d6b0: POST /api/auth/login
+[2025-06-12 12:26:16,807] [INFO] app.database: Connected to DB postgresql://postgres:CodeSD.com@localhost (connection open: True)
