@@ -1,0 +1,40 @@
+ERROR in ./src/App.js 11:0-51
+Module not found: Error: Can't resolve './i18n/I18nProvider' in '/Users/lendo/Desktop/Zetta/workflow-management-system2/src'
+ERROR in ./src/App.js 12:0-48
+Module not found: Error: Can't resolve './components/Layout/Layout' in '/Users/lendo/Desktop/Zetta/workflow-management-system2/src'
+ERROR in ./src/App.js 16:0-63
+Module not found: Error: Can't resolve './components/Workflows/WorkflowList' in '/Users/lendo/Desktop/Zetta/workflow-management-system2/src'
+ERROR in ./src/App.js 17:0-51
+Module not found: Error: Can't resolve './components/Tasks/TaskList' in '/Users/lendo/Desktop/Zetta/workflow-management-system2/src'
+ERROR in ./src/App.js 18:0-55
+Module not found: Error: Can't resolve './components/Tasks/TaskDetail' in '/Users/lendo/Desktop/Zetta/workflow-management-system2/src'
+ERROR in ./src/App.js 19:0-51
+Module not found: Error: Can't resolve './components/Reports/Reports' in '/Users/lendo/Desktop/Zetta/workflow-management-system2/src'
+ERROR in ./src/App.js 20:0-48
+Module not found: Error: Can't resolve './components/Auth/Profile' in '/Users/lendo/Desktop/Zetta/workflow-management-system2/src'
+ERROR in ./src/App.js 21:0-64
+Module not found: Error: Can't resolve './components/Common/LoadingSpinner' in '/Users/lendo/Desktop/Zetta/workflow-management-system2/src'
+ERROR in ./src/App.js 23:0-30
+Module not found: Error: Can't resolve './styles/globals.css' in '/Users/lendo/Desktop/Zetta/workflow-management-system2/src'
+ERROR in ./src/components/Auth/Login.js 11:0-20
+Module not found: Error: Can't resolve './Auth.css' in '/Users/lendo/Desktop/Zetta/workflow-management-system2/src/components/Auth'
+ERROR in ./src/components/Dashboard/Dashboard.js 13:0-44
+Module not found: Error: Can't resolve '../Common/StatsCard' in '/Users/lendo/Desktop/Zetta/workflow-management-system2/src/components/Dashboard'
+ERROR in ./src/components/Dashboard/Dashboard.js 14:0-40
+Module not found: Error: Can't resolve './RecentTasks' in '/Users/lendo/Desktop/Zetta/workflow-management-system2/src/components/Dashboard'
+ERROR in ./src/components/Dashboard/Dashboard.js 15:0-25
+Module not found: Error: Can't resolve './Dashboard.css' in '/Users/lendo/Desktop/Zetta/workflow-management-system2/src/components/Dashboard'
+ERROR in ./src/components/WorkflowDesigner/DesignerCanvas.js 8:0-42
+Module not found: Error: Can't resolve './WorkflowNode' in '/Users/lendo/Desktop/Zetta/workflow-management-system2/src/components/WorkflowDesigner'
+ERROR in ./src/components/WorkflowDesigner/DesignerCanvas.js 9:0-46
+Module not found: Error: Can't resolve './ConnectionLine' in '/Users/lendo/Desktop/Zetta/workflow-management-system2/src/components/WorkflowDesigner'
+ERROR in ./src/components/WorkflowDesigner/DesignerCanvas.js 10:0-30
+Module not found: Error: Can't resolve './DesignerCanvas.css' in '/Users/lendo/Desktop/Zetta/workflow-management-system2/src/components/WorkflowDesigner'
+ERROR in ./src/components/WorkflowDesigner/NodePalette.js 9:0-27
+Module not found: Error: Can't resolve './NodePalette.css' in '/Users/lendo/Desktop/Zetta/workflow-management-system2/src/components/WorkflowDesigner'
+ERROR in ./src/components/WorkflowDesigner/WorkflowDesigner.js 14:0-48
+Module not found: Error: Can't resolve './PropertiesPanel' in '/Users/lendo/Desktop/Zetta/workflow-management-system2/src/components/WorkflowDesigner'
+ERROR in ./src/components/WorkflowDesigner/WorkflowDesigner.js 15:0-48
+Module not found: Error: Can't resolve './DesignerToolbar' in '/Users/lendo/Desktop/Zetta/workflow-management-system2/src/components/WorkflowDesigner'
+ERROR in ./src/components/WorkflowDesigner/WorkflowDesigner.js 17:0-32
+Module not found: Error: Can't resolve './WorkflowDesigner.css' in '/Users/lendo/Desktop/Zetta/workflow-management-system2/src/components/WorkflowDesigner'

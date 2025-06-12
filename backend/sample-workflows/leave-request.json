@@ -1,0 +1,160 @@
+
+
+
+{
+  "name": "Employee Leave Request",
+  "description": "Process for requesting and approving employee leave",
+  "category": "HR",
+  "tags": ["hr", "leave", "approval"],
+  "definition": {
+    "steps": [
+      {
+        "id": "submit_request",
+        "name": "Submit Leave Request",
+        "type": "task",
+        "description": "Employee submits leave request with details",
+        "isStart": true,
+        "position": { "x": 100, "y": 100 },
+        "properties": {
+          "formId": "leave-request-form",
+          "assignee": "{{initiator}}",
+          "dueHours": 24,
+          "instructions": "Please fill out all required fields for your leave request"
+        }
+      },
+      {
+        "id": "manager_review",
+        "name": "Manager Review",
+        "type": "approval",
+        "description": "Direct manager reviews and approves/rejects leave request",
+        "position": { "x": 300, "y": 100 },
+        "properties": {
+          "approvers": ["{{initiator.manager}}"],
+          "approvalType": "any",
+          "dueHours": 48,
+          "escalationRules": [
+            {
+              "level": 2,
+              "afterHours": 72,
+              "recipients": ["hr_manager"]
+            }
+          ]
+        }
+      },
+      {
+        "id": "hr_approval",
+        "name": "HR Approval",
+        "type": "approval",
+        "description": "HR department final approval for leave requests over 5 days",
+        "position": { "x": 500, "y": 100 },
+        "properties": {
+          "approvers": ["hr_team"],
+          "approvalType": "any",
+          "dueHours": 24,
+          "condition": {
+            "field": "leave_days",
+            "operator": "greater_than",
+            "value": 5
+          }
+        }
+      },
+      {
+        "id": "approve_notification",
+        "name": "Approval Notification",
+        "type": "notification",
+        "description": "Notify employee of approved leave",
+        "position": { "x": 700, "y": 50 },
+        "properties": {
+          "recipients": ["{{initiator}}", "{{initiator.manager}}"],
+          "template": "leave_approved",
+          "channel": "email"
+        }
+      },
+      {
+        "id": "reject_notification",
+        "name": "Rejection Notification",
+        "type": "notification",
+        "description": "Notify employee of rejected leave",
+        "position": { "x": 700, "y": 150 },
+        "properties": {
+          "recipients": ["{{initiator}}"],
+          "template": "leave_rejected",
+          "channel": "email"
+        }
+      },
+      {
+        "id": "calendar_update",
+        "name": "Update Calendar",
+        "type": "automation",
+        "description": "Automatically update company calendar with approved leave",
+        "position": { "x": 900, "y": 50 },
+        "properties": {
+          "script": "calendar_integration.add_leave_event",
+          "timeout": 300
+        }
+      }
+    ],
+    "transitions": [
+      {
+        "id": "submit_to_manager",
+        "from": "submit_request",
+        "to": "manager_review"
+      },
+      {
+        "id": "manager_to_hr",
+        "from": "manager_review",
+        "to": "hr_approval",
+        "condition": {
+          "field": "manager_decision",
+          "operator": "equals",
+          "value": "approved"
+        }
+      },
+      {
+        "id": "manager_approve_direct",
+        "from": "manager_review",
+        "to": "approve_notification",
+        "condition": {
+          "field": "manager_decision",
+          "operator": "equals",
+          "value": "approved"
+        }
+      },
+      {
+        "id": "manager_reject",
+        "from": "manager_review",
+        "to": "reject_notification",
+        "condition": {
+          "field": "manager_decision",
+          "operator": "equals",
+          "value": "rejected"
+        }
+      },
+      {
+        "id": "hr_approve",
+        "from": "hr_approval",
+        "to": "approve_notification",
+        "condition": {
+          "field": "hr_decision",
+          "operator": "equals",
+          "value": "approved"
+        }
+      },
+      {
+        "id": "hr_reject",
+        "from": "hr_approval",
+        "to": "reject_notification",
+        "condition": {
+          "field": "hr_decision",
+          "operator": "equals",
+          "value": "rejected"
+        }
+      },
+      {
+        "id": "approved_to_calendar",
+        "from": "approve_notification",
+        "to": "calendar_update"
+      }
+    ]
+  }
+}

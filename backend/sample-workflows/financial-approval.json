@@ -1,0 +1,218 @@
+{
+  "name": "Financial Approval Process",
+  "description": "Multi-level approval process for financial expenditures",
+  "category": "Finance",
+  "tags": ["finance", "approval", "budget"],
+  "definition": {
+    "steps": [
+      {
+        "id": "submit_request",
+        "name": "Submit Financial Request",
+        "type": "task",
+        "description": "Submit request for financial expenditure",
+        "isStart": true,
+        "position": { "x": 100, "y": 200 },
+        "properties": {
+          "formId": "financial-request-form",
+          "assignee": "{{initiator}}",
+          "dueHours": 48,
+          "instructions": "Provide detailed justification and supporting documents"
+        }
+      },
+      {
+        "id": "budget_check",
+        "name": "Budget Availability Check",
+        "type": "automation",
+        "description": "Automatically check budget availability",
+        "position": { "x": 300, "y": 200 },
+        "properties": {
+          "script": "budget_system.check_availability",
+          "timeout": 60
+        }
+      },
+      {
+        "id": "supervisor_approval",
+        "name": "Supervisor Approval",
+        "type": "approval",
+        "description": "Direct supervisor approval for amounts under $5,000",
+        "position": { "x": 500, "y": 100 },
+        "properties": {
+          "approvers": ["{{initiator.supervisor}}"],
+          "approvalType": "any",
+          "dueHours": 24,
+          "condition": {
+            "field": "amount",
+            "operator": "less_than",
+            "value": 5000
+          }
+        }
+      },
+      {
+        "id": "manager_approval",
+        "name": "Manager Approval",
+        "type": "approval",
+        "description": "Department manager approval for amounts $5,000-$25,000",
+        "position": { "x": 500, "y": 200 },
+        "properties": {
+          "approvers": ["{{initiator.department_manager}}"],
+          "approvalType": "any",
+          "dueHours": 48,
+          "condition": {
+            "field": "amount",
+            "operator": "between",
+            "value": [5000, 25000]
+          }
+        }
+      },
+      {
+        "id": "director_approval",
+        "name": "Director Approval",
+        "type": "approval",
+        "description": "Director approval for amounts $25,000-$100,000",
+        "position": { "x": 500, "y": 300 },
+        "properties": {
+          "approvers": ["{{initiator.director}}", "finance_director"],
+          "approvalType": "all",
+          "dueHours": 72,
+          "condition": {
+            "field": "amount",
+            "operator": "between",
+            "value": [25000, 100000]
+          }
+        }
+      },
+      {
+        "id": "executive_approval",
+        "name": "Executive Approval",
+        "type": "approval",
+        "description": "Executive team approval for amounts over $100,000",
+        "position": { "x": 500, "y": 400 },
+        "properties": {
+          "approvers": ["ceo", "cfo"],
+          "approvalType": "all",
+          "dueHours": 168,
+          "condition": {
+            "field": "amount",
+            "operator": "greater_than",
+            "value": 100000
+          }
+        }
+      },
+      {
+        "id": "procurement",
+        "name": "Procurement Processing",
+        "type": "task",
+        "description": "Procurement team processes approved request",
+        "position": { "x": 700, "y": 200 },
+        "properties": {
+          "assignee": "procurement_team",
+          "dueHours": 72,
+          "instructions": "Process purchase order and vendor selection"
+        }
+      },
+      {
+        "id": "budget_allocation",
+        "name": "Budget Allocation",
+        "type": "automation",
+        "description": "Allocate budget and update financial systems",
+        "position": { "x": 900, "y": 200 },
+        "properties": {
+          "script": "budget_system.allocate_funds",
+          "timeout": 300
+        }
+      }
+    ],
+    "transitions": [
+      {
+        "id": "submit_to_budget_check",
+        "from": "submit_request",
+        "to": "budget_check"
+      },
+      {
+        "id": "budget_to_supervisor",
+        "from": "budget_check",
+        "to": "supervisor_approval",
+        "condition": {
+          "field": "budget_available",
+          "operator": "equals",
+          "value": true
+        }
+      },
+      {
+        "id": "budget_to_manager",
+        "from": "budget_check",
+        "to": "manager_approval",
+        "condition": {
+          "field": "budget_available",
+          "operator": "equals",
+          "value": true
+        }
+      },
+      {
+        "id": "budget_to_director",
+        "from": "budget_check",
+        "to": "director_approval",
+        "condition": {
+          "field": "budget_available",
+          "operator": "equals",
+          "value": true
+        }
+      },
+      {
+        "id": "budget_to_executive",
+        "from": "budget_check",
+        "to": "executive_approval",
+        "condition": {
+          "field": "budget_available",
+          "operator": "equals",
+          "value": true
+        }
+      },
+      {
+        "id": "supervisor_to_procurement",
+        "from": "supervisor_approval",
+        "to": "procurement",
+        "condition": {
+          "field": "supervisor_decision",
+          "operator": "equals",
+          "value": "approved"
+        }
+      },
+      {
+        "id": "manager_to_procurement",
+        "from": "manager_approval",
+        "to": "procurement",
+        "condition": {
+          "field": "manager_decision",
+          "operator": "equals",
+          "value": "approved"
+        }
+      },
+      {
+        "id": "director_to_procurement",
+        "from": "director_approval",
+        "to": "procurement",
+        "condition": {
+          "field": "director_decision",
+          "operator": "equals",
+          "value": "approved"
+        }
+      },
+      {
+        "id": "executive_to_procurement",
+        "from": "executive_approval",
+        "to": "procurement",
+        "condition": {
+          "field": "executive_decision",
+          "operator": "equals",
+          "value": "approved"
+        }
+      },
+      {
+        "id": "procurement_to_allocation",
+        "from": "procurement",
+        "to": "budget_allocation"
+      }
+    ]
+  }
+}

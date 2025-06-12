@@ -1,0 +1,120 @@
+### docker-compose.yml
+
+version: '3.8'
+
+services:
+  # PostgreSQL Database
+  postgres:
+    image: postgres:15-alpine
+    environment:
+      POSTGRES_DB: workflow_db
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: CodeSD.com
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+      - ./backend/migrations/schema.sql:/docker-entrypoint-initdb.d/01-schema.sql
+    ports:
+      - "5432:5432"
+    networks:
+      - workflow_network
+
+  # Redis for Celery
+  redis:
+    image: redis:7-alpine
+    ports:
+      - "6379:6379"
+    networks:
+      - workflow_network
+
+  # Backend API
+  backend:
+    build: ./backend
+    environment:
+      - DATABASE_URL=postgresql://postgres:workCodeSD.com@postgres:5432/workflow_db
+      - REDIS_URL=redis://redis:6379/0
+      - SECRET_KEY=your-secret-key-change-in-production
+      - JWT_SECRET_KEY=your-jwt-secret-key
+      - FLASK_ENV=development
+      - CORS_ORIGINS=http://localhost:3000
+    volumes:
+      - ./backend:/app
+      - uploads_data:/app/uploads
+    ports:
+      - "5000:5000"
+    depends_on:
+      - postgres
+      - redis
+    networks:
+      - workflow_network
+    command: python run.py
+
+  # Celery Worker
+  celery:
+    build: ./backend
+    environment:
+      - DATABASE_URL=postgresql://postgres:workCodeSD.com@postgres:5432/workflow_db
+      - REDIS_URL=redis://redis:6379/0
+      - SECRET_KEY=your-secret-key-change-in-production
+    volumes:
+      - ./backend:/app
+      - uploads_data:/app/uploads
+    depends_on:
+      - postgres
+      - redis
+    networks:
+      - workflow_network
+    command: celery -A app.celery worker --loglevel=info
+
+  # Celery Beat (Scheduler)
+  celery-beat:
+    build: ./backend
+    environment:
+      - DATABASE_URL=postgresql://postgres:workCodeSD.com@postgres:5432/workflow_db
+      - REDIS_URL=redis://redis:6379/0
+      - SECRET_KEY=your-secret-key-change-in-production
+    volumes:
+      - ./backend:/app
+    depends_on:
+      - postgres
+      - redis
+    networks:
+      - workflow_network
+    command: celery -A app.celery beat --loglevel=info
+
+  # Frontend
+  frontend:
+    build: ./frontend
+    volumes:
+      - ./frontend:/app
+      - /app/node_modules
+    ports:
+      - "3000:3000"
+    environment:
+      - REACT_APP_API_URL=http://localhost:5000
+      - REACT_APP_WS_URL=ws://localhost:5000
+    depends_on:
+      - backend
+    networks:
+      - workflow_network
+    command: npm start
+
+  # Nginx (Production only)
+  nginx:
+    image: nginx:alpine
+    ports:
+      - "80:80"
+      - "443:443"
+    volumes:
+      - ./nginx.conf:/etc/nginx/nginx.conf
+      - ./ssl:/etc/ssl
+    depends_on:
+      - frontend
+      - backend
+    networks:
+      - workflow_network
+    profiles:
+      - production
+
+volumes:
+  postgres_data:
+  uploads_data:
