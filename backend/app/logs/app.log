@@ -311,3 +311,21 @@ HINT:  Perhaps you meant to reference the column "u.updated_at".
 [2025-06-12 19:15:44,265] [INFO] app.middleware: Response 6f90205f-3595-415c-9ca5-2c543ab14286: 200 (0.147s)
 [2025-06-12 19:30:14,478] [INFO] app: Application startup
 [2025-06-12 19:30:14,507] [INFO] app.utils.file_handler: python-magic not available, using alternative MIME detection
+[2025-06-12 22:31:01,192] [INFO] app.middleware: Request 7544f677-edf0-46fc-a0f2-0fd05a9cddf1: GET /api/tasks
+[2025-06-12 22:31:01,291] [INFO] app.database: Connected to DB postgresql://postgres:CodeSD.com@localhost (connection open: True)
+[2025-06-12 22:31:01,310] [INFO] app.middleware: Response 7544f677-edf0-46fc-a0f2-0fd05a9cddf1: 200 (0.120s)
+[2025-06-12 22:31:14,668] [INFO] app.middleware: Request eec811f0-2b95-44b2-a5fc-328c9f816ec1: GET /api/tasks/
+[2025-06-12 22:31:14,674] [WARNING] app: 404 Not Found: 404 Not Found: The requested URL was not found on the server. If you entered the URL manually please check your spelling and try again.
+[2025-06-12 22:31:14,675] [INFO] app.middleware: Response eec811f0-2b95-44b2-a5fc-328c9f816ec1: 404 (0.007s)
+[2025-06-12 22:31:32,737] [INFO] app.middleware: Request aaa7a4a4-f2d3-4ecd-89a5-3c009ca5f387: POST /api/tasks//complete
+[2025-06-12 22:31:32,771] [INFO] app.middleware: Response aaa7a4a4-f2d3-4ecd-89a5-3c009ca5f387: 405 (0.035s)
+[2025-06-12 22:37:44,140] [INFO] app.middleware: Request d0b824cd-7a7d-4a58-84f7-31526265e5da: POST /api/tasks//complete
+[2025-06-12 22:37:44,141] [INFO] app.middleware: Response d0b824cd-7a7d-4a58-84f7-31526265e5da: 405 (0.001s)
+[2025-06-12 22:39:16,876] [INFO] app.middleware: Request a1f9ed5e-4cbb-40cd-9bba-348526241597: POST /api/tasks//form-response
+[2025-06-12 22:39:16,877] [INFO] app.middleware: Response a1f9ed5e-4cbb-40cd-9bba-348526241597: 405 (0.001s)
+[2025-06-12 22:49:24,008] [INFO] app.middleware: Request d5448b7b-bb45-4747-afbe-0812513fbf97: POST /api/workflows/91253eac-ff58-4342-b5dc-de013919f675/execute
+[2025-06-12 22:49:24,043] [INFO] app.database: Connected to DB postgresql://postgres:CodeSD.com@localhost (connection open: True)
+[2025-06-12 22:49:24,067] [INFO] app.middleware: Response d5448b7b-bb45-4747-afbe-0812513fbf97: 201 (0.059s)
+[2025-06-12 22:49:52,078] [INFO] app.middleware: Request 22af93c2-32fa-491c-a3ba-9625fe24d4ef: GET /api/workflows/91253eac-ff58-4342-b5dc-de013919f675/instances
+[2025-06-12 22:49:52,109] [INFO] app.database: Connected to DB postgresql://postgres:CodeSD.com@localhost (connection open: True)
+[2025-06-12 22:49:52,117] [INFO] app.middleware: Response 22af93c2-32fa-491c-a3ba-9625fe24d4ef: 200 (0.040s)
