@@ -20,15 +20,19 @@ const WebhooksList = () => {
   const queryClient = useQueryClient();
   const [page, setPage] = useState(1);
 
-  const {
-    data: webhooksData,
-    isLoading,
-    error,
-  } = useQuery(
-    ["webhooks", page],
-    () => webhooksService.getWebhooks({ page, limit: 20 }),
-    { keepPreviousData: true }
-  );
+  const isLoading = false;
+  const error = false;
+  const webhooksData = { pagination: { page, limit: 20 } };
+
+  // const {
+  //   data: webhooksData,
+  //   isLoading,
+  //   error,
+  // } = useQuery(
+  //   ["webhooks", page],
+  //   () => webhooksService.getWebhooks({ page, limit: 20 }),
+  //   { keepPreviousData: true }
+  // );
 
   const deleteWebhookMutation = useMutation(
     (id) => webhooksService.deleteWebhook(id),

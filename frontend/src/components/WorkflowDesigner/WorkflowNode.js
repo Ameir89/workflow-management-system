@@ -36,20 +36,23 @@ const WorkflowNode = ({
     }
   };
 
-  const getNodeColor = (type) => {
+  const getNodeStyles = (type) => {
+    const baseStyles =
+      "relative bg-white border-2 rounded-lg p-3 shadow-sm min-w-[128px] transition-all duration-200";
+
     switch (type) {
       case "task":
-        return "border-blue-500 bg-blue-50 text-blue-600";
+        return `${baseStyles} border-blue-500 bg-blue-50 text-blue-600`;
       case "approval":
-        return "border-green-500 bg-green-50 text-green-600";
+        return `${baseStyles} border-green-500 bg-green-50 text-green-600`;
       case "notification":
-        return "border-yellow-500 bg-yellow-50 text-yellow-600";
+        return `${baseStyles} border-yellow-500 bg-yellow-50 text-yellow-600`;
       case "condition":
-        return "border-purple-500 bg-purple-50 text-purple-600";
+        return `${baseStyles} border-purple-500 bg-purple-50 text-purple-600`;
       case "automation":
-        return "border-gray-500 bg-gray-50 text-gray-600";
+        return `${baseStyles} border-gray-500 bg-gray-50 text-gray-600`;
       default:
-        return "border-gray-500 bg-gray-50 text-gray-600";
+        return `${baseStyles} border-gray-500 bg-gray-50 text-gray-600`;
     }
   };
 
@@ -73,7 +76,7 @@ const WorkflowNode = ({
   return (
     <div
       className={`absolute cursor-pointer transform transition-transform hover:scale-105 ${
-        selected ? "ring-2 ring-indigo-500" : ""
+        selected ? "ring-2 ring-indigo-500 ring-offset-2" : ""
       }`}
       style={{
         left: step.position.x,
@@ -84,8 +87,7 @@ const WorkflowNode = ({
     >
       <div
         className={`
-          relative bg-white border-2 rounded-lg p-3 shadow-sm min-w-32
-          ${getNodeColor(step.type)}
+          ${getNodeStyles(step.type)}
           ${selected ? "ring-2 ring-indigo-500" : ""}
           ${
             connectionMode && connectionStart !== step.id
@@ -110,7 +112,7 @@ const WorkflowNode = ({
 
         {/* Connection point */}
         <button
-          className="absolute -right-2 top-1/2 transform -translate-y-1/2 w-4 h-4 bg-white border-2 border-gray-300 rounded-full hover:border-indigo-500"
+          className="absolute -right-2 top-1/2 transform -translate-y-1/2 w-4 h-4 bg-white border-2 border-gray-300 rounded-full hover:border-indigo-500 transition-colors"
           onClick={handleConnectionStart}
           title="Connect to another node"
         ></button>
@@ -118,7 +120,7 @@ const WorkflowNode = ({
         {/* Delete button */}
         {selected && (
           <button
-            className="absolute -top-2 -right-2 w-5 h-5 bg-red-500 text-white rounded-full text-xs hover:bg-red-600"
+            className="absolute -top-2 -right-2 w-5 h-5 bg-red-500 text-white rounded-full text-xs hover:bg-red-600 transition-colors flex items-center justify-center"
             onClick={(e) => {
               e.stopPropagation();
               onDelete();
@@ -132,5 +134,4 @@ const WorkflowNode = ({
     </div>
   );
 };
-
 export default WorkflowNode;

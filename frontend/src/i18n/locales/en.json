@@ -1,0 +1,292 @@
+{
+  "translation": {
+    "app": {
+      "title": "Workflow Management System"
+    },
+    "designer": {
+      "nodePalette": "Node Palette",
+      "dragNodesInstructions": "Drag and drop nodes to build your workflow",
+      "workflowProperties": "Workflow Properties",
+      "properties": "Properties",
+      "noNodeSelected": "No Node Selected",
+      "selectNodeToEdit": "Select a node to configure its properties",
+      "nodeName": "Node Name",
+      "nodeDescription": "Node Description",
+      "startNode": "Start Node",
+      "taskProperties": "Task Properties",
+      "assignee": "Assignee",
+      "dueHours": "Due Hours",
+      "instructions": "Instructions",
+      "form": "Form",
+      "noForm": "No form (plain task)",
+      "formDescription": "Select a form for users to fill when completing this task",
+      "approvalProperties": "Approval Properties",
+      "approvers": "Approvers",
+      "approvalType": "Approval Type",
+      "anyApprover": "Any approver",
+      "allApprovers": "All approvers",
+      "majority": "Majority",
+      "notificationProperties": "Notification Properties",
+      "recipients": "Recipients",
+      "channel": "Channel",
+      "email": "Email",
+      "sms": "SMS",
+      "inApp": "In-App",
+      "template": "Template",
+      "templatePlaceholder": "Use {{variables}} for dynamic content",
+      "conditionProperties": "Condition Properties",
+      "operator": "Operator",
+      "and": "AND",
+      "or": "OR",
+      "conditions": "Conditions",
+      "automationProperties": "Automation Properties",
+      "script": "Script",
+      "timeout": "Timeout",
+      "test": "Test",
+      "export": "Export",
+      "testWorkflow": "Test workflow",
+      "exportWorkflow": "Export workflow",
+      "keyboardShortcuts": "Keyboard Shortcuts",
+      "saving": "Saving...",
+      "zoomIn": "Zoom In",
+      "zoomOut": "Zoom Out",
+      "zoomReset": "Reset Zoom",
+      "connectingFrom": "Connecting from",
+      "clickTargetNode": "Click on target node to connect",
+      "dropNodeHere": "Drop node here",
+      "tips": {
+        "title": "Tips",
+        "dragDrop": "Drag nodes to canvas",
+        "selectEdit": "Click to select & edit",
+        "deleteKey": "Press Delete to remove",
+        "escape": "Press Escape to cancel"
+      },
+      "shortcuts": {
+        "save": "Save workflow",
+        "undo": "Undo",
+        "redo": "Redo",
+        "delete": "Delete selected",
+        "deselect": "Deselect all",
+        "zoomIn": "Zoom in",
+        "zoomOut": "Zoom out",
+        "zoomReset": "Reset zoom"
+      },
+      "newWorkflow": "New Workflow",
+      "workflowDesigner": "Workflow Designer"
+    },
+    "nav": {
+      "dashboard": "Dashboard",
+      "workflows": "Workflows",
+      "tasks": "Tasks",
+      "forms": "Forms",
+      "files": "Files",
+      "webhooks": "Webhooks",
+      "reports": "Reports",
+      "admin": {
+        "title": "Administration",
+        "users": "User Management",
+        "health": "System Health"
+      }
+    },
+
+    "auth": {
+      "signInToAccount": "Sign in to your account",
+      "workflowManagementSystem": "Workflow Management System",
+      "username": "Username or Email",
+      "password": "Password",
+      "signIn": "Sign In",
+      "logout": "Logout",
+      "usernameRequired": "Username is required",
+      "passwordRequired": "Password is required",
+      "loginSuccess": "Login successful",
+      "loginFailed": "Login failed",
+      "twoFactorRequired": "Two-factor authentication required",
+      "twoFactorCode": "Two-factor code",
+      "enterSixDigitCode": "Enter 6-digit code",
+      "verify": "Verify",
+      "twoFactorFailed": "Two-factor authentication failed"
+    },
+
+    "common": {
+      "loading": "Loading...",
+      "save": "Save",
+      "cancel": "Cancel",
+      "delete": "Delete",
+      "edit": "Edit",
+      "create": "Create",
+      "update": "Update",
+      "close": "Close",
+      "back": "Back",
+      "next": "Next",
+      "previous": "Previous",
+      "search": "Search",
+      "filter": "Filter",
+      "all": "All",
+      "active": "Active",
+      "inactive": "Inactive",
+      "status": "Status",
+      "actions": "Actions",
+      "createdBy": "Created by",
+      "never": "Never",
+      "saving": "Saving...",
+      "submitting": "Submitting...",
+      "submit": "Submit"
+    },
+
+    "dashboard": {
+      "title": "Dashboard",
+      "welcome": "Welcome to your workflow dashboard",
+      "totalTasks": "Total Tasks",
+      "pendingTasks": "Pending Tasks",
+      "overdueTasks": "Overdue Tasks",
+      "completionRate": "Completion Rate",
+      "taskDistribution": "Task Distribution",
+      "workflowTrends": "Workflow Trends",
+      "quickActions": "Quick Actions",
+      "createWorkflow": "Create Workflow",
+      "designNewWorkflow": "Design a new workflow",
+      "viewAllTasks": "View All Tasks",
+      "manageYourTasks": "Manage your tasks",
+      "viewReports": "View Reports",
+      "analyzePerformance": "Analyze performance",
+      "pending": "Pending",
+      "inProgress": "In Progress",
+      "completed": "Completed",
+      "overdue": "Overdue",
+      "workflowsStarted": "Workflows Started",
+      "workflowsCompleted": "Workflows Completed"
+    },
+
+    "tasks": {
+      "title": "Tasks",
+      "subtitle": "Manage and track your tasks",
+      "noTasks": "No tasks found",
+      "assignedTo": "Assigned to",
+      "dueDate": "Due date",
+      "priority": "Priority",
+      "workflow": "Workflow"
+    },
+
+    "workflows": {
+      "title": "Workflows",
+      "subtitle": "Design and manage workflows"
+    },
+    "workflow": {
+      "form": "Form",
+      "nodes": {
+        "task": "Task",
+        "approval": "Approval",
+        "condition": "Condition",
+        "notification": "Notification",
+        "automation": "Automation",
+        "start": "Start",
+        "end": "End"
+      }
+    },
+    "forms": {
+      "title": "Forms",
+      "subtitle": "Create and manage dynamic forms",
+      "createNew": "Create New Form",
+      "searchPlaceholder": "Search forms...",
+      "responses": "Responses",
+      "noForms": "No forms found",
+      "fieldTypes": {
+        "text": "Text",
+        "email": "Email",
+        "number": "Number",
+        "textarea": "Textarea",
+        "select": "Select",
+        "multiselect": "Multi Select",
+        "radio": "Radio",
+        "checkbox": "Checkbox",
+        "date": "Date",
+        "datetime": "Date Time",
+        "file": "File"
+      }
+    },
+
+    "files": {
+      "title": "File Manager",
+      "subtitle": "Upload and manage files",
+      "upload": "Upload Files",
+      "download": "Download",
+      "dragDropFiles": "Drag and drop files here, or click to select",
+      "dropFiles": "Drop files here",
+      "maxFileSize": "Maximum file size: 50MB",
+      "totalFiles": "Total Files",
+      "totalSize": "Total Size",
+      "recentFiles": "Recent Files",
+      "access": {
+        "private": "Private",
+        "team": "Team",
+        "public": "Public"
+      },
+      "types": {
+        "images": "Images",
+        "documents": "Documents",
+        "videos": "Videos",
+        "audio": "Audio"
+      },
+      "noFiles": "No files found",
+      "noFilesDescription": "Upload your first file to get started"
+    },
+
+    "webhooks": {
+      "title": "Webhooks",
+      "subtitle": "Configure webhook endpoints",
+      "createNew": "Create New Webhook",
+      "name": "Name",
+      "url": "URL",
+      "events": "Events",
+      "active": "Active",
+      "test": "Test",
+      "deliveries": "Deliveries",
+      "success": "Success",
+      "noWebhooks": "No webhooks found",
+      "noWebhooksDescription": "Create your first webhook to get started"
+    },
+
+    "reports": {
+      "title": "Reports",
+      "subtitle": "Analytics and insights"
+    },
+
+    "admin": {
+      "users": {
+        "title": "User Management",
+        "subtitle": "Manage system users",
+        "createNew": "Create New User",
+        "firstName": "First Name",
+        "lastName": "Last Name",
+        "username": "Username",
+        "email": "Email",
+        "phone": "Phone",
+        "roles": "Roles",
+        "active": "Active"
+      },
+      "health": {
+        "title": "System Health",
+        "subtitle": "Monitor system status",
+        "overallStatus": "Overall Status",
+        "lastChecked": "Last checked",
+        "database": "Database",
+        "redis": "Redis",
+        "storage": "Storage",
+        "version": "Version",
+        "statistics": "Statistics",
+        "totalUsers": "Total Users",
+        "totalWorkflows": "Total Workflows",
+        "totalInstances": "Total Instances",
+        "totalTasks": "Total Tasks"
+      }
+    },
+
+    "notifications": {
+      "title": "Notifications",
+      "all": "All",
+      "unread": "Unread",
+      "markAllRead": "Mark all as read",
+      "noNotifications": "No notifications"
+    }
+  }
+}

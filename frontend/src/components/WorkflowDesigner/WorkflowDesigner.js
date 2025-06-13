@@ -11,6 +11,10 @@ import PropertiesPanel from "./PropertiesPanel";
 import DesignerToolbar from "./DesignerToolbar";
 import { workflowService } from "../../services/workflowService";
 import "./WorkflowDesigner.css";
+import {
+  financialApprovalProcess,
+  contractReviewAndApproval,
+} from "../../mocks/workflows";
 
 const WorkflowDesigner = () => {
   const { t } = useTranslation();
@@ -18,15 +22,7 @@ const WorkflowDesigner = () => {
   const navigate = useNavigate();
   const queryClient = useQueryClient();
   const canvasRef = useRef(null);
-
-  const [workflow, setWorkflow] = useState({
-    name: "",
-    description: "",
-    definition: {
-      steps: [],
-      transitions: [],
-    },
-  });
+  const [workflow, setWorkflow] = useState(contractReviewAndApproval);
   const [selectedNode, setSelectedNode] = useState(null);
   const [zoom, setZoom] = useState(1);
   const [panOffset, setPanOffset] = useState({ x: 0, y: 0 });

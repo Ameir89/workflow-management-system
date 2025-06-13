@@ -166,7 +166,7 @@ const DesignerCanvas = forwardRef(
             from={fromStep.position}
             to={toStep.position}
             condition={transition.condition}
-            selected={false} // You might want to enhance this to select connections
+            selected={false}
             onDelete={() => onDeleteTransition(transition.id)}
             zoom={zoom}
           />
@@ -179,13 +179,19 @@ const DesignerCanvas = forwardRef(
         panOffset.y / zoom
       }px)`,
       transformOrigin: "0 0",
-      cursor: isPanning ? "grabbing" : connectionMode ? "crosshair" : "grab",
     };
 
     return (
       <div
         ref={combinedRef}
         className={`designer-canvas ${isOver ? "drop-target" : ""}`}
+        style={{
+          cursor: isPanning
+            ? "grabbing"
+            : connectionMode
+            ? "crosshair"
+            : "grab",
+        }}
         onMouseDown={handleMouseDown}
       >
         <div className="canvas-content" style={canvasStyle}>
@@ -193,7 +199,16 @@ const DesignerCanvas = forwardRef(
           <div className="canvas-grid" />
 
           {/* Connection lines rendered as SVG */}
-          <svg className="connections-layer">{renderConnections()}</svg>
+          <svg
+            className="connections-layer"
+            style={{
+              width: "100%",
+              height: "100%",
+              overflow: "visible",
+            }}
+          >
+            {renderConnections()}
+          </svg>
 
           {/* Workflow nodes */}
           {workflow.definition.steps?.map((step) => (

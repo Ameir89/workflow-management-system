@@ -25,6 +25,7 @@ const FormBuilder = () => {
     handleSubmit,
     watch,
     formState: { errors },
+    setValue,
   } = useForm({
     defaultValues: {
       name: "",
@@ -87,11 +88,20 @@ const FormBuilder = () => {
   };
 
   const addOption = (fieldIndex) => {
-    const field = fields[fieldIndex];
-    const updatedOptions = [...(field.options || []), { value: "", label: "" }];
-    // Update the field with new options
-    const updatedFields = [...fields];
-    updatedFields[fieldIndex] = { ...field, options: updatedOptions };
+    const currentOptions = watch(`fields.${fieldIndex}.options`) || [];
+    const updatedOptions = [...currentOptions, { value: "", label: "" }];
+    console.log("Adding option to field:", fieldIndex, updatedOptions);
+    setValue(`fields.${fieldIndex}.options`, updatedOptions, {
+      shouldDirty: true,
+      shouldTouch: true,
+      shouldValidate: true,
+    });
+  };
+
+  const handleMoveField = (fromIndex, toIndex) => {
+    if (toIndex >= 0 && toIndex < fields.length) {
+      move(fromIndex, toIndex);
+    }
   };
 
   const onSubmit = (data) => {
@@ -109,7 +119,9 @@ const FormBuilder = () => {
   };
 
   const renderFieldEditor = (field, index) => {
+    console.log("Rendering field editor for field:", field, "at index:", index);
     const fieldType = watch(`fields.${index}.type`);
+    const fieldOptions = watch(`fields.${index}.options`) || [];
     const needsOptions = [
       "select",
       "multiselect",
@@ -129,7 +141,7 @@ const FormBuilder = () => {
           <div className="flex items-center space-x-2">
             <button
               type="button"
-              onClick={() => move(index, Math.max(0, index - 1))}
+              onClick={() => handleMoveField(index, index - 1)}
               disabled={index === 0}
               className="p-1 text-gray-400 hover:text-gray-600 disabled:opacity-50"
             >
@@ -137,9 +149,7 @@ const FormBuilder = () => {
             </button>
             <button
               type="button"
-              onClick={() =>
-                move(index, Math.min(fields.length - 1, index + 1))
-              }
+              onClick={() => handleMoveField(index, index + 1)}
               disabled={index === fields.length - 1}
               className="p-1 text-gray-400 hover:text-gray-600 disabled:opacity-50"
             >
@@ -234,7 +244,7 @@ const FormBuilder = () => {
               {t("forms.options")}
             </label>
             <div className="space-y-2">
-              {field.options?.map((option, optionIndex) => (
+              {fieldOptions.map((option, optionIndex) => (
                 <div key={optionIndex} className="flex items-center space-x-2">
                   <input
                     {...register(
@@ -255,10 +265,14 @@ const FormBuilder = () => {
                   <button
                     type="button"
                     onClick={() => {
-                      const updatedOptions = field.options.filter(
+                      const updatedOptions = fieldOptions.filter(
                         (_, i) => i !== optionIndex
                       );
-                      // Update the field options
+                      setValue(`fields.${index}.options`, updatedOptions, {
+                        shouldDirty: true,
+                        shouldTouch: true,
+                        shouldValidate: true,
+                      });
                     }}
                     className="p-2 text-red-400 hover:text-red-600"
                   >

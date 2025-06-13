@@ -20,6 +20,7 @@ import WorkflowList from "./components/Workflows/WorkflowList";
 // Task components
 import TaskList from "./components/Tasks/TaskList";
 import TaskDetail from "./components/Tasks/TaskDetail";
+import TaskForm from "./components/Tasks/TaskForm";
 
 // Forms components
 import FormsList from "./components/Forms/FormsList";

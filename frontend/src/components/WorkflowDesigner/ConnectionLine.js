@@ -9,10 +9,11 @@ const ConnectionLine = ({
   onDelete,
   zoom,
 }) => {
-  const startX = from.x + 64; // Node width / 2
-  const startY = from.y + 32; // Node height / 2
+  // Calculate start and end points
+  const startX = from.x + 64; // Half of node width
+  const startY = from.y + 24; // Half of node height
   const endX = to.x;
-  const endY = to.y + 32;
+  const endY = to.y + 24;
 
   // Calculate control points for curved line
   const controlX1 = startX + (endX - startX) / 3;
@@ -23,14 +24,24 @@ const ConnectionLine = ({
   const path = `M ${startX} ${startY} C ${controlX1} ${controlY1}, ${controlX2} ${controlY2}, ${endX} ${endY}`;
 
   return (
-    <g>
+    <g className="connection-line">
+      {/* Invisible wider path for easier clicking */}
+      <path
+        d={path}
+        stroke="transparent"
+        strokeWidth="20"
+        fill="none"
+        className="cursor-pointer"
+        onClick={() => onDelete()}
+      />
+
+      {/* Visible path */}
       <path
         d={path}
         stroke={selected ? "#3B82F6" : "#6B7280"}
         strokeWidth="2"
         fill="none"
-        className="cursor-pointer"
-        onClick={() => onDelete()}
+        className="pointer-events-none"
       />
 
       {/* Arrow head */}
@@ -39,18 +50,31 @@ const ConnectionLine = ({
           endY + 4
         }`}
         fill={selected ? "#3B82F6" : "#6B7280"}
+        className="pointer-events-none"
       />
 
       {/* Condition label */}
       {condition && (
-        <text
-          x={(startX + endX) / 2}
-          y={(startY + endY) / 2 - 10}
-          textAnchor="middle"
-          className="text-xs fill-gray-600"
-        >
-          {condition.field}
-        </text>
+        <g>
+          <rect
+            x={(startX + endX) / 2 - 40}
+            y={(startY + endY) / 2 - 20}
+            width="80"
+            height="20"
+            rx="10"
+            fill="white"
+            stroke="#E5E7EB"
+            strokeWidth="1"
+          />
+          <text
+            x={(startX + endX) / 2}
+            y={(startY + endY) / 2 - 5}
+            textAnchor="middle"
+            className="text-xs fill-gray-600 pointer-events-none"
+          >
+            {condition.field}
+          </text>
+        </g>
       )}
     </g>
   );
