@@ -379,3 +379,343 @@ def delete_workflow(workflow_id):
     except Exception as e:
         logger.error(f"Error deleting workflow {workflow_id}: {e}")
         return jsonify({'error': 'Failed to delete workflow'}), 500
+
+# Add these endpoints to your workflows blueprint for better workflow management
+
+@workflows_bp.route('/instances/<instance_id>/advance', methods=['POST'])
+@require_auth
+@require_permissions(['manage_workflows'])
+@audit_log('advance', 'workflow_instance')
+def advance_workflow(instance_id):
+    """Manually advance workflow to next step"""
+    try:
+        if not validate_uuid(instance_id):
+            return jsonify({'error': 'Invalid instance ID'}), 400
+
+        data = sanitize_input(request.get_json())
+        tenant_id = g.current_user['tenant_id']
+        user_id = g.current_user['user_id']
+
+        # Get workflow instance
+        instance = Database.execute_one("""
+            SELECT wi.*, w.definition
+            FROM workflow_instances wi
+            JOIN workflows w ON wi.workflow_id = w.id
+            WHERE wi.id = %s AND wi.tenant_id = %s
+        """, (instance_id, tenant_id))
+
+        if not instance:
+            return jsonify({'error': 'Workflow instance not found'}), 404
+
+        target_step = data.get('target_step')
+        force_advance = data.get('force_advance', False)
+        reason = data.get('reason', 'Manual advancement')
+
+        # Parse workflow definition
+        definition = json.loads(instance['definition']) if isinstance(instance['definition'], str) else instance['definition']
+
+        # Find target step
+        target_step_def = None
+        for step in definition.get('steps', []):
+            if step['id'] == target_step:
+                target_step_def = step
+                break
+
+        if not target_step_def:
+            return jsonify({'error': f'Target step {target_step} not found'}), 400
+
+        # Create context for step execution
+        context = {
+            'initiator': instance['initiated_by'],
+            'tenant_id': tenant_id,
+            'workflow_data': json.loads(instance['data']) if instance['data'] else {},
+            'manual_advance': True,
+            'advanced_by': user_id,
+            'advance_reason': reason
+        }
+
+        # Execute target step
+        WorkflowEngine._execute_step(instance_id, target_step_def, definition, context)
+
+        # Update instance current step
+        Database.execute_query("""
+            UPDATE workflow_instances 
+            SET current_step = %s, updated_at = NOW()
+            WHERE id = %s
+        """, (target_step, instance_id))
+
+        return jsonify({
+            'message': 'Workflow advanced successfully',
+            'instance_id': instance_id,
+            'current_step': target_step,
+            'advanced_by': user_id,
+            'reason': reason
+        }), 200
+
+    except Exception as e:
+        logger.error(f"Error advancing workflow {instance_id}: {e}")
+        return jsonify({'error': 'Failed to advance workflow'}), 500
+
+@workflows_bp.route('/instances/<instance_id>/retry-step', methods=['POST'])
+@require_auth
+@require_permissions(['manage_workflows'])
+@audit_log('retry_step', 'workflow_instance')
+def retry_workflow_step(instance_id):
+    """Retry a failed workflow step"""
+    try:
+        if not validate_uuid(instance_id):
+            return jsonify({'error': 'Invalid instance ID'}), 400
+
+        data = sanitize_input(request.get_json())
+        tenant_id = g.current_user['tenant_id']
+        user_id = g.current_user['user_id']
+
+        step_id = data.get('step_id')
+        retry_reason = data.get('retry_reason', 'Manual retry')
+
+        if not step_id:
+            return jsonify({'error': 'step_id is required'}), 400
+
+        # Get workflow instance and definition
+        instance = Database.execute_one("""
+            SELECT wi.*, w.definition
+            FROM workflow_instances wi
+            JOIN workflows w ON wi.workflow_id = w.id
+            WHERE wi.id = %s AND wi.tenant_id = %s
+        """, (instance_id, tenant_id))
+
+        if not instance:
+            return jsonify({'error': 'Workflow instance not found'}), 404
+
+        # Parse workflow definition
+        definition = json.loads(instance['definition']) if isinstance(instance['definition'], str) else instance['definition']
+
+        # Find step to retry
+        step_def = None
+        for step in definition.get('steps', []):
+            if step['id'] == step_id:
+                step_def = step
+                break
+
+        if not step_def:
+            return jsonify({'error': f'Step {step_id} not found'}), 400
+
+        # Create context for retry
+        context = {
+            'initiator': instance['initiated_by'],
+            'tenant_id': tenant_id,
+            'workflow_data': json.loads(instance['data']) if instance['data'] else {},
+            'retry_attempt': True,
+            'retried_by': user_id,
+            'retry_reason': retry_reason
+        }
+
+        # Retry the step
+        WorkflowEngine._execute_step(instance_id, step_def, definition, context)
+
+        return jsonify({
+            'message': 'Step retried successfully',
+            'instance_id': instance_id,
+            'step_id': step_id,
+            'retried_by': user_id,
+            'reason': retry_reason
+        }), 200
+
+    except Exception as e:
+        logger.error(f"Error retrying step {step_id} for workflow {instance_id}: {e}")
+        return jsonify({'error': 'Failed to retry step'}), 500
+
+@workflows_bp.route('/instances/<instance_id>/timeline', methods=['GET'])
+@require_auth
+def get_workflow_timeline(instance_id):
+    """Get workflow execution timeline"""
+    try:
+        if not validate_uuid(instance_id):
+            return jsonify({'error': 'Invalid instance ID'}), 400
+
+        tenant_id = g.current_user['tenant_id']
+
+        # Get workflow instance
+        instance = Database.execute_one("""
+            SELECT * FROM workflow_instances 
+            WHERE id = %s AND tenant_id = %s
+        """, (instance_id, tenant_id))
+
+        if not instance:
+            return jsonify({'error': 'Workflow instance not found'}), 404
+
+        # Get task history
+        tasks = Database.execute_query("""
+            SELECT t.*, u1.first_name || ' ' || u1.last_name as assigned_to_name,
+                   u2.first_name || ' ' || u2.last_name as completed_by_name
+            FROM tasks t
+            LEFT JOIN users u1 ON t.assigned_to = u1.id
+            LEFT JOIN users u2 ON t.completed_by = u2.id
+            WHERE t.workflow_instance_id = %s
+            ORDER BY t.created_at
+        """, (instance_id,))
+
+        # Get step executions if table exists
+        try:
+            step_executions = Database.execute_query("""
+                SELECT * FROM workflow_step_executions
+                WHERE workflow_instance_id = %s
+                ORDER BY executed_at
+            """, (instance_id,))
+        except:
+            step_executions = []
+
+        # Build timeline
+        timeline = []
+
+        # Add workflow start
+        timeline.append({
+            'event': 'workflow_started',
+            'timestamp': instance['created_at'],
+            'step_id': None,
+            'description': f"Workflow '{instance['title']}' started",
+            'user': instance.get('initiated_by_name', 'System')
+        })
+
+        # Add task events
+        for task in tasks:
+            timeline.append({
+                'event': 'task_created',
+                'timestamp': task['created_at'],
+                'step_id': task['step_id'],
+                'task_id': task['id'],
+                'description': f"Task '{task['name']}' created",
+                'assigned_to': task.get('assigned_to_name'),
+                'status': task['status']
+            })
+
+            if task['completed_at']:
+                timeline.append({
+                    'event': 'task_completed',
+                    'timestamp': task['completed_at'],
+                    'step_id': task['step_id'],
+                    'task_id': task['id'],
+                    'description': f"Task '{task['name']}' completed",
+                    'completed_by': task.get('completed_by_name'),
+                    'status': task['status']
+                })
+
+        # Add step executions
+        for execution in step_executions:
+            timeline.append({
+                'event': 'step_executed',
+                'timestamp': execution['executed_at'],
+                'step_id': execution['step_id'],
+                'description': f"Step '{execution['step_id']}' executed",
+                'success': execution['success'],
+                'data': json.loads(execution['data']) if execution.get('data') else {}
+            })
+
+        # Add workflow completion if completed
+        if instance['completed_at']:
+            timeline.append({
+                'event': 'workflow_completed',
+                'timestamp': instance['completed_at'],
+                'step_id': None,
+                'description': f"Workflow '{instance['title']}' completed",
+                'status': instance['status']
+            })
+
+        # Sort timeline by timestamp
+        timeline.sort(key=lambda x: x['timestamp'])
+
+        return jsonify({
+            'instance_id': instance_id,
+            'workflow_name': instance['title'],
+            'status': instance['status'],
+            'timeline': timeline
+        }), 200
+
+    except Exception as e:
+        logger.error(f"Error getting workflow timeline {instance_id}: {e}")
+        return jsonify({'error': 'Failed to retrieve workflow timeline'}), 500
+
+@workflows_bp.route('/instances/<instance_id>/status', methods=['GET'])
+@require_auth
+def get_detailed_workflow_status(instance_id):
+    """Get detailed workflow status including next possible actions"""
+    try:
+        if not validate_uuid(instance_id):
+            return jsonify({'error': 'Invalid instance ID'}), 400
+
+        tenant_id = g.current_user['tenant_id']
+
+        # Get workflow instance with definition
+        instance = Database.execute_one("""
+            SELECT wi.*, w.name as workflow_name, w.definition
+            FROM workflow_instances wi
+            JOIN workflows w ON wi.workflow_id = w.id
+            WHERE wi.id = %s AND wi.tenant_id = %s
+        """, (instance_id, tenant_id))
+
+        if not instance:
+            return jsonify({'error': 'Workflow instance not found'}), 404
+
+        # Get current pending tasks
+        pending_tasks = Database.execute_query("""
+            SELECT t.*, u.first_name || ' ' || u.last_name as assigned_to_name,
+                   fd.name as form_name
+            FROM tasks t
+            LEFT JOIN users u ON t.assigned_to = u.id
+            LEFT JOIN form_definitions fd ON t.form_id = fd.id
+            WHERE t.workflow_instance_id = %s AND t.status = 'pending'
+            ORDER BY t.created_at
+        """, (instance_id,))
+
+        # Get completed tasks count
+        completed_tasks = Database.execute_one("""
+            SELECT COUNT(*) as count FROM tasks 
+            WHERE workflow_instance_id = %s AND status = 'completed'
+        """, (instance_id,))
+
+        # Parse workflow definition to determine next possible steps
+        definition = json.loads(instance['definition']) if isinstance(instance['definition'], str) else instance['definition']
+
+        # Determine next possible actions
+        next_actions = []
+        current_step = instance.get('current_step')
+
+        if current_step and definition:
+            transitions = definition.get('transitions', [])
+            for transition in transitions:
+                if transition['from'] == current_step:
+                    target_step = next((s for s in definition['steps'] if s['id'] == transition['to']), None)
+                    if target_step:
+                        next_actions.append({
+                            'step_id': target_step['id'],
+                            'step_name': target_step['name'],
+                            'step_type': target_step['type'],
+                            'condition': transition.get('condition')
+                        })
+
+        return jsonify({
+            'instance': {
+                'id': instance['id'],
+                'workflow_name': instance['workflow_name'],
+                'title': instance['title'],
+                'status': instance['status'],
+                'current_step': instance['current_step'],
+                'created_at': instance['created_at'],
+                'updated_at': instance['updated_at'],
+                'completed_at': instance['completed_at'],
+                'data': json.loads(instance['data']) if instance['data'] else {}
+            },
+            'progress': {
+                'pending_tasks': len(pending_tasks),
+                'completed_tasks': completed_tasks['count'],
+                'is_stuck': len(pending_tasks) == 0 and instance['status'] == 'in_progress'
+            },
+            'pending_tasks': [dict(t) for t in pending_tasks],
+            'next_possible_actions': next_actions,
+            'can_advance_manually': len(next_actions) > 0,
+            'requires_intervention': len(pending_tasks) == 0 and instance['status'] == 'in_progress'
+        }), 200
+
+    except Exception as e:
+        logger.error(f"Error getting detailed workflow status {instance_id}: {e}")
+        return jsonify({'error': 'Failed to retrieve workflow status'}), 500

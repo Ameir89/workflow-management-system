@@ -17,19 +17,16 @@ const FormsList = () => {
   const [page, setPage] = useState(1);
   const [search, setSearch] = useState("");
   const [filters, setFilters] = useState({});
-  const isLoading = false;
-  const error = false;
-  const formsData = { pagination: { page, limit: 20 } };
 
-  // const {
-  //   data: formsData,
-  //   isLoading,
-  //   error,
-  // } = useQuery(
-  //   ["forms", page, search, filters],
-  //   () => formsService.getForms({ page, limit: 20, search, ...filters }),
-  //   { keepPreviousData: true }
-  // );
+  const {
+    data: formsData,
+    isLoading,
+    error,
+  } = useQuery(
+    ["forms", page, search, filters],
+    () => formsService.getForms({ page, limit: 20, search, ...filters }),
+    { keepPreviousData: true }
+  );
 
   const deleteFormMutation = useMutation((id) => formsService.deleteForm(id), {
     onSuccess: () => {

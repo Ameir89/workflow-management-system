@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import { useState } from "react";
 import { useTranslation } from "react-i18next";
 import { useNavigate } from "react-router-dom";
 import {
@@ -8,7 +8,6 @@ import {
   MinusIcon,
   ArrowPathIcon,
   DocumentArrowDownIcon,
-  Cog6ToothIcon,
   QuestionMarkCircleIcon,
   CheckIcon,
 } from "@heroicons/react/24/outline";

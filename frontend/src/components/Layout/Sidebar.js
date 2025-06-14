@@ -19,6 +19,9 @@ import {
   ShieldCheckIcon,
   QuestionMarkCircleIcon,
   BookOpenIcon,
+  TableCellsIcon,
+  PencilSquareIcon,
+  WrenchScrewdriverIcon,
 } from "@heroicons/react/24/outline";
 import {
   HomeIcon as HomeIconSolid,
@@ -35,7 +38,7 @@ const Sidebar = ({ isOpen, onClose, userPermissions = [] }) => {
   const { t } = useTranslation();
   const location = useLocation();
   const [expandedSections, setExpandedSections] = useState({
-    admin: true,
+    admin: false,
   });
 
   // Fetch task stats for sidebar
@@ -60,13 +63,7 @@ const Sidebar = ({ isOpen, onClose, userPermissions = [] }) => {
       iconSolid: HomeIconSolid,
       badge: null,
     },
-    {
-      name: t("nav.workflows"),
-      href: "/workflows",
-      icon: Cog8ToothIcon,
-      iconSolid: Cog8ToothIconSolid,
-      badge: null,
-    },
+
     {
       name: t("nav.tasks"),
       href: "/tasks",
@@ -80,6 +77,17 @@ const Sidebar = ({ isOpen, onClose, userPermissions = [] }) => {
             }
           : null,
     },
+
+    {
+      name: t("nav.reports"),
+      href: "/reports",
+      icon: ChartBarIcon,
+      iconSolid: ChartBarIconSolid,
+      badge: null,
+    },
+  ];
+
+  const configurationNavigation = [
     {
       name: t("nav.forms"),
       href: "/forms",
@@ -102,10 +110,10 @@ const Sidebar = ({ isOpen, onClose, userPermissions = [] }) => {
       badge: null,
     },
     {
-      name: t("nav.reports"),
-      href: "/reports",
-      icon: ChartBarIcon,
-      iconSolid: ChartBarIconSolid,
+      name: t("nav.workflows"),
+      href: "/workflows",
+      icon: Cog8ToothIcon,
+      iconSolid: Cog8ToothIconSolid,
       badge: null,
     },
   ];
@@ -122,6 +130,18 @@ const Sidebar = ({ isOpen, onClose, userPermissions = [] }) => {
       href: "/admin/health",
       icon: ShieldCheckIcon,
       iconSolid: ShieldCheckIcon,
+    },
+    {
+      name: t("nav.admin.lookupsManagement"),
+      href: "/admin/lookups",
+      icon: TableCellsIcon,
+      iconSolid: TableCellsIcon,
+    },
+    {
+      name: t("nav.admin.auditLogs"),
+      href: "/admin/audit-logs",
+      icon: PencilSquareIcon,
+      iconSolid: PencilSquareIcon,
     },
   ];
 
@@ -247,30 +267,56 @@ const Sidebar = ({ isOpen, onClose, userPermissions = [] }) => {
 
             {/* Admin Section */}
             {hasAdminAccess && (
-              <div className="pt-4">
-                <button
-                  onClick={() => toggleSection("admin")}
-                  className="flex w-full items-center justify-between px-3 py-2 text-sm font-semibold text-gray-900 hover:bg-gray-50 rounded-lg transition-colors duration-200"
-                >
-                  <span className="flex items-center">
-                    <ShieldCheckIcon className="mr-2 h-5 w-5 text-gray-500" />
-                    {t("nav.admin.title")}
-                  </span>
-                  {expandedSections.admin ? (
-                    <ChevronDownIcon className="h-4 w-4 text-gray-500" />
-                  ) : (
-                    <ChevronRightIcon className="h-4 w-4 text-gray-500" />
-                  )}
-                </button>
+              <>
+                <div className="pt-4">
+                  <button
+                    onClick={() => toggleSection("configuration")}
+                    className="flex w-full items-center justify-between px-3 py-2 text-sm font-semibold text-gray-900 hover:bg-gray-50 rounded-lg transition-colors duration-200"
+                  >
+                    <span className="flex items-center">
+                      <WrenchScrewdriverIcon className="mr-2 h-5 w-5 text-gray-500" />
+                      {t("nav.configuration.title")}
+                    </span>
+                    {expandedSections.configuration ? (
+                      <ChevronDownIcon className="h-4 w-4 text-gray-500" />
+                    ) : (
+                      <ChevronRightIcon className="h-4 w-4 text-gray-500" />
+                    )}
+                  </button>
 
-                {expandedSections.admin && (
-                  <div className="mt-2 space-y-1">
-                    {adminNavigation.map((item) => (
-                      <NavLink key={item.name} item={item} isAdmin />
-                    ))}
-                  </div>
-                )}
-              </div>
+                  {expandedSections.configuration && (
+                    <div className="mt-2 space-y-1">
+                      {configurationNavigation.map((item) => (
+                        <NavLink key={item.name} item={item} isAdmin />
+                      ))}
+                    </div>
+                  )}
+                </div>
+                <div className="pt-2">
+                  <button
+                    onClick={() => toggleSection("admin")}
+                    className="flex w-full items-center justify-between px-3 py-2 text-sm font-semibold text-gray-900 hover:bg-gray-50 rounded-lg transition-colors duration-200"
+                  >
+                    <span className="flex items-center">
+                      <ShieldCheckIcon className="mr-2 h-5 w-5 text-gray-500" />
+                      {t("nav.admin.title")}
+                    </span>
+                    {expandedSections.admin ? (
+                      <ChevronDownIcon className="h-4 w-4 text-gray-500" />
+                    ) : (
+                      <ChevronRightIcon className="h-4 w-4 text-gray-500" />
+                    )}
+                  </button>
+
+                  {expandedSections.admin && (
+                    <div className="mt-2 space-y-1">
+                      {adminNavigation.map((item) => (
+                        <NavLink key={item.name} item={item} isAdmin />
+                      ))}
+                    </div>
+                  )}
+                </div>
+              </>
             )}
 
             {/* Spacer */}

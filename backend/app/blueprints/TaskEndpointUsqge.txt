@@ -1,0 +1,128 @@
+#!/bin/bash
+
+# Task Endpoint Usage Examples
+BASE_URL="http://localhost:5000/api"
+TOKEN="your_access_token_here"
+
+echo "=== TASK FILTERING EXAMPLES ==="
+
+# 1. Get all pending tasks for a specific workflow instance (YOUR REQUEST)
+echo "1. Get all pending tasks for workflow instance:"
+curl -X GET "$BASE_URL/tasks?workflow_instance_id=45db90eb-cd5e-446c-a909-c23c0dea49f4&status=pending" \
+  -H "Authorization: Bearer $TOKEN" \
+  -H "Content-Type: application/json"
+
+# 2. Get all tasks for a specific workflow instance (any status)
+echo -e "\n2. Get all tasks for workflow instance:"
+curl -X GET "$BASE_URL/tasks?workflow_instance_id=45db90eb-cd5e-446c-a909-c23c0dea49f4" \
+  -H "Authorization: Bearer $TOKEN"
+
+# 3. Alternative dedicated endpoint for workflow tasks
+echo -e "\n3. Using dedicated workflow tasks endpoint:"
+curl -X GET "$BASE_URL/tasks/workflow/45db90eb-cd5e-446c-a909-c23c0dea49f4" \
+  -H "Authorization: Bearer $TOKEN"
+
+# 4. Get only approval tasks for the workflow
+echo -e "\n4. Get only approval tasks:"
+curl -X GET "$BASE_URL/tasks?workflow_instance_id=45db90eb-cd5e-446c-a909-c23c0dea49f4&type=approval" \
+  -H "Authorization: Bearer $TOKEN"
+
+# 5. Get overdue tasks for the workflow
+echo -e "\n5. Get overdue tasks with due date filter:"
+curl -X GET "$BASE_URL/tasks?workflow_instance_id=45db90eb-cd5e-446c-a909-c23c0dea49f4&due_date_to=$(date -Iseconds)" \
+  -H "Authorization: Bearer $TOKEN"
+
+# 6. Get tasks assigned to specific user
+echo -e "\n6. Get tasks assigned to specific user:"
+curl -X GET "$BASE_URL/tasks?workflow_instance_id=45db90eb-cd5e-446c-a909-c23c0dea49f4&assigned_to=00000000-0000-0000-0000-000000000001" \
+  -H "Authorization: Bearer $TOKEN"
+
+# 7. Search tasks within workflow
+echo -e "\n7. Search for approval tasks:"
+curl -X GET "$BASE_URL/tasks?workflow_instance_id=45db90eb-cd5e-446c-a909-c23c0dea49f4&search=approval" \
+  -H "Authorization: Bearer $TOKEN"
+
+# 8. Get all pending tasks across all workflows (for current user)
+echo -e "\n8. Get all my pending tasks:"
+curl -X GET "$BASE_URL/tasks?assigned_to_me=true&status=pending" \
+  -H "Authorization: Bearer $TOKEN"
+
+# 9. Get tasks for a specific workflow (all instances)
+echo -e "\n9. Get tasks for all instances of a workflow:"
+curl -X GET "$BASE_URL/tasks?workflow_id=f006f785-948f-4dd9-b271-d926c93df065&status=pending" \
+  -H "Authorization: Bearer $TOKEN"
+
+echo -e "\n=== SAMPLE RESPONSES ==="
+
+# Sample response for workflow instance tasks
+cat << 'EOF'
+Sample Response for GET /api/tasks?workflow_instance_id=45db90eb-cd5e-446c-a909-c23c0dea49f4&status=pending:
+
+{
+  "tasks": [
+    {
+      "id": "supervisor-approval-task-uuid",
+      "name": "Supervisor Approval",
+      "description": "Direct supervisor approval for amounts under $5,000",
+      "type": "approval",
+      "status": "pending",
+      "step_id": "supervisor_approval",
+      "workflow_instance_id": "45db90eb-cd5e-446c-a909-c23c0dea49f4",
+      "workflow_title": "Financial Approval Process",
+      "workflow_name": "Financial Approval Process",
+      "workflow_status": "in_progress",
+      "assigned_to": "supervisor-user-uuid",
+      "assigned_to_name": "Jane Supervisor",
+      "form_id": "approval-form-uuid",
+      "form_name": "Approval Form",
+      "due_date": "2025-06-15T20:28:13Z",
+      "created_at": "2025-06-14T20:30:15Z",
+      "is_overdue": false,
+      "hours_until_due": 23.5,
+      "urgency": "urgent"
+    }
+  ],
+  "pagination": {
+    "page": 1,
+    "limit": 20,
+    "total": 1,
+    "pages": 1
+  },
+  "statistics": {
+    "total_tasks": 1,
+    "pending_count": 1,
+    "in_progress_count": 0,
+    "completed_count": 0,
+    "overdue_count": 0,
+    "tasks_with_forms": 1
+  },
+  "filters_applied": {
+    "workflow_instance_id": "45db90eb-cd5e-446c-a909-c23c0dea49f4",
+    "status": "pending",
+    "assigned_to_me": true
+  }
+}
+EOF
+
+echo -e "\n=== QUERY PARAMETERS REFERENCE ==="
+cat << 'EOF'
+Available Query Parameters for GET /api/tasks:
+
+• workflow_instance_id (UUID) - Filter by specific workflow instance
+• workflow_id (UUID) - Filter by workflow definition (all instances)
+• status (string) - Filter by task status (pending, in_progress, completed, failed)
+• assigned_to_me (boolean) - Show only tasks assigned to current user (default: true)
+• assigned_to (UUID) - Filter by specific assignee
+• type (string) - Filter by task type (task, approval, automation, etc.)
+• due_date_from (ISO date) - Tasks due after this date
+• due_date_to (ISO date) - Tasks due before this date
+• search (string) - Search in task name and description
+• page (integer) - Page number for pagination (default: 1)
+• limit (integer) - Items per page (default: 20, max: 100)
+
+Examples:
+• ?workflow_instance_id=uuid&status=pending
+• ?assigned_to_me=true&status=pending&type=approval
+• ?workflow_id=uuid&due_date_to=2025-06-15T00:00:00Z
+• ?search=approval&status=pending
+EOF

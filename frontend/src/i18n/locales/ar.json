@@ -83,10 +83,13 @@
       "files": "الملفات",
       "webhooks": "Webhooks",
       "reports": "التقارير",
+      "profile": "الملف الشخصي",
       "admin": {
         "title": "الإدارة",
         "users": "إدارة المستخدمين",
-        "health": "صحة النظام"
+        "health": "صحة النظام",
+        "lookupsManagement": "إدارة القوائم المرجعية",
+        "auditLogs": "سجلات التدقيق"
       }
     },
     "auth": {
@@ -287,7 +290,17 @@
         "email": "البريد الإلكتروني",
         "phone": "رقم الهاتف",
         "roles": "الأدوار",
-        "active": "نشط"
+        "active": "نشط",
+        "user": "مستخدم",
+        "contact": "معلومات الاتصال",
+        "role": "الدور",
+        "lastLogin": "آخر تسجيل دخول",
+        "searchPlaceholder": "بحث في المستخدمين...",
+        "createUser": "إنشاء مستخدم",
+        "editUser": "تعديل مستخدم",
+        "deleteUser": "حذف مستخدم",
+        "password": "كلمة المرور",
+        "confirmPassword": "تأكيد كلمة المرور"
       },
       "health": {
         "title": "صحة النظام",

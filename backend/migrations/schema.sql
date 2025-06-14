@@ -95,25 +95,7 @@ CREATE TABLE workflow_instances (
     updated_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP
 );
 
--- Tasks (workflow steps)
-CREATE TABLE tasks (
-    id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
-    workflow_instance_id UUID REFERENCES workflow_instances(id) ON DELETE CASCADE,
-    step_id VARCHAR(100) NOT NULL, -- References step in workflow definition
-    name VARCHAR(255) NOT NULL,
-    description TEXT,
-    type VARCHAR(50) NOT NULL, -- form, approval, notification, automation, etc.
-    status VARCHAR(50) DEFAULT 'pending', -- pending, in_progress, completed, skipped, failed
-    assigned_to UUID REFERENCES users(id),
-    assigned_by UUID REFERENCES users(id),
-    form_data JSONB DEFAULT '{}',
-    result JSONB DEFAULT '{}',
-    due_date TIMESTAMP WITH TIME ZONE,
-    started_at TIMESTAMP WITH TIME ZONE,
-    completed_at TIMESTAMP WITH TIME ZONE,
-    created_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP,
-    updated_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP
-);
+
 
 -- Form definitions
 CREATE TABLE form_definitions (
@@ -125,6 +107,27 @@ CREATE TABLE form_definitions (
     version INTEGER DEFAULT 1,
     is_active BOOLEAN DEFAULT true,
     created_by UUID REFERENCES users(id),
+    created_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP,
+    updated_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP
+);
+
+-- Tasks (workflow steps)
+CREATE TABLE tasks (
+    id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
+    workflow_instance_id UUID REFERENCES workflow_instances(id) ON DELETE CASCADE,
+    step_id VARCHAR(100) NOT NULL, -- References step in workflow definition
+    name VARCHAR(255) NOT NULL,
+    description TEXT,
+    type VARCHAR(50) NOT NULL, -- form, approval, notification, automation, etc.
+    status VARCHAR(50) DEFAULT 'pending', -- pending, in_progress, completed, skipped, failed
+    assigned_to UUID REFERENCES users(id),
+    assigned_by UUID REFERENCES users(id),
+    form_id UUID REFERENCES form_definitions(id) ON DELETE SET NULL,  -- NEW COLUMN
+    form_data JSONB DEFAULT '{}',
+    result JSONB DEFAULT '{}',
+    due_date TIMESTAMP WITH TIME ZONE,
+    started_at TIMESTAMP WITH TIME ZONE,
+    completed_at TIMESTAMP WITH TIME ZONE,
     created_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP,
     updated_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP
 );
@@ -256,6 +259,21 @@ CREATE TABLE webhook_deliveries (
     created_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP
 );
 
+-- Add task_comments table for task notes/comments
+-- This table was referenced in the code but missing from schema
+
+CREATE TABLE task_comments (
+    id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
+    task_id UUID REFERENCES tasks(id) ON DELETE CASCADE,
+    comment TEXT NOT NULL,
+    is_internal BOOLEAN DEFAULT false,
+    created_by UUID REFERENCES users(id),
+    created_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP,
+    updated_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP
+);
+
+
+
 -- Indexes for performance
 CREATE INDEX idx_users_tenant_id ON users(tenant_id);
 CREATE INDEX idx_users_email ON users(email);
@@ -268,21 +286,30 @@ CREATE INDEX idx_notifications_user_id_read ON notifications(user_id, is_read);
 CREATE INDEX idx_audit_logs_resource ON audit_logs(resource_type, resource_id);
 CREATE INDEX idx_files_workflow_instance ON files(workflow_instance_id);
 CREATE INDEX idx_sla_breaches_workflow_instance ON sla_breaches(workflow_instance_id);
+-- Add index for performance
+CREATE INDEX idx_task_comments_task_id ON task_comments(task_id);
+CREATE INDEX idx_task_comments_created_at ON task_comments(created_at);
+
+ALTER TABLE tasks ADD COLUMN completed_by UUID REFERENCES users(id);
+
+-- Add indexes for performance
+CREATE INDEX idx_tasks_form_id ON tasks(form_id);
+CREATE INDEX idx_tasks_completed_by ON tasks(completed_by);
 
 -- Insert default tenant and admin user
-INSERT INTO tenants (id, name, subdomain) VALUES 
+INSERT INTO tenants (id, name, subdomain) VALUES
 ('00000000-0000-0000-0000-000000000001', 'Default Organization', 'default');
 
-INSERT INTO roles (id, tenant_id, name, description, permissions, is_system) VALUES 
+INSERT INTO roles (id, tenant_id, name, description, permissions, is_system) VALUES
 ('00000000-0000-0000-0000-000000000001', '00000000-0000-0000-0000-000000000001', 'Super Admin', 'System administrator with full access', '["*"]', true),
 ('00000000-0000-0000-0000-000000000002', '00000000-0000-0000-0000-000000000001', 'Admin', 'Organization administrator', '["manage_workflows", "manage_users", "view_reports", "manage_sla"]', false),
 ('00000000-0000-0000-0000-000000000003', '00000000-0000-0000-0000-000000000001', 'User', 'Regular user', '["create_workflows", "execute_tasks", "view_reports"]', false);
 
 -- Default admin user (password: admin123!)
-INSERT INTO users (id, tenant_id, username, email, password_hash, first_name, last_name, is_verified) VALUES 
-('00000000-0000-0000-0000-000000000001', '00000000-0000-0000-0000-000000000001', 'admin', 'admin@example.com', '$2b$12$LQv3c1yqBWVHxkd0LHAkCOYz6TtxMQJqhN8/LekaWfTnKEEoKSSxW', 'System', 'Administrator', true);
+INSERT INTO users (id, tenant_id, username, email, password_hash, first_name, last_name, is_verified) VALUES
+('00000000-0000-0000-0000-000000000001', '00000000-0000-0000-0000-000000000001', 'admin', 'admin@example.com', '$2b$12$Ppyp.CEXX0GttnrEz733Z.asnCsG6RUg11DNaJ5hSJh57eJjWYQXO', 'System', 'Administrator', true);
 
-INSERT INTO user_roles (user_id, role_id) VALUES 
+INSERT INTO user_roles (user_id, role_id) VALUES
 ('00000000-0000-0000-0000-000000000001', '00000000-0000-0000-0000-000000000001');
 
 ALTER TABLE webhooks ADD COLUMN updated_at TIMESTAMP;
@@ -299,3 +326,8 @@ CREATE TRIGGER update_webhooks_updated_at
 BEFORE UPDATE ON webhooks
 FOR EACH ROW
 EXECUTE FUNCTION update_updated_at_column();
+
+INSERT INTO roles (tenant_id, name, description, permissions) VALUES
+('00000000-0000-0000-0000-000000000001', 'manager', 'Department Manager', '["approve_requests"]'),
+('00000000-0000-0000-0000-000000000001', 'supervisor', 'Team Supervisor', '["review_tasks"]'),
+('00000000-0000-0000-0000-000000000001', 'director', 'Department Director', '["approve_budget"]');

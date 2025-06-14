@@ -1,9 +1,8 @@
-import React, { useState } from "react";
+import { useState } from "react";
 import { useTranslation } from "react-i18next";
 import { useQuery } from "react-query";
 import { formsService } from "../../services/formsService";
 import {
-  XMarkIcon,
   Cog6ToothIcon,
   InformationCircleIcon,
 } from "@heroicons/react/24/outline";
@@ -15,6 +14,13 @@ const PropertiesPanel = ({
 }) => {
   const { t } = useTranslation();
   const [activeTab, setActiveTab] = useState("properties");
+  const { data: formsData } = useQuery(
+    ["forms"],
+    () => formsService.getForms(),
+    {
+      keepPreviousData: true,
+    }
+  );
 
   const handleWorkflowChange = (field, value) => {
     onUpdateWorkflow((prev) => ({
@@ -32,6 +38,7 @@ const PropertiesPanel = ({
   };
 
   const handleNodePropertyChange = (propertyKey, value) => {
+    // Ensure selectedNode is defined before updating
     if (selectedNode) {
       onUpdateNode(selectedNode.id, {
         properties: {
@@ -229,21 +236,17 @@ const PropertiesPanel = ({
                 {t("workflow.form")}
               </label>
               <select
-                value={workflow.form}
-                onChange={(e) => handleWorkflowChange("form", e.target.value)}
+                value={properties.formId}
+                onChange={(e) =>
+                  handleNodePropertyChange("formId", e.target.value)
+                }
                 className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-indigo-500"
               >
-                <option value="">{t("workflow.form")}</option>
-                <option value="form1">{t("form1")}</option>
-                <option value="automation">
-                  {t("workflow.categories.automation")}
-                </option>
-                <option value="notification">
-                  {t("workflow.categories.notification")}
-                </option>
-                <option value="integration">
-                  {t("workflow.categories.integration")}
-                </option>
+                {formsData?.forms?.map((form) => (
+                  <option key={form.id} value={form.id}>
+                    {form.name}
+                  </option>
+                ))}
               </select>
             </div>
           </div>

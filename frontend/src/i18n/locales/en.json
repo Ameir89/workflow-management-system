@@ -83,10 +83,20 @@
       "files": "Files",
       "webhooks": "Webhooks",
       "reports": "Reports",
+      "profile": "Profile",
       "admin": {
         "title": "Administration",
         "users": "User Management",
-        "health": "System Health"
+        "health": "System Health",
+        "lookupsManagement": "Lookups Management",
+        "auditLogs": "Audit Logs"
+      },
+      "configuration": {
+        "title": "Configuration",
+        "users": "User Management",
+        "health": "System Health",
+        "lookupsManagement": "Lookups Management",
+        "auditLogs": "Audit Logs"
       }
     },
 
@@ -131,7 +141,8 @@
       "never": "Never",
       "saving": "Saving...",
       "submitting": "Submitting...",
-      "submit": "Submit"
+      "submit": "Submit",
+      "showingResults": "Showing results"
     },
 
     "dashboard": {
@@ -296,7 +307,16 @@
         "email": "Email",
         "phone": "Phone",
         "roles": "Roles",
-        "active": "Active"
+        "active": "Active",
+        "user": "User",
+        "contact": "Contact Information",
+        "role": "Role",
+        "lastLogin": "Last Login",
+        "searchPlaceholder": "Search users...",
+        "createUser": "Create User",
+        "editUser": "Edit User",
+        "deleteUser": "Delete User",
+        "password": "Password"
       },
       "health": {
         "title": "System Health",

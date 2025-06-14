@@ -1,7 +1,6 @@
 ### app/services/workflow_engine.py
-
 """
-Workflow execution engine with state machine logic
+Workflow execution engine with enhanced form support
 """
 import json
 from datetime import datetime, timedelta
@@ -12,9 +11,8 @@ import logging
 
 logger = logging.getLogger(__name__)
 
-
 class WorkflowEngine:
-    """Core workflow execution engine"""
+    """Core workflow execution engine with form integration"""
 
     @staticmethod
     def execute_workflow(workflow_id, data, initiated_by, tenant_id):
@@ -34,11 +32,11 @@ class WorkflowEngine:
             )
 
             # Execute first step
-            # definition = json.loads(workflow['definition'])
             if isinstance(workflow['definition'], str):
                 definition = json.loads(workflow['definition'])
             else:
                 definition = workflow['definition']
+
             first_step = WorkflowEngine._get_first_step(definition)
 
             if first_step:
@@ -70,13 +68,17 @@ class WorkflowEngine:
             if task['status'] != 'pending':
                 raise ValueError(f"Task {task_id} is not in pending status")
 
-            # Update task
+            # Update task with completed_by field
             WorkflowEngine._update_task_status(task_id, 'completed', result_data, completed_by)
 
             # Get workflow definition
             workflow_instance = WorkflowEngine._get_workflow_instance(task['workflow_instance_id'])
             workflow = WorkflowEngine._get_workflow(workflow_instance['workflow_id'])
-            definition = json.loads(workflow['definition'])
+
+            if isinstance(workflow['definition'], str):
+                definition = json.loads(workflow['definition'])
+            else:
+                definition = workflow['definition']
 
             # Determine next step
             next_step = WorkflowEngine._get_next_step(
@@ -128,13 +130,13 @@ class WorkflowEngine:
         """Get first step from workflow definition"""
         steps = definition.get('steps', [])
         for step in steps:
-            if step.get('is_start', False):
+            if step.get('isStart', False):
                 return step
         return steps[0] if steps else None
 
     @staticmethod
     def _execute_step(instance_id, step, definition):
-        """Execute a workflow step"""
+        """Execute a workflow step with form support"""
         step_id = step['id']
         step_type = step['type']
 
@@ -154,19 +156,35 @@ class WorkflowEngine:
 
     @staticmethod
     def _create_task(instance_id, step):
-        """Create a new task"""
-        assigned_to = step.get('assigned_to')
-        due_hours = step.get('due_hours', 24)
+        """Create a new task with form support"""
+        assigned_to = step.get('properties', {}).get('assignee')
+        due_hours = step.get('properties', {}).get('dueHours', 24)
         due_date = datetime.now() + timedelta(hours=due_hours)
+
+        # Get form ID from step properties
+        form_id = step.get('properties', {}).get('formId')
+
+        # Resolve form ID if it's a string reference
+        if form_id and isinstance(form_id, str) and not form_id.startswith('uuid:'):
+            # Look up form by name
+            form = Database.execute_one("""
+                SELECT id FROM form_definitions 
+                WHERE name = %s AND is_active = true
+                ORDER BY version DESC
+                LIMIT 1
+            """, (form_id,))
+            form_id = form['id'] if form else None
 
         query = """
             INSERT INTO tasks 
-            (workflow_instance_id, step_id, name, description, type, assigned_to, due_date)
-            VALUES (%s, %s, %s, %s, %s, %s, %s)
+            (workflow_instance_id, step_id, name, description, type, 
+             assigned_to, due_date, form_id)
+            VALUES (%s, %s, %s, %s, %s, %s, %s, %s)
         """
         task_id = Database.execute_insert(query, (
             instance_id, step['id'], step['name'],
-            step.get('description', ''), step['type'], assigned_to, due_date
+            step.get('description', ''), step['type'],
+            assigned_to, due_date, form_id
         ))
 
         # Send notification to assigned user
@@ -174,6 +192,121 @@ class WorkflowEngine:
             NotificationService.send_task_assignment(assigned_to, task_id)
 
         return task_id
+
+    @staticmethod
+    def _create_approval_task(instance_id, step):
+        """Create an approval task with form support"""
+        properties = step.get('properties', {})
+        approvers = properties.get('approvers', [])
+        approval_type = properties.get('approvalType', 'any')
+        due_hours = properties.get('dueHours', 48)
+        due_date = datetime.now() + timedelta(hours=due_hours)
+
+        # Get form ID for approval
+        form_id = properties.get('formId')
+        if form_id and isinstance(form_id, str) and not form_id.startswith('uuid:'):
+            form = Database.execute_one("""
+                SELECT id FROM form_definitions 
+                WHERE name = %s AND is_active = true
+                ORDER BY version DESC
+                LIMIT 1
+            """, (form_id,))
+            form_id = form['id'] if form else None
+
+        # Create approval task for each approver
+        for approver in approvers:
+            query = """
+                INSERT INTO tasks 
+                (workflow_instance_id, step_id, name, description, type, 
+                 assigned_to, due_date, form_id)
+                VALUES (%s, %s, %s, %s, %s, %s, %s, %s)
+            """
+            task_id = Database.execute_insert(query, (
+                instance_id, step['id'], f"Approval: {step['name']}",
+                step.get('description', ''), 'approval',
+                approver, due_date, form_id
+            ))
+
+            # Send notification
+            NotificationService.send_task_assignment(approver, task_id)
+
+    @staticmethod
+    def _send_notification(instance_id, step):
+        """Send notification step"""
+        properties = step.get('properties', {})
+        recipients = properties.get('recipients', [])
+        template = properties.get('template', 'default')
+
+        # Get workflow instance data for notification context
+        instance = WorkflowEngine._get_workflow_instance(instance_id)
+
+        notification_data = {
+            'workflow_instance_id': instance_id,
+            'step_name': step['name'],
+            'message': properties.get('message', ''),
+            'workflow_data': json.loads(instance['data']) if instance['data'] else {}
+        }
+
+        for recipient in recipients:
+            NotificationService.send_notification(recipient, template, notification_data)
+
+    @staticmethod
+    def _execute_automation(instance_id, step):
+        """Execute automation step"""
+        properties = step.get('properties', {})
+        script = properties.get('script')
+        timeout = properties.get('timeout', 300)
+
+        # Get workflow instance data
+        instance = WorkflowEngine._get_workflow_instance(instance_id)
+        workflow_data = json.loads(instance['data']) if instance['data'] else {}
+
+        # Execute automation script (placeholder implementation)
+        # In real implementation, this would call external services/APIs
+        logger.info(f"Executing automation script: {script} for instance {instance_id}")
+
+        # Update workflow data with automation result
+        automation_result = {
+            'automation_executed': True,
+            'script': script,
+            'executed_at': datetime.now().isoformat()
+        }
+
+        workflow_data.update(automation_result)
+
+        # Update instance data
+        Database.execute_query("""
+            UPDATE workflow_instances 
+            SET data = %s, updated_at = NOW()
+            WHERE id = %s
+        """, (json.dumps(workflow_data), instance_id))
+
+    @staticmethod
+    def _evaluate_condition(instance_id, step, definition):
+        """Evaluate condition step"""
+        properties = step.get('properties', {})
+        condition = properties.get('condition', {})
+
+        # Get workflow instance data
+        instance = WorkflowEngine._get_workflow_instance(instance_id)
+        workflow_data = json.loads(instance['data']) if instance['data'] else {}
+
+        # Evaluate condition
+        condition_met = WorkflowEngine._evaluate_condition_expression(condition, workflow_data)
+
+        # Execute appropriate next steps
+        if condition_met:
+            true_steps = properties.get('trueSteps', [])
+            for step_id in true_steps:
+                next_step = WorkflowEngine._find_step_by_id(definition['steps'], step_id)
+                if next_step:
+                    WorkflowEngine._execute_step(instance_id, next_step, definition)
+        else:
+            false_steps = properties.get('falseSteps', [])
+            for step_id in false_steps:
+                next_step = WorkflowEngine._find_step_by_id(definition['steps'], step_id)
+                if next_step:
+                    WorkflowEngine._execute_step(instance_id, next_step, definition)
 
     @staticmethod
     def _get_next_step(definition, current_step_id, result_data):
@@ -218,6 +351,8 @@ class WorkflowEngine:
             return float(field_value) < float(value)
         elif operator == 'contains':
             return value in str(field_value)
+        elif operator == 'between':
+            return value[0] <= float(field_value) <= value[1]
 
         return False
 
@@ -257,7 +392,7 @@ class WorkflowEngine:
     def _get_workflow_instance(instance_id):
         """Get workflow instance by ID"""
         query = """
-            SELECT id, workflow_id, initiated_by, status
+            SELECT id, workflow_id, initiated_by, status, data
             FROM workflow_instances 
             WHERE id = %s
         """
@@ -265,13 +400,14 @@ class WorkflowEngine:
 
     @staticmethod
     def _update_task_status(task_id, status, result_data, completed_by):
-        """Update task status and result"""
+        """Update task status and result with completed_by field"""
         query = """
             UPDATE tasks 
-            SET status = %s, result = %s, completed_at = NOW(), updated_at = NOW()
+            SET status = %s, result = %s, completed_by = %s, 
+                completed_at = NOW(), updated_at = NOW()
             WHERE id = %s
         """
-        Database.execute_query(query, (status, json.dumps(result_data), task_id))
+        Database.execute_query(query, (status, json.dumps(result_data), completed_by, task_id))
 
     @staticmethod
     def _update_instance_step(instance_id, step_id):

@@ -1623,3 +1623,111 @@ LINE 12:             LEFT JOIN form_definitions fd ON t.form_id = fd....
 [2025-06-14 21:08:07,976] [INFO] app.middleware: Request fcbcf918-89ee-480e-8e87-715c6fe6a846: POST /api/workflows/91253eac-ff58-4342-b5dc-de013919f675/execute
 [2025-06-14 21:08:08,023] [INFO] app.database: Connected to DB postgresql://postgres:CodeSD.com@localhost (connection open: True)
 [2025-06-14 21:08:08,037] [INFO] app.middleware: Response fcbcf918-89ee-480e-8e87-715c6fe6a846: 201 (0.061s)
+[2025-06-14 21:32:38,820] [INFO] app: Application startup
+[2025-06-14 21:32:57,571] [INFO] app: Application startup
+[2025-06-14 21:35:40,844] [INFO] app: Application startup
+[2025-06-14 21:35:53,568] [INFO] app: Application startup
+[2025-06-14 21:43:34,006] [INFO] app: Application startup
+[2025-06-14 21:43:34,481] [INFO] app: Application startup
+[2025-06-14 21:50:27,432] [INFO] app.middleware: Request be5a92da-219d-4378-a239-d322e35ec420: POST /api/auth/login
+[2025-06-14 21:50:27,480] [INFO] app.database: Connected to DB postgresql://postgres:CodeSD.com@localhost (connection open: True)
+[2025-06-14 21:50:27,673] [INFO] app.middleware: Response be5a92da-219d-4378-a239-d322e35ec420: 200 (0.241s)
+[2025-06-14 21:50:34,318] [INFO] app.middleware: Request 24d8b1c7-6495-4c5e-9b61-ce7666c8fd40: GET /api/auth/profile
+[2025-06-14 21:50:34,361] [INFO] app.database: Connected to DB postgresql://postgres:CodeSD.com@localhost (connection open: True)
+[2025-06-14 21:50:34,367] [INFO] app.middleware: Response 24d8b1c7-6495-4c5e-9b61-ce7666c8fd40: 200 (0.049s)
+[2025-06-14 21:52:19,052] [INFO] app.middleware: Request 8d08dc10-aaee-42ea-909b-41f65c4a8e2e: POST /api/workflows
+[2025-06-14 21:52:19,108] [INFO] app.database: Connected to DB postgresql://postgres:CodeSD.com@localhost (connection open: True)
+[2025-06-14 21:52:19,143] [INFO] app.middleware: Response 8d08dc10-aaee-42ea-909b-41f65c4a8e2e: 201 (0.091s)
+[2025-06-14 21:54:03,486] [INFO] app.middleware: Request ab9551e7-2065-48b3-be83-6adfda3b900c: POST /api/forms
+[2025-06-14 21:54:03,646] [INFO] app.database: Connected to DB postgresql://postgres:CodeSD.com@localhost (connection open: True)
+[2025-06-14 21:54:03,659] [INFO] app.middleware: Response ab9551e7-2065-48b3-be83-6adfda3b900c: 201 (0.173s)
+[2025-06-14 21:55:32,407] [INFO] app.middleware: Request e04b5581-cde0-45c1-a4c4-9ec6836c5422: GET /api/workflows
+[2025-06-14 21:55:32,443] [INFO] app.database: Connected to DB postgresql://postgres:CodeSD.com@localhost (connection open: True)
+[2025-06-14 21:55:32,448] [INFO] app.middleware: Response e04b5581-cde0-45c1-a4c4-9ec6836c5422: 200 (0.041s)
+[2025-06-14 21:56:44,503] [INFO] app.middleware: Request ff1d1920-a68e-4381-8e62-1f15cc354e64: POST /api/workflows/96ff7252-b2db-465f-aa44-5236fc07d969/execute
+[2025-06-14 21:56:44,539] [INFO] app.database: Connected to DB postgresql://postgres:CodeSD.com@localhost (connection open: True)
+[2025-06-14 21:56:44,556] [INFO] app.middleware: Response ff1d1920-a68e-4381-8e62-1f15cc354e64: 201 (0.052s)
+[2025-06-14 21:56:53,670] [INFO] app.middleware: Request 10a5dd7f-51f8-4bdb-bfeb-1dcc36f664a4: GET /api/tasks
+[2025-06-14 21:56:53,707] [INFO] app.database: Connected to DB postgresql://postgres:CodeSD.com@localhost (connection open: True)
+[2025-06-14 21:56:53,716] [INFO] app.middleware: Response 10a5dd7f-51f8-4bdb-bfeb-1dcc36f664a4: 200 (0.046s)
+[2025-06-14 22:09:29,407] [INFO] app: Application startup
+[2025-06-14 22:09:36,014] [INFO] app: Application startup
+[2025-06-14 22:10:10,156] [INFO] app: Application startup
+[2025-06-14 22:11:50,246] [INFO] app.middleware: Request 554776c7-1a73-4761-8c1e-4d8407291ad3: POST /api/auth/login
+[2025-06-14 22:11:50,302] [INFO] app.database: Connected to DB postgresql://postgres:CodeSD.com@localhost (connection open: True)
+[2025-06-14 22:11:50,528] [INFO] app.middleware: Response 554776c7-1a73-4761-8c1e-4d8407291ad3: 200 (0.282s)
+[2025-06-14 22:12:19,090] [INFO] app.middleware: Request 79699451-3ddf-4bef-ae59-a0a0f433c502: POST /api/forms
+[2025-06-14 22:12:19,142] [INFO] app.database: Connected to DB postgresql://postgres:CodeSD.com@localhost (connection open: True)
+[2025-06-14 22:12:19,155] [INFO] app.middleware: Response 79699451-3ddf-4bef-ae59-a0a0f433c502: 201 (0.065s)
+[2025-06-14 22:12:29,569] [INFO] app.middleware: Request dad5bd71-d4b5-44d8-b99e-617356efebb6: GET /api/forms
+[2025-06-14 22:12:29,614] [INFO] app.database: Connected to DB postgresql://postgres:CodeSD.com@localhost (connection open: True)
+[2025-06-14 22:12:29,619] [INFO] app.middleware: Response dad5bd71-d4b5-44d8-b99e-617356efebb6: 200 (0.050s)
+[2025-06-14 22:13:39,108] [INFO] app.middleware: Request 080d3b02-a2bf-469e-90db-738cf0c5ec2d: POST /api/workflows
+[2025-06-14 22:13:39,171] [INFO] app.database: Connected to DB postgresql://postgres:CodeSD.com@localhost (connection open: True)
+[2025-06-14 22:13:39,195] [INFO] app.middleware: Response 080d3b02-a2bf-469e-90db-738cf0c5ec2d: 201 (0.087s)
+[2025-06-14 22:14:55,420] [INFO] app.middleware: Request 13db7a05-2697-4353-899d-5fab68ff6b4a: POST /api/workflows/f006f785-948f-4dd9-b271-d926c93df065/execute
+[2025-06-14 22:14:55,450] [INFO] app.database: Connected to DB postgresql://postgres:CodeSD.com@localhost (connection open: True)
+[2025-06-14 22:14:55,463] [ERROR] app.services.workflow_engine: Failed to execute workflow f006f785-948f-4dd9-b271-d926c93df065: invalid input syntax for type uuid: "{{initiator}}"
+LINE 5: ...ubmit request for financial expenditure', 'task', '{{initiat...
+                                                             ^
+
+[2025-06-14 22:14:55,463] [ERROR] app.blueprints.workflows: Error executing workflow f006f785-948f-4dd9-b271-d926c93df065: invalid input syntax for type uuid: "{{initiator}}"
+LINE 5: ...ubmit request for financial expenditure', 'task', '{{initiat...
+                                                             ^
+
+[2025-06-14 22:14:55,465] [INFO] app.middleware: Response 13db7a05-2697-4353-899d-5fab68ff6b4a: 500 (0.046s)
+[2025-06-14 22:24:43,765] [INFO] app: Application startup
+[2025-06-14 22:24:58,520] [INFO] app: Application startup
+[2025-06-14 22:28:13,409] [INFO] app.middleware: Request fa8fcace-3004-4045-9f84-d528dee91108: POST /api/workflows/f006f785-948f-4dd9-b271-d926c93df065/execute
+[2025-06-14 22:28:13,485] [INFO] app.database: Connected to DB postgresql://postgres:CodeSD.com@localhost (connection open: True)
+[2025-06-14 22:28:13,505] [INFO] app.services.workflow_engine: Created task 2b81b72d-5559-4f25-bc56-312b6405dc55 assigned to 00000000-0000-0000-0000-000000000001 for step submit_request
+[2025-06-14 22:28:13,509] [INFO] app.middleware: Response fa8fcace-3004-4045-9f84-d528dee91108: 201 (0.100s)
+[2025-06-14 22:29:36,530] [INFO] app.middleware: Request d8b3f12e-7f42-4e19-b994-34970f416b6b: GET /api/tasks
+[2025-06-14 22:29:36,564] [INFO] app.database: Connected to DB postgresql://postgres:CodeSD.com@localhost (connection open: True)
+[2025-06-14 22:29:36,573] [INFO] app.middleware: Response d8b3f12e-7f42-4e19-b994-34970f416b6b: 200 (0.043s)
+[2025-06-14 22:32:41,540] [INFO] app.middleware: Request 65235a78-0f5a-495b-9016-80f0f82e3501: GET /api/tasks/d67a331f-7d39-4edf-a74f-d6e2b8f2b0b2
+[2025-06-14 22:32:41,575] [INFO] app.database: Connected to DB postgresql://postgres:CodeSD.com@localhost (connection open: True)
+[2025-06-14 22:32:41,584] [INFO] app.middleware: Response 65235a78-0f5a-495b-9016-80f0f82e3501: 404 (0.045s)
+[2025-06-14 22:33:35,129] [INFO] app.middleware: Request 2f6e5f44-8370-41cf-86b6-ca37e98eedfb: GET /api/tasks/2b81b72d-5559-4f25-bc56-312b6405dc55
+[2025-06-14 22:33:35,261] [INFO] app.database: Connected to DB postgresql://postgres:CodeSD.com@localhost (connection open: True)
+[2025-06-14 22:33:35,270] [INFO] app.middleware: Response 2f6e5f44-8370-41cf-86b6-ca37e98eedfb: 200 (0.142s)
+[2025-06-14 22:57:25,707] [INFO] app.middleware: Request 4d3d6864-ddc2-496b-b01a-aa279189891b: POST /api/tasks/2b81b72d-5559-4f25-bc56-312b6405dc55/complete
+[2025-06-14 22:57:25,746] [INFO] app.database: Connected to DB postgresql://postgres:CodeSD.com@localhost (connection open: True)
+[2025-06-14 22:57:25,753] [ERROR] app.blueprints.tasks: Error completing task 2b81b72d-5559-4f25-bc56-312b6405dc55: 'workflow_instance_id'
+[2025-06-14 22:57:25,761] [INFO] app.middleware: Response 4d3d6864-ddc2-496b-b01a-aa279189891b: 500 (0.054s)
+[2025-06-14 23:02:00,338] [INFO] app.middleware: Request 7c737065-27ae-4428-aa94-6207237eb972: POST /api/tasks/2b81b72d-5559-4f25-bc56-312b6405dc55/complete
+[2025-06-14 23:02:00,370] [INFO] app.database: Connected to DB postgresql://postgres:CodeSD.com@localhost (connection open: True)
+[2025-06-14 23:02:00,376] [ERROR] app.blueprints.tasks: Error completing task 2b81b72d-5559-4f25-bc56-312b6405dc55: 'workflow_instance_id'
+[2025-06-14 23:02:00,383] [INFO] app.middleware: Response 7c737065-27ae-4428-aa94-6207237eb972: 500 (0.045s)
+[2025-06-14 23:12:44,519] [INFO] app: Application startup
+[2025-06-14 23:12:56,642] [INFO] app.middleware: Request baae43da-81b3-4781-8d9a-b6c63dd88306: POST /api/tasks/2b81b72d-5559-4f25-bc56-312b6405dc55/complete
+[2025-06-14 23:12:56,683] [INFO] app.database: Connected to DB postgresql://postgres:CodeSD.com@localhost (connection open: True)
+[2025-06-14 23:12:56,693] [INFO] app.blueprints.tasks: Created form response 58cd2212-e9e3-40d7-8104-2aec592eda5d for task 2b81b72d-5559-4f25-bc56-312b6405dc55
+[2025-06-14 23:12:56,694] [INFO] app.blueprints.tasks: Task 2b81b72d-5559-4f25-bc56-312b6405dc55 marked as completed by user 00000000-0000-0000-0000-000000000001
+[2025-06-14 23:12:56,695] [ERROR] app.services.workflow_engine: Failed to complete task 2b81b72d-5559-4f25-bc56-312b6405dc55: Task 2b81b72d-5559-4f25-bc56-312b6405dc55 is not in pending status
+[2025-06-14 23:12:56,695] [ERROR] app.blueprints.tasks: Error in workflow engine for task 2b81b72d-5559-4f25-bc56-312b6405dc55: Task 2b81b72d-5559-4f25-bc56-312b6405dc55 is not in pending status
+[2025-06-14 23:12:56,696] [ERROR] app.blueprints.tasks: Unexpected error completing task 2b81b72d-5559-4f25-bc56-312b6405dc55: name 'datetime' is not defined
+Traceback (most recent call last):
+  File "D:\Dynamic Workflow\workflow-management-system\backend\app\blueprints\tasks.py", line 451, in complete_task
+    'completed_at': datetime.now().isoformat(),
+                    ^^^^^^^^
+NameError: name 'datetime' is not defined. Did you forget to import 'datetime'
+[2025-06-14 23:12:56,700] [INFO] app.middleware: Response baae43da-81b3-4781-8d9a-b6c63dd88306: 500 (0.058s)
+[2025-06-14 23:13:45,085] [INFO] app: Application startup
+[2025-06-14 23:13:53,752] [INFO] app.middleware: Request b12575ce-cf62-40ff-9d05-2f4832cdf8f0: POST /api/tasks/2b81b72d-5559-4f25-bc56-312b6405dc55/complete
+[2025-06-14 23:13:53,796] [INFO] app.database: Connected to DB postgresql://postgres:CodeSD.com@localhost (connection open: True)
+[2025-06-14 23:13:53,812] [INFO] app.middleware: Response b12575ce-cf62-40ff-9d05-2f4832cdf8f0: 400 (0.060s)
+[2025-06-14 23:16:36,119] [INFO] app.middleware: Request 8e205762-f87d-4707-b1ee-c2bda5490140: GET /api/tasks
+[2025-06-14 23:16:36,185] [INFO] app.database: Connected to DB postgresql://postgres:CodeSD.com@localhost (connection open: True)
+[2025-06-14 23:16:36,196] [INFO] app.middleware: Response 8e205762-f87d-4707-b1ee-c2bda5490140: 200 (0.077s)
+[2025-06-14 23:17:24,156] [INFO] app.middleware: Request 7fff7005-038f-400a-a987-29fd5ca3b7f1: GET /api/tasks/2b81b72d-5559-4f25-bc56-312b6405dc55
+[2025-06-14 23:17:24,197] [INFO] app.database: Connected to DB postgresql://postgres:CodeSD.com@localhost (connection open: True)
+[2025-06-14 23:17:24,205] [INFO] app.middleware: Response 7fff7005-038f-400a-a987-29fd5ca3b7f1: 200 (0.049s)
+[2025-06-14 23:18:24,193] [INFO] app.middleware: Request 5b07b3a8-3034-491b-848b-64cd1a96a682: GET /api/workflows/instances/45db90eb-cd5e-446c-a909-c23c0dea49f4
+[2025-06-14 23:18:24,226] [INFO] app.database: Connected to DB postgresql://postgres:CodeSD.com@localhost (connection open: True)
+[2025-06-14 23:18:24,234] [INFO] app.middleware: Response 5b07b3a8-3034-491b-848b-64cd1a96a682: 200 (0.041s)
+[2025-06-14 23:38:00,526] [INFO] app: Application startup
+[2025-06-14 23:49:29,968] [INFO] app: Application startup
+[2025-06-14 23:50:52,412] [INFO] app.middleware: Request a55920db-56ad-4556-abd4-2fe5cfd0d5ed: GET /api/tasks
+[2025-06-14 23:50:52,447] [INFO] app.database: Connected to DB postgresql://postgres:CodeSD.com@localhost (connection open: True)
+[2025-06-14 23:50:52,456] [INFO] app.middleware: Response a55920db-56ad-4556-abd4-2fe5cfd0d5ed: 200 (0.044s)

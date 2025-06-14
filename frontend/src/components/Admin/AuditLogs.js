@@ -2,12 +2,7 @@ import React, { useState } from "react";
 import { useQuery } from "react-query";
 import { useTranslation } from "react-i18next";
 import { adminService } from "../../services/adminService";
-import {
-  EyeIcon,
-  CalendarIcon,
-  UserIcon,
-  CogIcon,
-} from "@heroicons/react/24/outline";
+import { EyeIcon, UserIcon, CogIcon } from "@heroicons/react/24/outline";
 
 const AuditLogs = () => {
   const { t } = useTranslation();

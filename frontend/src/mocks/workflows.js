@@ -438,7 +438,7 @@ export const contractReviewAndApproval = {
   },
 };
 
-export const mockWorkflows = {
+export const workflowInitialData = {
   name: "",
   description: "",
   definition: {

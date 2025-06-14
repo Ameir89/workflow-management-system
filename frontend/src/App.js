@@ -24,7 +24,7 @@ import TaskForm from "./components/Tasks/TaskForm";
 
 // Forms components
 import FormsList from "./components/Forms/FormsList";
-import FormBuilder from "./components/Forms/FormBuilder";
+import FormBuilder from "./components/Forms/FormBuilder/FormBuilder";
 import FormResponses from "./components/Forms/FormResponses";
 
 // Webhooks components
@@ -39,6 +39,7 @@ import FileManager from "./components/Files/FileManager";
 import UserManagement from "./components/Admin/UserManagement";
 import SystemHealth from "./components/Admin/SystemHealth";
 import AuditLogs from "./components/Admin/AuditLogs";
+import LookupsManagement from "./components/Admin/LookupsManagement";
 
 // Other components
 import Reports from "./components/Reports/Reports";
@@ -65,23 +66,23 @@ const ProtectedRoute = ({ children, requiredPermissions = [] }) => {
     return <LoadingSpinner />;
   }
 
-  // if (!user) {
-  //   return <Navigate to="/login" replace />;
-  // }
+  if (!user) {
+    return <Navigate to="/login" replace />;
+  }
 
   // Check permissions if required
-  // if (requiredPermissions.length > 0) {
-  //   const userPermissions = user.permissions || [];
-  //   const hasPermission =
-  //     userPermissions.includes("*") ||
-  //     requiredPermissions.some((permission) =>
-  //       userPermissions.includes(permission)
-  //     );
+  if (requiredPermissions.length > 0) {
+    const userPermissions = user.permissions || [];
+    const hasPermission =
+      userPermissions.includes("*") ||
+      requiredPermissions.some((permission) =>
+        userPermissions.includes(permission)
+      );
 
-  //   if (!hasPermission) {
-  //     return <Navigate to="/dashboard" replace />;
-  //   }
-  // }
+    if (!hasPermission) {
+      return <Navigate to="/dashboard" replace />;
+    }
+  }
 
   return children;
 };
@@ -164,6 +165,7 @@ function App() {
                     {/* Task Routes */}
                     <Route path="tasks" element={<TaskList />} />
                     <Route path="tasks/:id" element={<TaskDetail />} />
+                    <Route path="tasks/start" element={<TaskForm />} />
 
                     {/* Forms Routes */}
                     <Route path="forms" element={<FormsList />} />
@@ -261,6 +263,16 @@ function App() {
                           requiredPermissions={["view_audit_logs"]}
                         >
                           <AuditLogs />
+                        </ProtectedRoute>
+                      }
+                    />
+                    <Route
+                      path="admin/lookups"
+                      element={
+                        <ProtectedRoute
+                          requiredPermissions={["manage_lookups"]}
+                        >
+                          <LookupsManagement />
                         </ProtectedRoute>
                       }
                     />

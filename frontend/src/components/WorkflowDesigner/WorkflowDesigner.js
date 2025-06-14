@@ -11,10 +11,7 @@ import PropertiesPanel from "./PropertiesPanel";
 import DesignerToolbar from "./DesignerToolbar";
 import { workflowService } from "../../services/workflowService";
 import "./WorkflowDesigner.css";
-import {
-  financialApprovalProcess,
-  contractReviewAndApproval,
-} from "../../mocks/workflows";
+import { workflowInitialData } from "../../mocks/workflows";
 
 const WorkflowDesignerContent = () => {
   const { t } = useTranslation();
@@ -22,7 +19,7 @@ const WorkflowDesignerContent = () => {
   const navigate = useNavigate();
   const queryClient = useQueryClient();
   const canvasRef = useRef(null);
-  const [workflow, setWorkflow] = useState(contractReviewAndApproval);
+  const [workflow, setWorkflow] = useState(workflowInitialData);
   const [selectedNode, setSelectedNode] = useState(null);
   const [zoom, setZoom] = useState(1);
   const [panOffset, setPanOffset] = useState({ x: 0, y: 0 });
@@ -244,7 +241,7 @@ const WorkflowDesignerContent = () => {
   }
 
   return (
-    <div className="workflow-designer h-full flex flex-col">
+    <div className="workflow-designer h-screen flex flex-col">
       <DesignerToolbar
         workflow={workflow}
         onSave={handleSaveWorkflow}
