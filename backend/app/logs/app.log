@@ -1552,3 +1552,51 @@ AttributeError: type object 'NotificationService' has no attribute 'send_workflo
 [2025-06-14 20:08:41,079] [ERROR] app.blueprints.workflows: Error executing workflow 91253eac-ff58-4342-b5dc-de013919f675: Workflow execution failed: type object 'NotificationService' has no attribute 'send_workflow_failure'
 [2025-06-14 20:08:41,082] [INFO] app.middleware: Response b8386b63-9833-405b-ae45-ff9a8ae1bee8: 500 (0.077s)
 [2025-06-14 20:18:28,414] [INFO] app: Application startup
+[2025-06-14 20:31:56,280] [INFO] app: Application startup
+[2025-06-14 20:32:00,157] [INFO] app.middleware: Request 5e8d9e5c-c6ef-4cf6-86ac-06d8ddcb6e1b: POST /api/workflows/91253eac-ff58-4342-b5dc-de013919f675/execute
+[2025-06-14 20:32:00,205] [INFO] app.database: Connected to DB postgresql://postgres:CodeSD.com@localhost (connection open: True)
+[2025-06-14 20:32:00,217] [INFO] app.services.workflow_engine: Executing step submit_request of type task for instance 1c5b1600-eaa2-444f-becc-86be3ab7267b
+[2025-06-14 20:32:00,217] [ERROR] app.services.workflow_engine: Step submit_request execution failed (attempt 1): No executor for step type task
+[2025-06-14 20:32:00,217] [ERROR] app.services.workflow_engine: Failed to execute first step: relation "workflow_step_executions" does not exist
+LINE 2:             INSERT INTO workflow_step_executions 
+                                ^
+
+[2025-06-14 20:32:00,218] [WARNING] app.services.notification_service: [Notification] To user 00000000-0000-0000-0000-000000000001: Workflow instance 1c5b1600-eaa2-444f-becc-86be3ab7267b failed with error: relation "workflow_step_executions" does not exist
+LINE 2:             INSERT INTO workflow_step_executions 
+                                ^
+
+[2025-06-14 20:32:00,218] [ERROR] app.services.workflow_engine: Failed to execute workflow 91253eac-ff58-4342-b5dc-de013919f675: relation "workflow_step_executions" does not exist
+LINE 2:             INSERT INTO workflow_step_executions 
+                                ^
+Traceback (most recent call last):
+  File "D:\Dynamic Workflow\workflow-management-system\backend\app\services\workflow_engine.py", line 331, in _execute_step
+    raise StepExecutionError(f"No executor for step type {step_type.value}")
+app.services.workflow_engine.StepExecutionError: No executor for step type task
+
+During handling of the above exception, another exception occurred:
+
+Traceback (most recent call last):
+  File "D:\Dynamic Workflow\workflow-management-system\backend\app\services\workflow_engine.py", line 157, in execute_workflow
+    cls._start_workflow_execution(context, definition)
+  File "D:\Dynamic Workflow\workflow-management-system\backend\app\services\workflow_engine.py", line 781, in _start_workflow_execution
+    cls._execute_step(context, first_step, definition)
+  File "D:\Dynamic Workflow\workflow-management-system\backend\app\services\workflow_engine.py", line 350, in _execute_step
+    cls._save_step_execution(context.instance_id, step['id'], False,
+  File "D:\Dynamic Workflow\workflow-management-system\backend\app\services\workflow_engine.py", line 762, in _save_step_execution
+    Database.execute_insert(query, (
+  File "D:\Dynamic Workflow\workflow-management-system\backend\app\database.py", line 81, in execute_insert
+    cursor.execute(query + " RETURNING id", params)
+  File "D:\Dynamic Workflow\workflow-management-system\backend\.venv\Lib\site-packages\psycopg2\extras.py", line 236, in execute
+    return super().execute(query, vars)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+psycopg2.errors.UndefinedTable: relation "workflow_step_executions" does not exist
+LINE 2:             INSERT INTO workflow_step_executions 
+                                ^
+
+[2025-06-14 20:32:00,220] [ERROR] app.blueprints.workflows: Error executing workflow 91253eac-ff58-4342-b5dc-de013919f675: Workflow execution failed: relation "workflow_step_executions" does not exist
+LINE 2:             INSERT INTO workflow_step_executions 
+                                ^
+
+[2025-06-14 20:32:00,222] [INFO] app.middleware: Response 5e8d9e5c-c6ef-4cf6-86ac-06d8ddcb6e1b: 500 (0.065s)
+[2025-06-14 20:43:29,128] [INFO] app: Application startup
+[2025-06-14 20:43:31,827] [INFO] app: Application startup
