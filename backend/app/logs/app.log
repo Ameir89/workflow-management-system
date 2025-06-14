@@ -1375,3 +1375,180 @@ LINE 3:             (workflow_id, title, status, error_details, init...
 [2025-06-13 22:04:15,308] [INFO] app.middleware: Response 50e402eb-f026-4cdf-b561-d6eda42df2d2: 200 (0.062s)
 [2025-06-13 22:04:15,308] [INFO] app.database: Connected to DB postgresql://postgres:CodeSD.com@localhost (connection open: True)
 [2025-06-13 22:04:15,312] [INFO] app.middleware: Response 11b94125-7163-4fd0-b183-38e53ceb09fe: 200 (0.062s)
+[2025-06-14 08:06:18,392] [INFO] app: Application startup
+[2025-06-14 08:06:19,059] [INFO] app: Application startup
+[2025-06-14 08:06:23,158] [INFO] app.middleware: Request a3d63146-4f9d-4bff-ac86-9f4dbc998287: POST /api/auth/login
+[2025-06-14 08:06:23,210] [INFO] app.database: Connected to DB postgresql://postgres:CodeSD.com@localhost (connection open: True)
+[2025-06-14 08:06:23,423] [INFO] app.middleware: Response a3d63146-4f9d-4bff-ac86-9f4dbc998287: 200 (0.265s)
+[2025-06-14 19:57:42,137] [INFO] app.middleware: Request cf2f211e-978a-456e-988d-92b4d7c19f3a: POST /api/workflows/91253eac-ff58-4342-b5dc-de013919f675/execute
+[2025-06-14 19:57:42,202] [INFO] app.database: Connected to DB postgresql://postgres:CodeSD.com@localhost (connection open: True)
+[2025-06-14 19:57:42,210] [INFO] app.middleware: Response cf2f211e-978a-456e-988d-92b4d7c19f3a: 401 (0.074s)
+[2025-06-14 20:01:32,656] [INFO] app.middleware: Request 74453d9b-5a96-4082-9370-c117bb3e2916: POST /api/auth/login
+[2025-06-14 20:01:32,701] [INFO] app.database: Connected to DB postgresql://postgres:CodeSD.com@localhost (connection open: True)
+[2025-06-14 20:01:32,965] [INFO] app.middleware: Response 74453d9b-5a96-4082-9370-c117bb3e2916: 200 (0.309s)
+[2025-06-14 20:01:40,839] [INFO] app.middleware: Request 45a65976-c7ed-46bb-bb72-a19ae1d00127: GET /api/workflows
+[2025-06-14 20:01:40,886] [INFO] app.database: Connected to DB postgresql://postgres:CodeSD.com@localhost (connection open: True)
+[2025-06-14 20:01:40,899] [INFO] app.middleware: Response 45a65976-c7ed-46bb-bb72-a19ae1d00127: 200 (0.060s)
+[2025-06-14 20:02:10,403] [INFO] app.middleware: Request f762f56c-e5af-4d37-bc03-fd92cbd5ed46: POST /api/workflows/91253eac-ff58-4342-b5dc-de013919f675/execute
+[2025-06-14 20:02:10,445] [INFO] app.database: Connected to DB postgresql://postgres:CodeSD.com@localhost (connection open: True)
+[2025-06-14 20:02:10,462] [INFO] app.services.workflow_engine: Executing step submit_request of type task for instance d086de84-93ff-4a09-9994-65709a8f4b1c
+[2025-06-14 20:02:10,463] [ERROR] app.services.workflow_engine: Step submit_request execution failed (attempt 1): No executor for step type task
+[2025-06-14 20:02:10,467] [ERROR] app.services.workflow_engine: Failed to execute first step: relation "workflow_step_executions" does not exist
+LINE 2:             INSERT INTO workflow_step_executions 
+                                ^
+
+[2025-06-14 20:02:10,469] [ERROR] app.services.workflow_engine: Failed to execute workflow 91253eac-ff58-4342-b5dc-de013919f675: column "error_details" of relation "workflow_instances" does not exist
+LINE 3:             SET error_details = '{"step_id": "submit_request...
+                        ^
+Traceback (most recent call last):
+  File "D:\Dynamic Workflow\workflow-management-system\backend\app\services\workflow_engine.py", line 331, in _execute_step
+    raise StepExecutionError(f"No executor for step type {step_type.value}")
+app.services.workflow_engine.StepExecutionError: No executor for step type task
+
+During handling of the above exception, another exception occurred:
+
+Traceback (most recent call last):
+  File "D:\Dynamic Workflow\workflow-management-system\backend\app\services\workflow_engine.py", line 781, in _start_workflow_execution
+    cls._execute_step(context, first_step, definition)
+  File "D:\Dynamic Workflow\workflow-management-system\backend\app\services\workflow_engine.py", line 350, in _execute_step
+    cls._save_step_execution(context.instance_id, step['id'], False,
+  File "D:\Dynamic Workflow\workflow-management-system\backend\app\services\workflow_engine.py", line 762, in _save_step_execution
+    Database.execute_insert(query, (
+  File "D:\Dynamic Workflow\workflow-management-system\backend\app\database.py", line 81, in execute_insert
+    cursor.execute(query + " RETURNING id", params)
+  File "D:\Dynamic Workflow\workflow-management-system\backend\.venv\Lib\site-packages\psycopg2\extras.py", line 236, in execute
+    return super().execute(query, vars)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+psycopg2.errors.UndefinedTable: relation "workflow_step_executions" does not exist
+LINE 2:             INSERT INTO workflow_step_executions 
+                                ^
+
+
+During handling of the above exception, another exception occurred:
+
+Traceback (most recent call last):
+  File "D:\Dynamic Workflow\workflow-management-system\backend\app\services\workflow_engine.py", line 157, in execute_workflow
+    cls._start_workflow_execution(context, definition)
+  File "D:\Dynamic Workflow\workflow-management-system\backend\app\services\workflow_engine.py", line 784, in _start_workflow_execution
+    cls._handle_workflow_failure(context.instance_id, first_step['id'], str(e))
+  File "D:\Dynamic Workflow\workflow-management-system\backend\app\services\workflow_engine.py", line 686, in _handle_workflow_failure
+    Database.execute_query(query, (
+  File "D:\Dynamic Workflow\workflow-management-system\backend\app\database.py", line 63, in execute_query
+    cursor.execute(query, params)
+  File "D:\Dynamic Workflow\workflow-management-system\backend\.venv\Lib\site-packages\psycopg2\extras.py", line 236, in execute
+    return super().execute(query, vars)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+psycopg2.errors.UndefinedColumn: column "error_details" of relation "workflow_instances" does not exist
+LINE 3:             SET error_details = '{"step_id": "submit_request...
+                        ^
+
+[2025-06-14 20:02:10,525] [ERROR] app.blueprints.workflows: Error executing workflow 91253eac-ff58-4342-b5dc-de013919f675: column "error_details" of relation "workflow_instances" does not exist
+LINE 3:             (workflow_id, title, status, error_details, init...
+                                                 ^
+
+[2025-06-14 20:02:10,531] [INFO] app.middleware: Response f762f56c-e5af-4d37-bc03-fd92cbd5ed46: 500 (0.127s)
+[2025-06-14 20:06:16,900] [INFO] app.middleware: Request ad5eaf0e-f3f4-45f1-802b-814d0c86333e: POST /api/workflows/91253eac-ff58-4342-b5dc-de013919f675/execute
+[2025-06-14 20:06:16,961] [INFO] app.database: Connected to DB postgresql://postgres:CodeSD.com@localhost (connection open: True)
+[2025-06-14 20:06:16,980] [INFO] app.services.workflow_engine: Executing step submit_request of type task for instance df2b4d6a-1d2b-4fe1-83d4-230374577559
+[2025-06-14 20:06:16,980] [ERROR] app.services.workflow_engine: Step submit_request execution failed (attempt 1): No executor for step type task
+[2025-06-14 20:06:16,981] [ERROR] app.services.workflow_engine: Failed to execute first step: relation "workflow_step_executions" does not exist
+LINE 2:             INSERT INTO workflow_step_executions 
+                                ^
+
+[2025-06-14 20:06:16,982] [ERROR] app.services.workflow_engine: Failed to execute workflow 91253eac-ff58-4342-b5dc-de013919f675: column "failed_at_step" of relation "workflow_instances" does not exist
+LINE 3: ...\n", "timestamp": "2025-06-14T20:06:16.982862"}', failed_at_...
+                                                             ^
+Traceback (most recent call last):
+  File "D:\Dynamic Workflow\workflow-management-system\backend\app\services\workflow_engine.py", line 331, in _execute_step
+    raise StepExecutionError(f"No executor for step type {step_type.value}")
+app.services.workflow_engine.StepExecutionError: No executor for step type task
+
+During handling of the above exception, another exception occurred:
+
+Traceback (most recent call last):
+  File "D:\Dynamic Workflow\workflow-management-system\backend\app\services\workflow_engine.py", line 781, in _start_workflow_execution
+    cls._execute_step(context, first_step, definition)
+  File "D:\Dynamic Workflow\workflow-management-system\backend\app\services\workflow_engine.py", line 350, in _execute_step
+    cls._save_step_execution(context.instance_id, step['id'], False,
+  File "D:\Dynamic Workflow\workflow-management-system\backend\app\services\workflow_engine.py", line 762, in _save_step_execution
+    Database.execute_insert(query, (
+  File "D:\Dynamic Workflow\workflow-management-system\backend\app\database.py", line 81, in execute_insert
+    cursor.execute(query + " RETURNING id", params)
+  File "D:\Dynamic Workflow\workflow-management-system\backend\.venv\Lib\site-packages\psycopg2\extras.py", line 236, in execute
+    return super().execute(query, vars)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+psycopg2.errors.UndefinedTable: relation "workflow_step_executions" does not exist
+LINE 2:             INSERT INTO workflow_step_executions 
+                                ^
+
+
+During handling of the above exception, another exception occurred:
+
+Traceback (most recent call last):
+  File "D:\Dynamic Workflow\workflow-management-system\backend\app\services\workflow_engine.py", line 157, in execute_workflow
+    cls._start_workflow_execution(context, definition)
+  File "D:\Dynamic Workflow\workflow-management-system\backend\app\services\workflow_engine.py", line 784, in _start_workflow_execution
+    cls._handle_workflow_failure(context.instance_id, first_step['id'], str(e))
+  File "D:\Dynamic Workflow\workflow-management-system\backend\app\services\workflow_engine.py", line 686, in _handle_workflow_failure
+    Database.execute_query(query, (
+  File "D:\Dynamic Workflow\workflow-management-system\backend\app\database.py", line 63, in execute_query
+    cursor.execute(query, params)
+  File "D:\Dynamic Workflow\workflow-management-system\backend\.venv\Lib\site-packages\psycopg2\extras.py", line 236, in execute
+    return super().execute(query, vars)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+psycopg2.errors.UndefinedColumn: column "failed_at_step" of relation "workflow_instances" does not exist
+LINE 3: ...\n", "timestamp": "2025-06-14T20:06:16.982862"}', failed_at_...
+                                                             ^
+
+[2025-06-14 20:06:16,987] [ERROR] app.blueprints.workflows: Error executing workflow 91253eac-ff58-4342-b5dc-de013919f675: Workflow execution failed: column "failed_at_step" of relation "workflow_instances" does not exist
+LINE 3: ...\n", "timestamp": "2025-06-14T20:06:16.982862"}', failed_at_...
+                                                             ^
+
+[2025-06-14 20:06:16,991] [INFO] app.middleware: Response ad5eaf0e-f3f4-45f1-802b-814d0c86333e: 500 (0.091s)
+[2025-06-14 20:08:41,004] [INFO] app.middleware: Request b8386b63-9833-405b-ae45-ff9a8ae1bee8: POST /api/workflows/91253eac-ff58-4342-b5dc-de013919f675/execute
+[2025-06-14 20:08:41,052] [INFO] app.database: Connected to DB postgresql://postgres:CodeSD.com@localhost (connection open: True)
+[2025-06-14 20:08:41,071] [INFO] app.services.workflow_engine: Executing step submit_request of type task for instance 81ce9e06-a28d-4882-9e1e-b793daf00a11
+[2025-06-14 20:08:41,072] [ERROR] app.services.workflow_engine: Step submit_request execution failed (attempt 1): No executor for step type task
+[2025-06-14 20:08:41,072] [ERROR] app.services.workflow_engine: Failed to execute first step: relation "workflow_step_executions" does not exist
+LINE 2:             INSERT INTO workflow_step_executions 
+                                ^
+
+[2025-06-14 20:08:41,074] [ERROR] app.services.workflow_engine: Failed to execute workflow 91253eac-ff58-4342-b5dc-de013919f675: type object 'NotificationService' has no attribute 'send_workflow_failure'
+Traceback (most recent call last):
+  File "D:\Dynamic Workflow\workflow-management-system\backend\app\services\workflow_engine.py", line 331, in _execute_step
+    raise StepExecutionError(f"No executor for step type {step_type.value}")
+app.services.workflow_engine.StepExecutionError: No executor for step type task
+
+During handling of the above exception, another exception occurred:
+
+Traceback (most recent call last):
+  File "D:\Dynamic Workflow\workflow-management-system\backend\app\services\workflow_engine.py", line 781, in _start_workflow_execution
+    cls._execute_step(context, first_step, definition)
+  File "D:\Dynamic Workflow\workflow-management-system\backend\app\services\workflow_engine.py", line 350, in _execute_step
+    cls._save_step_execution(context.instance_id, step['id'], False,
+  File "D:\Dynamic Workflow\workflow-management-system\backend\app\services\workflow_engine.py", line 762, in _save_step_execution
+    Database.execute_insert(query, (
+  File "D:\Dynamic Workflow\workflow-management-system\backend\app\database.py", line 81, in execute_insert
+    cursor.execute(query + " RETURNING id", params)
+  File "D:\Dynamic Workflow\workflow-management-system\backend\.venv\Lib\site-packages\psycopg2\extras.py", line 236, in execute
+    return super().execute(query, vars)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+psycopg2.errors.UndefinedTable: relation "workflow_step_executions" does not exist
+LINE 2:             INSERT INTO workflow_step_executions 
+                                ^
+
+
+During handling of the above exception, another exception occurred:
+
+Traceback (most recent call last):
+  File "D:\Dynamic Workflow\workflow-management-system\backend\app\services\workflow_engine.py", line 157, in execute_workflow
+    cls._start_workflow_execution(context, definition)
+  File "D:\Dynamic Workflow\workflow-management-system\backend\app\services\workflow_engine.py", line 784, in _start_workflow_execution
+    cls._handle_workflow_failure(context.instance_id, first_step['id'], str(e))
+  File "D:\Dynamic Workflow\workflow-management-system\backend\app\services\workflow_engine.py", line 692, in _handle_workflow_failure
+    NotificationService.send_workflow_failure(
+    ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+AttributeError: type object 'NotificationService' has no attribute 'send_workflow_failure'
+[2025-06-14 20:08:41,079] [ERROR] app.blueprints.workflows: Error executing workflow 91253eac-ff58-4342-b5dc-de013919f675: Workflow execution failed: type object 'NotificationService' has no attribute 'send_workflow_failure'
+[2025-06-14 20:08:41,082] [INFO] app.middleware: Response b8386b63-9833-405b-ae45-ff9a8ae1bee8: 500 (0.077s)
+[2025-06-14 20:18:28,414] [INFO] app: Application startup

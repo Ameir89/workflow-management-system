@@ -202,3 +202,16 @@ class NotificationService:
             
         except Exception as e:
             logger.error(f"Error marking all notifications as read: {e}")
+            
+            
+    @staticmethod
+    def send_workflow_failure(user_id: int, instance_id: int, error: str):
+        """
+        Notify the user that the workflow has failed.
+        Replace this placeholder with actual notification logic (email, SMS, etc.).
+        """
+        message = (
+            f"Workflow instance {instance_id} failed with error: {error}"
+        )
+        # Replace this with real implementation: email, SMS, Slack, etc.
+        logger.warning(f"[Notification] To user {user_id}: {message}")
