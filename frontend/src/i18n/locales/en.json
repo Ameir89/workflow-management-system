@@ -54,6 +54,7 @@
       "connectingFrom": "Connecting from",
       "clickTargetNode": "Click on target node to connect",
       "dropNodeHere": "Drop node here",
+      "start": "Start",
       "tips": {
         "title": "Tips",
         "dragDrop": "Drag nodes to canvas",
@@ -154,7 +155,8 @@
       "completed": "Completed",
       "overdue": "Overdue",
       "workflowsStarted": "Workflows Started",
-      "workflowsCompleted": "Workflows Completed"
+      "workflowsCompleted": "Workflows Completed",
+      "recentTasks": "Recent Tasks"
     },
 
     "tasks": {
@@ -164,7 +166,17 @@
       "assignedTo": "Assigned to",
       "dueDate": "Due date",
       "priority": "Priority",
-      "workflow": "Workflow"
+      "workflow": "Workflow",
+      "noTasksDescription": "Start creating tasks",
+      "pending": "Pending",
+      "inProgress": "In Progress",
+      "completed": "Completed",
+      "overdue": "Overdue",
+      "medium": "Medium",
+      "high": "High",
+      "low": "Low",
+      "assignedToMe": "Assigned to me",
+      "unassigned": "Unassigned"
     },
 
     "workflows": {
@@ -173,6 +185,18 @@
     },
     "workflow": {
       "form": "Form",
+      "name": "Workflow Name",
+      "category": "Workflow Category",
+      "description": "Workflow Description",
+      "selectCategory": "Select a category",
+      "active": "Active",
+      "categories": {
+        "approval": "Approval",
+        "automation": "Automation",
+        "notification": "Notification",
+        "condition": "Condition",
+        "integration": "Integration"
+      },
       "nodes": {
         "task": "Task",
         "approval": "Approval",
@@ -181,6 +205,16 @@
         "automation": "Automation",
         "start": "Start",
         "end": "End"
+      },
+      "steps": {
+        "design": "Design",
+        "properties": "Properties",
+        "test": "Test",
+        "export": "Export",
+        "approval": "Approval",
+        "automation": "Automation",
+        "notification": "Notification",
+        "condition": "Condition"
       }
     },
     "forms": {

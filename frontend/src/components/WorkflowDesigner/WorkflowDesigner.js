@@ -16,7 +16,7 @@ import {
   contractReviewAndApproval,
 } from "../../mocks/workflows";
 
-const WorkflowDesigner = () => {
+const WorkflowDesignerContent = () => {
   const { t } = useTranslation();
   const { id } = useParams();
   const navigate = useNavigate();
@@ -244,46 +244,53 @@ const WorkflowDesigner = () => {
   }
 
   return (
-    <DndProvider backend={HTML5Backend}>
-      <div className="workflow-designer h-full flex flex-col">
-        <DesignerToolbar
-          workflow={workflow}
-          onSave={handleSaveWorkflow}
-          onZoomIn={() => handleZoom(0.1)}
-          onZoomOut={() => handleZoom(-0.1)}
-          onZoomReset={() => setZoom(1)}
-          zoom={zoom}
-          saving={saveWorkflowMutation.isLoading}
-        />
+    <div className="workflow-designer h-full flex flex-col">
+      <DesignerToolbar
+        workflow={workflow}
+        onSave={handleSaveWorkflow}
+        onZoomIn={() => handleZoom(0.1)}
+        onZoomOut={() => handleZoom(-0.1)}
+        onZoomReset={() => setZoom(1)}
+        zoom={zoom}
+        saving={saveWorkflowMutation.isLoading}
+      />
 
-        <div className="flex-1 flex overflow-hidden">
-          <NodePalette onAddNode={handleAddNode} />
+      <div className="flex-1 flex overflow-hidden">
+        <NodePalette onAddNode={handleAddNode} />
 
-          <div className="flex-1 relative">
-            <DesignerCanvas
-              ref={canvasRef}
-              workflow={workflow}
-              selectedNode={selectedNode}
-              zoom={zoom}
-              panOffset={panOffset}
-              onSelectNode={setSelectedNode}
-              onUpdateNode={handleUpdateNode}
-              onDeleteNode={handleDeleteNode}
-              onAddNode={handleAddNode}
-              onAddTransition={handleAddTransition}
-              onDeleteTransition={handleDeleteTransition}
-              onPan={handlePan}
-            />
-          </div>
-
-          <PropertiesPanel
+        <div className="flex-1 relative">
+          <DesignerCanvas
+            ref={canvasRef}
             workflow={workflow}
             selectedNode={selectedNode}
-            onUpdateWorkflow={setWorkflow}
+            zoom={zoom}
+            panOffset={panOffset}
+            onSelectNode={setSelectedNode}
             onUpdateNode={handleUpdateNode}
+            onDeleteNode={handleDeleteNode}
+            onAddNode={handleAddNode}
+            onAddTransition={handleAddTransition}
+            onDeleteTransition={handleDeleteTransition}
+            onPan={handlePan}
           />
         </div>
+
+        <PropertiesPanel
+          workflow={workflow}
+          selectedNode={selectedNode}
+          onUpdateWorkflow={setWorkflow}
+          onUpdateNode={handleUpdateNode}
+        />
       </div>
+    </div>
+  );
+};
+
+// Main component with DnD Provider
+const WorkflowDesigner = () => {
+  return (
+    <DndProvider backend={HTML5Backend}>
+      <WorkflowDesignerContent />
     </DndProvider>
   );
 };

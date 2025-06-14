@@ -329,3 +329,1049 @@ HINT:  Perhaps you meant to reference the column "u.updated_at".
 [2025-06-12 22:49:52,078] [INFO] app.middleware: Request 22af93c2-32fa-491c-a3ba-9625fe24d4ef: GET /api/workflows/91253eac-ff58-4342-b5dc-de013919f675/instances
 [2025-06-12 22:49:52,109] [INFO] app.database: Connected to DB postgresql://postgres:CodeSD.com@localhost (connection open: True)
 [2025-06-12 22:49:52,117] [INFO] app.middleware: Response 22af93c2-32fa-491c-a3ba-9625fe24d4ef: 200 (0.040s)
+[2025-06-13 19:57:58,221] [INFO] app: Application startup
+[2025-06-13 19:57:58,273] [INFO] app.utils.file_handler: python-magic not available, using alternative MIME detection
+[2025-06-13 19:57:58,838] [INFO] app: Application startup
+[2025-06-13 19:57:58,891] [INFO] app.utils.file_handler: python-magic not available, using alternative MIME detection
+[2025-06-13 19:58:09,850] [INFO] app.middleware: Request 031a0b2a-4d0c-4a67-a44b-dbe9a8ec86dc: GET /api/tasks
+[2025-06-13 19:58:09,850] [INFO] app.utils.auth: Token expired
+[2025-06-13 19:58:09,850] [INFO] app.middleware: Response 031a0b2a-4d0c-4a67-a44b-dbe9a8ec86dc: 401 (0.000s)
+[2025-06-13 19:58:21,428] [INFO] app.middleware: Request 0aae521c-d96e-491d-a66a-9811500d4471: POST /api/auth/login
+[2025-06-13 19:58:21,489] [INFO] app.database: Connected to DB postgresql://postgres:CodeSD.com@localhost (connection open: True)
+[2025-06-13 19:58:21,710] [INFO] app.middleware: Response 0aae521c-d96e-491d-a66a-9811500d4471: 200 (0.282s)
+[2025-06-13 19:58:26,282] [INFO] app.middleware: Request 5dfe8f30-dabc-4a2d-8af8-791643c5aad2: GET /api/tasks
+[2025-06-13 19:58:26,310] [INFO] app.database: Connected to DB postgresql://postgres:CodeSD.com@localhost (connection open: True)
+[2025-06-13 19:58:26,321] [INFO] app.middleware: Response 5dfe8f30-dabc-4a2d-8af8-791643c5aad2: 200 (0.039s)
+[2025-06-13 19:58:37,317] [INFO] app.middleware: Request e8b5c99d-6013-48bf-941d-0817de10aba8: GET /api/tasks/
+[2025-06-13 19:58:37,317] [WARNING] app: 404 Not Found: 404 Not Found: The requested URL was not found on the server. If you entered the URL manually please check your spelling and try again.
+[2025-06-13 19:58:37,317] [INFO] app.middleware: Response e8b5c99d-6013-48bf-941d-0817de10aba8: 404 (0.000s)
+[2025-06-13 19:59:01,265] [INFO] app.middleware: Request eea0e46f-6188-4e12-9d86-1a2ee943cbad: GET /api/workflows
+[2025-06-13 19:59:01,296] [INFO] app.database: Connected to DB postgresql://postgres:CodeSD.com@localhost (connection open: True)
+[2025-06-13 19:59:01,301] [INFO] app.middleware: Response eea0e46f-6188-4e12-9d86-1a2ee943cbad: 200 (0.036s)
+[2025-06-13 20:00:03,449] [INFO] app.middleware: Request b3ab46fa-5441-466c-8a60-d37f82b2d533: POST /api/workflows
+[2025-06-13 20:00:03,499] [INFO] app.database: Connected to DB postgresql://postgres:CodeSD.com@localhost (connection open: True)
+[2025-06-13 20:00:03,530] [INFO] app.middleware: Response b3ab46fa-5441-466c-8a60-d37f82b2d533: 201 (0.081s)
+[2025-06-13 20:00:10,285] [INFO] app.middleware: Request d42e047e-fe55-44d1-8b81-337e7d8db98a: GET /api/workflows
+[2025-06-13 20:00:10,319] [INFO] app.database: Connected to DB postgresql://postgres:CodeSD.com@localhost (connection open: True)
+[2025-06-13 20:00:10,325] [INFO] app.middleware: Response d42e047e-fe55-44d1-8b81-337e7d8db98a: 200 (0.039s)
+[2025-06-13 20:00:36,455] [INFO] app.middleware: Request 4d548b98-0983-45c8-b3ed-cf1df334c8a9: POST /api/workflows
+[2025-06-13 20:00:36,491] [INFO] app.database: Connected to DB postgresql://postgres:CodeSD.com@localhost (connection open: True)
+[2025-06-13 20:00:36,516] [INFO] app.middleware: Response 4d548b98-0983-45c8-b3ed-cf1df334c8a9: 201 (0.061s)
+[2025-06-13 20:00:41,231] [INFO] app.middleware: Request 46c54895-2ce4-4f43-95f0-a8b52f3f7271: POST /api/workflows
+[2025-06-13 20:00:41,279] [INFO] app.database: Connected to DB postgresql://postgres:CodeSD.com@localhost (connection open: True)
+[2025-06-13 20:00:41,300] [INFO] app.middleware: Response 46c54895-2ce4-4f43-95f0-a8b52f3f7271: 201 (0.069s)
+[2025-06-13 20:00:52,166] [INFO] app.middleware: Request 1e49597a-a624-43fa-8f41-65e2139022fe: GET /api/workflows/2db74003-42a5-4f6b-ab2d-b03dc42e146d
+[2025-06-13 20:00:52,197] [INFO] app.database: Connected to DB postgresql://postgres:CodeSD.com@localhost (connection open: True)
+[2025-06-13 20:00:52,203] [INFO] app.middleware: Response 1e49597a-a624-43fa-8f41-65e2139022fe: 200 (0.037s)
+[2025-06-13 20:28:02,586] [INFO] app.middleware: Request fba95b8a-d2b8-494e-846a-c7832c8d5636: POST /api/forms
+[2025-06-13 20:28:02,624] [INFO] app.database: Connected to DB postgresql://postgres:CodeSD.com@localhost (connection open: True)
+[2025-06-13 20:28:02,635] [INFO] app.middleware: Response fba95b8a-d2b8-494e-846a-c7832c8d5636: 201 (0.049s)
+[2025-06-13 20:30:14,008] [INFO] app.middleware: Request 88a117c5-ae0e-4abd-981f-2e78bae90a6d: GET /api/forms
+[2025-06-13 20:30:14,149] [INFO] app.database: Connected to DB postgresql://postgres:CodeSD.com@localhost (connection open: True)
+[2025-06-13 20:30:14,152] [INFO] app.middleware: Response 88a117c5-ae0e-4abd-981f-2e78bae90a6d: 200 (0.144s)
+[2025-06-13 20:33:38,469] [INFO] app.middleware: Request 1dd758ba-d2b5-4da1-b39f-d28053ec5ec5: GET /api/admin/users
+[2025-06-13 20:33:38,502] [INFO] app.database: Connected to DB postgresql://postgres:CodeSD.com@localhost (connection open: True)
+[2025-06-13 20:33:38,508] [INFO] app.middleware: Response 1dd758ba-d2b5-4da1-b39f-d28053ec5ec5: 200 (0.039s)
+[2025-06-13 20:34:15,016] [INFO] app.middleware: Request 0aa0a4b2-1aaa-4672-a020-ac5894ebd62a: GET /api/admin/roles
+[2025-06-13 20:34:15,051] [INFO] app.database: Connected to DB postgresql://postgres:CodeSD.com@localhost (connection open: True)
+[2025-06-13 20:34:15,054] [INFO] app.middleware: Response 0aa0a4b2-1aaa-4672-a020-ac5894ebd62a: 200 (0.038s)
+[2025-06-13 20:52:21,369] [INFO] app.middleware: Request 429bcc2b-daee-4b5e-8f82-3caab946d228: POST /api/tasks//complete
+[2025-06-13 20:52:21,371] [INFO] app.middleware: Response 429bcc2b-daee-4b5e-8f82-3caab946d228: 405 (0.002s)
+[2025-06-13 20:59:24,169] [INFO] app: Application startup
+[2025-06-13 20:59:24,205] [INFO] app.utils.file_handler: python-magic not available, using alternative MIME detection
+[2025-06-13 20:59:28,635] [INFO] app.middleware: Request ff60f36a-dc76-4652-933f-3d6a230c2a13: POST /api/tasks//complete
+[2025-06-13 20:59:28,644] [INFO] app.middleware: Response ff60f36a-dc76-4652-933f-3d6a230c2a13: 405 (0.009s)
+[2025-06-13 20:59:31,086] [INFO] app.middleware: Request c2762d8a-65d7-45c6-b410-ee3a001126f6: POST /api/tasks//complete
+[2025-06-13 20:59:31,086] [INFO] app.middleware: Response c2762d8a-65d7-45c6-b410-ee3a001126f6: 405 (0.000s)
+[2025-06-13 21:00:15,007] [INFO] app: Application startup
+[2025-06-13 21:00:15,058] [INFO] app.utils.file_handler: python-magic not available, using alternative MIME detection
+[2025-06-13 21:00:18,154] [INFO] app.middleware: Request 45478c62-c689-48e1-bbcd-257f9842c57a: POST /api/tasks//complete
+[2025-06-13 21:00:18,166] [INFO] app.middleware: Response 45478c62-c689-48e1-bbcd-257f9842c57a: 405 (0.012s)
+[2025-06-13 21:00:23,225] [INFO] app.middleware: Request b65884b1-ebab-44fa-8a6d-242381470f7c: GET /api/tasks
+[2025-06-13 21:00:23,262] [INFO] app.database: Connected to DB postgresql://postgres:CodeSD.com@localhost (connection open: True)
+[2025-06-13 21:00:23,269] [INFO] app.middleware: Response b65884b1-ebab-44fa-8a6d-242381470f7c: 200 (0.043s)
+[2025-06-13 21:00:38,993] [INFO] app: Application startup
+[2025-06-13 21:00:39,042] [INFO] app.utils.file_handler: python-magic not available, using alternative MIME detection
+[2025-06-13 21:02:26,866] [INFO] app: Application startup
+[2025-06-13 21:02:26,923] [INFO] app.utils.file_handler: python-magic not available, using alternative MIME detection
+[2025-06-13 21:02:30,009] [INFO] app.middleware: Request cca5e1eb-f202-4271-a11a-b2a0e4a4ea35: POST /api/tasks//complete
+[2025-06-13 21:02:30,017] [INFO] app.middleware: Response cca5e1eb-f202-4271-a11a-b2a0e4a4ea35: 405 (0.008s)
+[2025-06-13 21:02:33,558] [INFO] app.middleware: Request 64eb07e6-f4ee-4dee-a685-806d4e4695f0: POST /api/tasks//complete
+[2025-06-13 21:02:33,559] [INFO] app.middleware: Response 64eb07e6-f4ee-4dee-a685-806d4e4695f0: 405 (0.001s)
+[2025-06-13 21:07:38,742] [INFO] app: Application startup
+[2025-06-13 21:08:57,838] [INFO] app: Application startup
+[2025-06-13 21:09:11,868] [INFO] app: Application startup
+[2025-06-13 21:10:00,378] [INFO] app: Application startup
+[2025-06-13 21:10:10,072] [INFO] app.middleware: Request 84b83ef8-b0f9-457b-8180-ebc6c747a726: POST /api/tasks//complete
+[2025-06-13 21:10:10,081] [INFO] app.middleware: Response 84b83ef8-b0f9-457b-8180-ebc6c747a726: 405 (0.009s)
+[2025-06-13 21:12:03,091] [INFO] app.middleware: Request 7315955a-1132-4225-b56e-0a3f61e5887d: POST /api/tasks/123/complete
+[2025-06-13 21:12:03,092] [INFO] app.middleware: Response 7315955a-1132-4225-b56e-0a3f61e5887d: 200 (0.001s)
+[2025-06-13 21:19:04,112] [INFO] app.middleware: Request 8df7e0af-9b34-4bb5-a0f5-7226a2581871: GET /api/notifications
+[2025-06-13 21:19:04,112] [INFO] app.middleware: Response 8df7e0af-9b34-4bb5-a0f5-7226a2581871: 401 (0.000s)
+[2025-06-13 21:19:04,112] [INFO] app.middleware: Request 41bc378c-3ab7-40ec-8f00-6892486a5061: GET /api/notifications/stats
+[2025-06-13 21:19:04,112] [INFO] app.middleware: Response 41bc378c-3ab7-40ec-8f00-6892486a5061: 401 (0.000s)
+[2025-06-13 21:19:04,119] [INFO] app.middleware: Request 87e12bd3-677a-4be7-a222-2b16d8e6b173: GET /api/tasks/dashboard-stats
+[2025-06-13 21:19:04,119] [INFO] app.middleware: Response 87e12bd3-677a-4be7-a222-2b16d8e6b173: 401 (0.000s)
+[2025-06-13 21:19:04,119] [INFO] app.middleware: Request af945717-0e5c-4115-a3f9-2f06f6a562d8: GET /api/reports/dashboard-stats
+[2025-06-13 21:19:04,127] [INFO] app.middleware: Response af945717-0e5c-4115-a3f9-2f06f6a562d8: 401 (0.008s)
+[2025-06-13 21:19:24,251] [INFO] app.middleware: Request 273bda8c-2d24-44f1-9b40-4aa77d54b2bd: OPTIONS /api/auth/login
+[2025-06-13 21:19:24,251] [INFO] app.middleware: Response 273bda8c-2d24-44f1-9b40-4aa77d54b2bd: 200 (0.000s)
+[2025-06-13 21:19:24,257] [INFO] app.middleware: Request 151c4076-e8af-4e2b-b62a-1c1584a2e4bd: POST /api/auth/login
+[2025-06-13 21:19:24,327] [INFO] app.database: Connected to DB postgresql://postgres:CodeSD.com@localhost (connection open: True)
+[2025-06-13 21:19:24,336] [INFO] app.middleware: Response 151c4076-e8af-4e2b-b62a-1c1584a2e4bd: 401 (0.078s)
+[2025-06-13 21:20:28,378] [INFO] app.middleware: Request bf9e3002-b809-489c-9c93-bb17229e20fc: OPTIONS /api/auth/login
+[2025-06-13 21:20:28,378] [INFO] app.middleware: Response bf9e3002-b809-489c-9c93-bb17229e20fc: 200 (0.000s)
+[2025-06-13 21:20:28,378] [INFO] app.middleware: Request ec8b5780-fda9-4b39-b38f-e9f597158a27: POST /api/auth/login
+[2025-06-13 21:20:28,418] [INFO] app.database: Connected to DB postgresql://postgres:CodeSD.com@localhost (connection open: True)
+[2025-06-13 21:20:28,674] [INFO] app.middleware: Response ec8b5780-fda9-4b39-b38f-e9f597158a27: 200 (0.296s)
+[2025-06-13 21:20:28,707] [INFO] app.middleware: Request e99306bd-c66a-4254-b79e-27728014b61b: OPTIONS /api/reports/dashboard-stats
+[2025-06-13 21:20:28,708] [INFO] app.middleware: Request 57c297aa-242a-405b-a112-429169217cfb: OPTIONS /api/tasks/dashboard-stats
+[2025-06-13 21:20:28,709] [INFO] app.middleware: Response e99306bd-c66a-4254-b79e-27728014b61b: 200 (0.002s)
+[2025-06-13 21:20:28,709] [INFO] app.middleware: Request 8e845ebd-e79e-4635-b5cc-cf2e5aee5dd6: OPTIONS /api/notifications
+[2025-06-13 21:20:28,710] [INFO] app.middleware: Response 57c297aa-242a-405b-a112-429169217cfb: 200 (0.002s)
+[2025-06-13 21:20:28,712] [INFO] app.middleware: Response 8e845ebd-e79e-4635-b5cc-cf2e5aee5dd6: 200 (0.003s)
+[2025-06-13 21:20:28,713] [INFO] app.middleware: Request 7b45b224-11e7-4592-b355-5bf6f1e81b4f: OPTIONS /api/notifications/stats
+[2025-06-13 21:20:28,716] [INFO] app.middleware: Request e5ce459a-05e3-4ac4-bad5-a21c030753ff: GET /api/reports/dashboard-stats
+[2025-06-13 21:20:28,718] [INFO] app.middleware: Response 7b45b224-11e7-4592-b355-5bf6f1e81b4f: 200 (0.005s)
+[2025-06-13 21:20:28,718] [INFO] app.middleware: Request 6bd6d641-9327-4ea5-91d3-3b4383c39259: GET /api/tasks/dashboard-stats
+[2025-06-13 21:20:28,722] [INFO] app.middleware: Request 0f798f15-a834-4d8f-bb2d-9effeed424fe: GET /api/notifications
+[2025-06-13 21:20:28,722] [INFO] app.middleware: Request 10ef4010-e067-4afc-9ceb-ce48199433dd: GET /api/notifications/stats
+[2025-06-13 21:20:28,779] [INFO] app.database: Connected to DB postgresql://postgres:CodeSD.com@localhost (connection open: True)
+[2025-06-13 21:20:28,785] [INFO] app.database: Connected to DB postgresql://postgres:CodeSD.com@localhost (connection open: True)
+[2025-06-13 21:20:28,789] [INFO] app.database: Connected to DB postgresql://postgres:CodeSD.com@localhost (connection open: True)
+[2025-06-13 21:20:28,789] [INFO] app.database: Connected to DB postgresql://postgres:CodeSD.com@localhost (connection open: True)
+[2025-06-13 21:20:28,792] [INFO] app.middleware: Response 6bd6d641-9327-4ea5-91d3-3b4383c39259: 200 (0.074s)
+[2025-06-13 21:20:28,795] [INFO] app.middleware: Response e5ce459a-05e3-4ac4-bad5-a21c030753ff: 200 (0.079s)
+[2025-06-13 21:20:28,796] [INFO] app.middleware: Response 10ef4010-e067-4afc-9ceb-ce48199433dd: 200 (0.073s)
+[2025-06-13 21:20:28,796] [INFO] app.middleware: Response 0f798f15-a834-4d8f-bb2d-9effeed424fe: 200 (0.074s)
+[2025-06-13 21:20:43,264] [INFO] app.middleware: Request 6563c359-1472-4f19-8ce9-c1ad971c21d6: OPTIONS /api/workflows
+[2025-06-13 21:20:43,269] [INFO] app.middleware: Response 6563c359-1472-4f19-8ce9-c1ad971c21d6: 200 (0.005s)
+[2025-06-13 21:20:43,270] [INFO] app.middleware: Request 7eba0a38-0354-4eef-8f3b-42d504536ebb: GET /api/workflows
+[2025-06-13 21:20:43,305] [INFO] app.database: Connected to DB postgresql://postgres:CodeSD.com@localhost (connection open: True)
+[2025-06-13 21:20:43,310] [INFO] app.middleware: Response 7eba0a38-0354-4eef-8f3b-42d504536ebb: 200 (0.039s)
+[2025-06-13 21:20:58,866] [INFO] app.middleware: Request e2e0e108-80de-44d6-916e-685f7ff8d049: OPTIONS /api/notifications/stats
+[2025-06-13 21:20:58,866] [INFO] app.middleware: Response e2e0e108-80de-44d6-916e-685f7ff8d049: 200 (0.000s)
+[2025-06-13 21:20:58,866] [INFO] app.middleware: Request 3f3b9716-ce4a-4168-bb5f-4d53db0c0d1f: OPTIONS /api/notifications
+[2025-06-13 21:20:58,866] [INFO] app.middleware: Response 3f3b9716-ce4a-4168-bb5f-4d53db0c0d1f: 200 (0.000s)
+[2025-06-13 21:20:58,872] [INFO] app.middleware: Request d776e2bd-ad69-4457-93ba-726cd948a4a2: GET /api/notifications
+[2025-06-13 21:20:58,872] [INFO] app.middleware: Request a2293144-c7cf-44dc-b84d-92dc563a0db9: GET /api/notifications/stats
+[2025-06-13 21:20:58,912] [INFO] app.database: Connected to DB postgresql://postgres:CodeSD.com@localhost (connection open: True)
+[2025-06-13 21:20:58,912] [INFO] app.database: Connected to DB postgresql://postgres:CodeSD.com@localhost (connection open: True)
+[2025-06-13 21:20:58,912] [INFO] app.middleware: Response d776e2bd-ad69-4457-93ba-726cd948a4a2: 200 (0.040s)
+[2025-06-13 21:20:58,920] [INFO] app.middleware: Response a2293144-c7cf-44dc-b84d-92dc563a0db9: 200 (0.049s)
+[2025-06-13 21:21:14,626] [INFO] app.middleware: Request 3b290f62-95ae-4674-88b6-b706e64b3878: OPTIONS /api/admin/users
+[2025-06-13 21:21:14,626] [INFO] app.middleware: Response 3b290f62-95ae-4674-88b6-b706e64b3878: 200 (0.000s)
+[2025-06-13 21:21:14,626] [INFO] app.middleware: Request c3478cb4-114e-4878-a068-c4e05eba1a21: OPTIONS /api/admin/roles
+[2025-06-13 21:21:14,631] [INFO] app.middleware: Response c3478cb4-114e-4878-a068-c4e05eba1a21: 200 (0.005s)
+[2025-06-13 21:21:14,632] [INFO] app.middleware: Request ef094704-637b-4dfb-94c4-3f31ed06b2a0: GET /api/admin/users
+[2025-06-13 21:21:14,632] [INFO] app.middleware: Request 8c3e3c33-2173-4b07-b4cb-212c3d9ce39b: GET /api/admin/roles
+[2025-06-13 21:21:14,675] [INFO] app.database: Connected to DB postgresql://postgres:CodeSD.com@localhost (connection open: True)
+[2025-06-13 21:21:14,675] [INFO] app.database: Connected to DB postgresql://postgres:CodeSD.com@localhost (connection open: True)
+[2025-06-13 21:21:14,681] [INFO] app.middleware: Response 8c3e3c33-2173-4b07-b4cb-212c3d9ce39b: 200 (0.049s)
+[2025-06-13 21:21:14,685] [INFO] app.middleware: Response ef094704-637b-4dfb-94c4-3f31ed06b2a0: 200 (0.053s)
+[2025-06-13 21:21:16,819] [INFO] app.middleware: Request e773de2f-771c-4294-bde4-412b9561f27f: OPTIONS /api/admin/health
+[2025-06-13 21:21:16,819] [INFO] app.middleware: Response e773de2f-771c-4294-bde4-412b9561f27f: 200 (0.000s)
+[2025-06-13 21:21:16,819] [INFO] app.middleware: Request 6d3ae4d4-8a4c-44fd-9428-d7391ba27af5: GET /api/admin/health
+[2025-06-13 21:21:16,860] [INFO] app.database: Connected to DB postgresql://postgres:CodeSD.com@localhost (connection open: True)
+[2025-06-13 21:21:16,860] [INFO] app.middleware: Response 6d3ae4d4-8a4c-44fd-9428-d7391ba27af5: 200 (0.041s)
+[2025-06-13 21:21:29,873] [INFO] app.middleware: Request 92d06732-7f1a-4374-a192-4c610ab3247c: OPTIONS /api/notifications
+[2025-06-13 21:21:29,875] [INFO] app.middleware: Response 92d06732-7f1a-4374-a192-4c610ab3247c: 200 (0.002s)
+[2025-06-13 21:21:29,875] [INFO] app.middleware: Request bcfdf371-a71e-4842-bd00-acf2d4ef0ce7: OPTIONS /api/notifications/stats
+[2025-06-13 21:21:29,877] [INFO] app.middleware: Response bcfdf371-a71e-4842-bd00-acf2d4ef0ce7: 200 (0.002s)
+[2025-06-13 21:21:29,878] [INFO] app.middleware: Request 533377eb-923f-49d2-b7f6-87c585703d35: GET /api/notifications
+[2025-06-13 21:21:29,878] [INFO] app.middleware: Request f41aca5d-b7e9-43e6-97a4-9f2575b9801a: GET /api/notifications/stats
+[2025-06-13 21:21:29,918] [INFO] app.database: Connected to DB postgresql://postgres:CodeSD.com@localhost (connection open: True)
+[2025-06-13 21:21:29,918] [INFO] app.database: Connected to DB postgresql://postgres:CodeSD.com@localhost (connection open: True)
+[2025-06-13 21:21:29,918] [INFO] app.middleware: Response f41aca5d-b7e9-43e6-97a4-9f2575b9801a: 200 (0.041s)
+[2025-06-13 21:21:29,918] [INFO] app.middleware: Response 533377eb-923f-49d2-b7f6-87c585703d35: 200 (0.041s)
+[2025-06-13 21:21:36,194] [INFO] app.middleware: Request 34cfaf6d-7831-4771-b66f-a97a825a2ac9: OPTIONS /api/tasks
+[2025-06-13 21:21:36,194] [INFO] app.middleware: Response 34cfaf6d-7831-4771-b66f-a97a825a2ac9: 200 (0.000s)
+[2025-06-13 21:21:36,194] [INFO] app.middleware: Request acd2d22c-3bdb-4716-bd01-101a2c65ccbb: GET /api/tasks
+[2025-06-13 21:21:36,233] [INFO] app.database: Connected to DB postgresql://postgres:CodeSD.com@localhost (connection open: True)
+[2025-06-13 21:21:36,242] [INFO] app.middleware: Response acd2d22c-3bdb-4716-bd01-101a2c65ccbb: 200 (0.048s)
+[2025-06-13 21:21:59,952] [INFO] app.middleware: Request 761e352d-2678-42e6-bd27-301bbd97e6e5: OPTIONS /api/notifications
+[2025-06-13 21:21:59,952] [INFO] app.middleware: Request 8a426e8b-95df-4b90-b788-06d4d0f5e9a4: OPTIONS /api/notifications/stats
+[2025-06-13 21:21:59,952] [INFO] app.middleware: Response 761e352d-2678-42e6-bd27-301bbd97e6e5: 200 (0.000s)
+[2025-06-13 21:21:59,952] [INFO] app.middleware: Response 8a426e8b-95df-4b90-b788-06d4d0f5e9a4: 200 (0.000s)
+[2025-06-13 21:21:59,958] [INFO] app.middleware: Request da329cc9-c99e-445d-8450-d65cd26a4c6f: GET /api/notifications/stats
+[2025-06-13 21:21:59,958] [INFO] app.middleware: Request 0ea290cb-954d-494a-aff9-97d866fb8f75: GET /api/notifications
+[2025-06-13 21:21:59,998] [INFO] app.database: Connected to DB postgresql://postgres:CodeSD.com@localhost (connection open: True)
+[2025-06-13 21:21:59,998] [INFO] app.database: Connected to DB postgresql://postgres:CodeSD.com@localhost (connection open: True)
+[2025-06-13 21:22:00,006] [INFO] app.middleware: Response 0ea290cb-954d-494a-aff9-97d866fb8f75: 200 (0.048s)
+[2025-06-13 21:22:00,007] [INFO] app.middleware: Response da329cc9-c99e-445d-8450-d65cd26a4c6f: 200 (0.049s)
+[2025-06-13 21:22:39,811] [INFO] app.middleware: Request 7f25dc8e-55a3-4ea1-a792-a413ee1e5ed3: OPTIONS /api/workflows/2db74003-42a5-4f6b-ab2d-b03dc42e146d
+[2025-06-13 21:22:39,811] [INFO] app.middleware: Response 7f25dc8e-55a3-4ea1-a792-a413ee1e5ed3: 200 (0.000s)
+[2025-06-13 21:22:39,811] [INFO] app.middleware: Request 08b61139-868a-4d2f-8ba8-89bcb66b30b1: GET /api/workflows/2db74003-42a5-4f6b-ab2d-b03dc42e146d
+[2025-06-13 21:22:39,852] [INFO] app.database: Connected to DB postgresql://postgres:CodeSD.com@localhost (connection open: True)
+[2025-06-13 21:22:39,859] [INFO] app.middleware: Response 08b61139-868a-4d2f-8ba8-89bcb66b30b1: 200 (0.048s)
+[2025-06-13 21:22:53,166] [INFO] app.middleware: Request cd4dbaed-fa5a-4cb7-8690-07173a96febd: OPTIONS /api/notifications
+[2025-06-13 21:22:53,166] [INFO] app.middleware: Request 0cba5604-0c07-481f-ab04-05c8106b9be1: OPTIONS /api/notifications/stats
+[2025-06-13 21:22:53,166] [INFO] app.middleware: Response 0cba5604-0c07-481f-ab04-05c8106b9be1: 200 (0.000s)
+[2025-06-13 21:22:53,166] [INFO] app.middleware: Response cd4dbaed-fa5a-4cb7-8690-07173a96febd: 200 (0.000s)
+[2025-06-13 21:22:53,171] [INFO] app.middleware: Request 1c267594-02af-400b-a75b-4739878aeedb: GET /api/notifications/stats
+[2025-06-13 21:22:53,180] [INFO] app.middleware: Request f3973068-00ad-441d-bc8f-8d9ab31e111a: GET /api/notifications
+[2025-06-13 21:22:53,213] [INFO] app.database: Connected to DB postgresql://postgres:CodeSD.com@localhost (connection open: True)
+[2025-06-13 21:22:53,221] [INFO] app.middleware: Response f3973068-00ad-441d-bc8f-8d9ab31e111a: 200 (0.034s)
+[2025-06-13 21:22:53,304] [INFO] app.database: Connected to DB postgresql://postgres:CodeSD.com@localhost (connection open: True)
+[2025-06-13 21:22:53,304] [INFO] app.middleware: Response 1c267594-02af-400b-a75b-4739878aeedb: 200 (0.132s)
+[2025-06-13 21:22:54,293] [INFO] app.middleware: Request c7365ffc-a0de-4e43-aa78-81c1b93badb0: OPTIONS /api/files
+[2025-06-13 21:22:54,293] [INFO] app.middleware: Request 2847e862-e3ed-4437-85ff-7ffebf378723: OPTIONS /api/files/stats
+[2025-06-13 21:22:54,293] [INFO] app.middleware: Response c7365ffc-a0de-4e43-aa78-81c1b93badb0: 200 (0.000s)
+[2025-06-13 21:22:54,293] [INFO] app.middleware: Response 2847e862-e3ed-4437-85ff-7ffebf378723: 200 (0.000s)
+[2025-06-13 21:22:54,293] [INFO] app.middleware: Request 62a87da7-03ed-4fb9-8f68-2ab971638f83: GET /api/files/stats
+[2025-06-13 21:22:54,302] [INFO] app.middleware: Request 11af5ba6-4ceb-4fd9-a6ae-97b4682a1a06: GET /api/files
+[2025-06-13 21:22:54,343] [INFO] app.database: Connected to DB postgresql://postgres:CodeSD.com@localhost (connection open: True)
+[2025-06-13 21:22:54,343] [INFO] app.database: Connected to DB postgresql://postgres:CodeSD.com@localhost (connection open: True)
+[2025-06-13 21:22:54,343] [INFO] app.middleware: Response 62a87da7-03ed-4fb9-8f68-2ab971638f83: 200 (0.049s)
+[2025-06-13 21:22:54,351] [INFO] app.middleware: Response 11af5ba6-4ceb-4fd9-a6ae-97b4682a1a06: 200 (0.049s)
+[2025-06-13 21:23:23,292] [INFO] app.middleware: Request 993be26c-afa8-4ce2-8f11-ce036149de9d: OPTIONS /api/notifications
+[2025-06-13 21:23:23,292] [INFO] app.middleware: Response 993be26c-afa8-4ce2-8f11-ce036149de9d: 200 (0.000s)
+[2025-06-13 21:23:23,292] [INFO] app.middleware: Request fbaa7f62-2a11-407a-9e09-8eec072f345c: GET /api/notifications
+[2025-06-13 21:23:23,317] [INFO] app.middleware: Request cece94b5-6340-4a27-b0de-15e3e089b73b: OPTIONS /api/notifications/stats
+[2025-06-13 21:23:23,317] [INFO] app.middleware: Response cece94b5-6340-4a27-b0de-15e3e089b73b: 200 (0.000s)
+[2025-06-13 21:23:23,317] [INFO] app.middleware: Request 99005004-1319-4b57-8511-3721a68eafb1: GET /api/notifications/stats
+[2025-06-13 21:23:23,325] [INFO] app.database: Connected to DB postgresql://postgres:CodeSD.com@localhost (connection open: True)
+[2025-06-13 21:23:23,333] [INFO] app.middleware: Response fbaa7f62-2a11-407a-9e09-8eec072f345c: 200 (0.041s)
+[2025-06-13 21:23:23,350] [INFO] app.database: Connected to DB postgresql://postgres:CodeSD.com@localhost (connection open: True)
+[2025-06-13 21:23:23,358] [INFO] app.middleware: Response 99005004-1319-4b57-8511-3721a68eafb1: 200 (0.041s)
+[2025-06-13 21:23:53,352] [INFO] app.middleware: Request f72fc94d-7d5f-4c75-a42c-939f8faf2408: OPTIONS /api/notifications
+[2025-06-13 21:23:53,352] [INFO] app.middleware: Response f72fc94d-7d5f-4c75-a42c-939f8faf2408: 200 (0.000s)
+[2025-06-13 21:23:53,354] [INFO] app.middleware: Request f0ed750c-01d8-49a8-84ba-2a2bbdaff37e: GET /api/notifications
+[2025-06-13 21:23:53,367] [INFO] app.middleware: Request 451517fe-6bb3-430b-b85b-d2118259f976: OPTIONS /api/notifications/stats
+[2025-06-13 21:23:53,368] [INFO] app.middleware: Response 451517fe-6bb3-430b-b85b-d2118259f976: 200 (0.001s)
+[2025-06-13 21:23:53,371] [INFO] app.middleware: Request f115d62b-1f5e-404b-b27a-2c88524dada8: GET /api/notifications/stats
+[2025-06-13 21:23:53,391] [INFO] app.database: Connected to DB postgresql://postgres:CodeSD.com@localhost (connection open: True)
+[2025-06-13 21:23:53,394] [INFO] app.middleware: Response f0ed750c-01d8-49a8-84ba-2a2bbdaff37e: 200 (0.040s)
+[2025-06-13 21:23:53,406] [INFO] app.database: Connected to DB postgresql://postgres:CodeSD.com@localhost (connection open: True)
+[2025-06-13 21:23:53,408] [INFO] app.middleware: Response f115d62b-1f5e-404b-b27a-2c88524dada8: 200 (0.037s)
+[2025-06-13 21:24:23,445] [INFO] app.middleware: Request a0d21c9e-6d1c-44ce-bf9a-c5114cdb83ce: OPTIONS /api/notifications
+[2025-06-13 21:24:23,445] [INFO] app.middleware: Request c7394752-415d-4965-89d8-cba7cda895d7: OPTIONS /api/notifications/stats
+[2025-06-13 21:24:23,445] [INFO] app.middleware: Response a0d21c9e-6d1c-44ce-bf9a-c5114cdb83ce: 200 (0.000s)
+[2025-06-13 21:24:23,445] [INFO] app.middleware: Response c7394752-415d-4965-89d8-cba7cda895d7: 200 (0.000s)
+[2025-06-13 21:24:23,450] [INFO] app.middleware: Request ab683ce0-1e07-42c4-adaf-477044e2efe5: GET /api/notifications
+[2025-06-13 21:24:23,450] [INFO] app.middleware: Request 29e5668c-dafe-4911-aa67-d5630bf28e94: GET /api/notifications/stats
+[2025-06-13 21:24:23,490] [INFO] app.database: Connected to DB postgresql://postgres:CodeSD.com@localhost (connection open: True)
+[2025-06-13 21:24:23,490] [INFO] app.database: Connected to DB postgresql://postgres:CodeSD.com@localhost (connection open: True)
+[2025-06-13 21:24:23,490] [INFO] app.middleware: Response ab683ce0-1e07-42c4-adaf-477044e2efe5: 200 (0.040s)
+[2025-06-13 21:24:23,490] [INFO] app.middleware: Response 29e5668c-dafe-4911-aa67-d5630bf28e94: 200 (0.040s)
+[2025-06-13 21:24:54,408] [INFO] app.middleware: Request 75baa5a8-29ae-43fe-bdcc-2f8545ae909d: OPTIONS /api/notifications
+[2025-06-13 21:24:54,408] [INFO] app.middleware: Response 75baa5a8-29ae-43fe-bdcc-2f8545ae909d: 200 (0.000s)
+[2025-06-13 21:24:54,408] [INFO] app.middleware: Request 9108a2a5-1d0e-47e0-9b20-28115b8fe882: OPTIONS /api/notifications/stats
+[2025-06-13 21:24:54,408] [INFO] app.middleware: Response 9108a2a5-1d0e-47e0-9b20-28115b8fe882: 200 (0.000s)
+[2025-06-13 21:24:54,408] [INFO] app.middleware: Request c8ef1015-6d00-4f67-b506-e0f93c3c0e1d: GET /api/notifications
+[2025-06-13 21:24:54,408] [INFO] app.middleware: Request 7c9b7354-b46f-442d-aa08-3b05e727638d: GET /api/notifications/stats
+[2025-06-13 21:24:54,448] [INFO] app.database: Connected to DB postgresql://postgres:CodeSD.com@localhost (connection open: True)
+[2025-06-13 21:24:54,448] [INFO] app.database: Connected to DB postgresql://postgres:CodeSD.com@localhost (connection open: True)
+[2025-06-13 21:24:54,448] [INFO] app.middleware: Response c8ef1015-6d00-4f67-b506-e0f93c3c0e1d: 200 (0.041s)
+[2025-06-13 21:24:54,448] [INFO] app.middleware: Response 7c9b7354-b46f-442d-aa08-3b05e727638d: 200 (0.041s)
+[2025-06-13 21:24:55,925] [INFO] app.middleware: Request 883bda25-7560-4442-8d6f-a5d91b8942d7: OPTIONS /api/workflows/366baade-cff1-4023-839e-c97996d52c53
+[2025-06-13 21:24:55,925] [INFO] app.middleware: Response 883bda25-7560-4442-8d6f-a5d91b8942d7: 200 (0.000s)
+[2025-06-13 21:24:55,934] [INFO] app.middleware: Request 8ebd6394-288a-447e-8cd6-a7fd2b7af4c8: GET /api/workflows/366baade-cff1-4023-839e-c97996d52c53
+[2025-06-13 21:24:55,973] [INFO] app.database: Connected to DB postgresql://postgres:CodeSD.com@localhost (connection open: True)
+[2025-06-13 21:24:55,983] [INFO] app.middleware: Response 8ebd6394-288a-447e-8cd6-a7fd2b7af4c8: 200 (0.049s)
+[2025-06-13 21:25:24,758] [INFO] app.middleware: Request 6b0cbec2-c610-486b-810d-570142c42637: OPTIONS /api/notifications
+[2025-06-13 21:25:24,758] [INFO] app.middleware: Response 6b0cbec2-c610-486b-810d-570142c42637: 200 (0.000s)
+[2025-06-13 21:25:24,758] [INFO] app.middleware: Request 495ba749-a852-407d-8f0e-715c6bc94e00: OPTIONS /api/notifications/stats
+[2025-06-13 21:25:24,758] [INFO] app.middleware: Response 495ba749-a852-407d-8f0e-715c6bc94e00: 200 (0.000s)
+[2025-06-13 21:25:24,758] [INFO] app.middleware: Request bc9f320d-5a9e-49bf-ad2d-45c729f183cd: GET /api/notifications
+[2025-06-13 21:25:24,763] [INFO] app.middleware: Request f2e8453d-d896-46dd-908d-5464b88f2cf2: GET /api/notifications/stats
+[2025-06-13 21:25:24,804] [INFO] app.database: Connected to DB postgresql://postgres:CodeSD.com@localhost (connection open: True)
+[2025-06-13 21:25:24,804] [INFO] app.database: Connected to DB postgresql://postgres:CodeSD.com@localhost (connection open: True)
+[2025-06-13 21:25:24,804] [INFO] app.middleware: Response f2e8453d-d896-46dd-908d-5464b88f2cf2: 200 (0.041s)
+[2025-06-13 21:25:24,804] [INFO] app.middleware: Response bc9f320d-5a9e-49bf-ad2d-45c729f183cd: 200 (0.046s)
+[2025-06-13 21:25:55,069] [INFO] app.middleware: Request 00bfee07-60b6-43d6-bb3a-9a8cdee3c837: OPTIONS /api/notifications/stats
+[2025-06-13 21:25:55,069] [INFO] app.middleware: Response 00bfee07-60b6-43d6-bb3a-9a8cdee3c837: 200 (0.000s)
+[2025-06-13 21:25:55,069] [INFO] app.middleware: Request d5cd9b23-4b66-4187-a8e7-aca2805fb071: OPTIONS /api/notifications
+[2025-06-13 21:25:55,069] [INFO] app.middleware: Response d5cd9b23-4b66-4187-a8e7-aca2805fb071: 200 (0.000s)
+[2025-06-13 21:25:55,075] [INFO] app.middleware: Request d57d79a9-51f7-4239-a394-5b37256900c5: GET /api/notifications/stats
+[2025-06-13 21:25:55,075] [INFO] app.middleware: Request 6eee5374-783d-40a5-b156-0ad14cd423e0: GET /api/notifications
+[2025-06-13 21:25:55,116] [INFO] app.database: Connected to DB postgresql://postgres:CodeSD.com@localhost (connection open: True)
+[2025-06-13 21:25:55,116] [INFO] app.database: Connected to DB postgresql://postgres:CodeSD.com@localhost (connection open: True)
+[2025-06-13 21:25:55,116] [INFO] app.middleware: Response 6eee5374-783d-40a5-b156-0ad14cd423e0: 200 (0.041s)
+[2025-06-13 21:25:55,116] [INFO] app.middleware: Response d57d79a9-51f7-4239-a394-5b37256900c5: 200 (0.041s)
+[2025-06-13 21:26:02,219] [INFO] app.middleware: Request 14dca036-8c82-4212-8cf5-a01d2a4c0138: OPTIONS /api/workflows
+[2025-06-13 21:26:02,219] [INFO] app.middleware: Response 14dca036-8c82-4212-8cf5-a01d2a4c0138: 200 (0.000s)
+[2025-06-13 21:26:02,222] [INFO] app.middleware: Request fd3bdad8-d4e8-4321-8b4f-df997b6f8a8e: GET /api/workflows
+[2025-06-13 21:26:02,262] [INFO] app.database: Connected to DB postgresql://postgres:CodeSD.com@localhost (connection open: True)
+[2025-06-13 21:26:02,262] [INFO] app.middleware: Response fd3bdad8-d4e8-4321-8b4f-df997b6f8a8e: 200 (0.041s)
+[2025-06-13 21:26:25,168] [INFO] app.middleware: Request a68e0d4e-56bf-498b-86ad-32c86bfa5d0a: OPTIONS /api/notifications
+[2025-06-13 21:26:25,168] [INFO] app.middleware: Response a68e0d4e-56bf-498b-86ad-32c86bfa5d0a: 200 (0.000s)
+[2025-06-13 21:26:25,168] [INFO] app.middleware: Request bbb54d7a-62fe-40bf-8141-fa3bfc11fc1f: OPTIONS /api/notifications/stats
+[2025-06-13 21:26:25,168] [INFO] app.middleware: Response bbb54d7a-62fe-40bf-8141-fa3bfc11fc1f: 200 (0.000s)
+[2025-06-13 21:26:25,174] [INFO] app.middleware: Request d1f4dd19-7f59-49ee-b6c0-3908b72e1a50: GET /api/notifications/stats
+[2025-06-13 21:26:25,174] [INFO] app.middleware: Request 038c3b10-b180-4c5d-98df-a2f2525461fd: GET /api/notifications
+[2025-06-13 21:26:25,207] [INFO] app.database: Connected to DB postgresql://postgres:CodeSD.com@localhost (connection open: True)
+[2025-06-13 21:26:25,207] [INFO] app.database: Connected to DB postgresql://postgres:CodeSD.com@localhost (connection open: True)
+[2025-06-13 21:26:25,215] [INFO] app.middleware: Response 038c3b10-b180-4c5d-98df-a2f2525461fd: 200 (0.041s)
+[2025-06-13 21:26:25,215] [INFO] app.middleware: Response d1f4dd19-7f59-49ee-b6c0-3908b72e1a50: 200 (0.041s)
+[2025-06-13 21:26:55,504] [INFO] app.middleware: Request 25ea1641-3096-4b00-a33a-40ffdd91f831: OPTIONS /api/notifications
+[2025-06-13 21:26:55,504] [INFO] app.middleware: Request 86a92e88-f42a-4c64-b20a-f76eef5e8850: OPTIONS /api/notifications/stats
+[2025-06-13 21:26:55,504] [INFO] app.middleware: Response 86a92e88-f42a-4c64-b20a-f76eef5e8850: 200 (0.000s)
+[2025-06-13 21:26:55,504] [INFO] app.middleware: Request bf87979a-55f4-43f2-b116-8412c49f07c9: GET /api/notifications/stats
+[2025-06-13 21:26:55,504] [INFO] app.middleware: Response 25ea1641-3096-4b00-a33a-40ffdd91f831: 200 (0.000s)
+[2025-06-13 21:26:55,516] [INFO] app.middleware: Request 12eaac9f-d951-422a-a531-02b09abc7218: GET /api/notifications
+[2025-06-13 21:26:55,543] [INFO] app.database: Connected to DB postgresql://postgres:CodeSD.com@localhost (connection open: True)
+[2025-06-13 21:26:55,543] [INFO] app.middleware: Response bf87979a-55f4-43f2-b116-8412c49f07c9: 200 (0.038s)
+[2025-06-13 21:26:55,551] [INFO] app.database: Connected to DB postgresql://postgres:CodeSD.com@localhost (connection open: True)
+[2025-06-13 21:26:55,551] [INFO] app.middleware: Response 12eaac9f-d951-422a-a531-02b09abc7218: 200 (0.035s)
+[2025-06-13 21:27:25,577] [INFO] app.middleware: Request e8491882-b7e4-4de7-9f86-a9a7a5d1137b: OPTIONS /api/notifications/stats
+[2025-06-13 21:27:25,579] [INFO] app.middleware: Response e8491882-b7e4-4de7-9f86-a9a7a5d1137b: 200 (0.002s)
+[2025-06-13 21:27:25,579] [INFO] app.middleware: Request a3638b59-0480-47d3-8f54-6c0ee0fcff67: OPTIONS /api/notifications
+[2025-06-13 21:27:25,581] [INFO] app.middleware: Response a3638b59-0480-47d3-8f54-6c0ee0fcff67: 200 (0.002s)
+[2025-06-13 21:27:25,585] [INFO] app.middleware: Request 223e2e14-4776-4215-863e-4f5f407a965c: GET /api/notifications/stats
+[2025-06-13 21:27:25,585] [INFO] app.middleware: Request 8a4fc2c7-3400-4d73-aa69-617322602f90: GET /api/notifications
+[2025-06-13 21:27:25,625] [INFO] app.database: Connected to DB postgresql://postgres:CodeSD.com@localhost (connection open: True)
+[2025-06-13 21:27:25,625] [INFO] app.database: Connected to DB postgresql://postgres:CodeSD.com@localhost (connection open: True)
+[2025-06-13 21:27:25,625] [INFO] app.middleware: Response 8a4fc2c7-3400-4d73-aa69-617322602f90: 200 (0.040s)
+[2025-06-13 21:27:25,625] [INFO] app.middleware: Response 223e2e14-4776-4215-863e-4f5f407a965c: 200 (0.040s)
+[2025-06-13 21:28:25,681] [INFO] app.middleware: Request d2164022-eca8-47e6-a4f7-4dc8f14bf1ab: OPTIONS /api/notifications
+[2025-06-13 21:28:25,681] [INFO] app.middleware: Request 51ee6dcf-6c9e-4c10-97ea-10e777a03f79: OPTIONS /api/notifications/stats
+[2025-06-13 21:28:25,681] [INFO] app.middleware: Response 51ee6dcf-6c9e-4c10-97ea-10e777a03f79: 200 (0.000s)
+[2025-06-13 21:28:25,681] [INFO] app.middleware: Response d2164022-eca8-47e6-a4f7-4dc8f14bf1ab: 200 (0.000s)
+[2025-06-13 21:28:25,690] [INFO] app.middleware: Request 162e4f81-ac9e-4643-91ca-20e28a6d5ac7: GET /api/notifications/stats
+[2025-06-13 21:28:25,690] [INFO] app.middleware: Request 7fedf67f-f9dd-4797-b8b6-ff8ec2447ec4: GET /api/notifications
+[2025-06-13 21:28:25,730] [INFO] app.database: Connected to DB postgresql://postgres:CodeSD.com@localhost (connection open: True)
+[2025-06-13 21:28:25,730] [INFO] app.middleware: Response 7fedf67f-f9dd-4797-b8b6-ff8ec2447ec4: 200 (0.040s)
+[2025-06-13 21:28:25,828] [INFO] app.database: Connected to DB postgresql://postgres:CodeSD.com@localhost (connection open: True)
+[2025-06-13 21:28:25,836] [INFO] app.middleware: Response 162e4f81-ac9e-4643-91ca-20e28a6d5ac7: 200 (0.147s)
+[2025-06-13 21:28:56,176] [INFO] app.middleware: Request 8e316d73-e9ff-45b7-866a-c4163113c60e: OPTIONS /api/notifications
+[2025-06-13 21:28:56,176] [INFO] app.middleware: Request c8c2f503-ca13-4e8a-bfef-2a7bd497b1ea: OPTIONS /api/notifications/stats
+[2025-06-13 21:28:56,176] [INFO] app.middleware: Response 8e316d73-e9ff-45b7-866a-c4163113c60e: 200 (0.000s)
+[2025-06-13 21:28:56,176] [INFO] app.middleware: Response c8c2f503-ca13-4e8a-bfef-2a7bd497b1ea: 200 (0.000s)
+[2025-06-13 21:28:56,176] [INFO] app.middleware: Request a30bbba9-806f-45d7-ae3a-93a72b6b30a4: GET /api/notifications/stats
+[2025-06-13 21:28:56,176] [INFO] app.middleware: Request a0d35195-393a-4103-a07c-756355274793: GET /api/notifications
+[2025-06-13 21:28:56,217] [INFO] app.database: Connected to DB postgresql://postgres:CodeSD.com@localhost (connection open: True)
+[2025-06-13 21:28:56,217] [INFO] app.database: Connected to DB postgresql://postgres:CodeSD.com@localhost (connection open: True)
+[2025-06-13 21:28:56,225] [INFO] app.middleware: Response a30bbba9-806f-45d7-ae3a-93a72b6b30a4: 200 (0.049s)
+[2025-06-13 21:28:56,225] [INFO] app.middleware: Response a0d35195-393a-4103-a07c-756355274793: 200 (0.049s)
+[2025-06-13 21:29:26,238] [INFO] app.middleware: Request 8cbd1634-c2e0-4a99-9a46-d5b51e76bf0e: OPTIONS /api/notifications/stats
+[2025-06-13 21:29:26,238] [INFO] app.middleware: Response 8cbd1634-c2e0-4a99-9a46-d5b51e76bf0e: 200 (0.000s)
+[2025-06-13 21:29:26,240] [INFO] app.middleware: Request ca74d231-9688-46ea-85f1-b94186d8e0e3: OPTIONS /api/notifications
+[2025-06-13 21:29:26,242] [INFO] app.middleware: Response ca74d231-9688-46ea-85f1-b94186d8e0e3: 200 (0.001s)
+[2025-06-13 21:29:26,242] [INFO] app.middleware: Request 9e2cd1a6-ff47-4cc3-964a-fc1170fa1c06: GET /api/notifications/stats
+[2025-06-13 21:29:26,242] [INFO] app.middleware: Request f825b699-9a41-46d3-8a11-3f53013dfbca: GET /api/notifications
+[2025-06-13 21:29:26,282] [INFO] app.database: Connected to DB postgresql://postgres:CodeSD.com@localhost (connection open: True)
+[2025-06-13 21:29:26,282] [INFO] app.database: Connected to DB postgresql://postgres:CodeSD.com@localhost (connection open: True)
+[2025-06-13 21:29:26,282] [INFO] app.middleware: Response 9e2cd1a6-ff47-4cc3-964a-fc1170fa1c06: 200 (0.040s)
+[2025-06-13 21:29:26,282] [INFO] app.middleware: Response f825b699-9a41-46d3-8a11-3f53013dfbca: 200 (0.040s)
+[2025-06-13 21:29:56,326] [INFO] app.middleware: Request 79ef198f-89a0-4b3f-9dd7-5eead132cf06: OPTIONS /api/notifications/stats
+[2025-06-13 21:29:56,326] [INFO] app.middleware: Response 79ef198f-89a0-4b3f-9dd7-5eead132cf06: 200 (0.000s)
+[2025-06-13 21:29:56,329] [INFO] app.middleware: Request 3c367631-c367-47d7-bd7f-50cde7949245: OPTIONS /api/notifications
+[2025-06-13 21:29:56,329] [INFO] app.middleware: Response 3c367631-c367-47d7-bd7f-50cde7949245: 200 (0.000s)
+[2025-06-13 21:29:56,331] [INFO] app.middleware: Request 36600a0c-aca8-4402-bc41-cd171841d60a: GET /api/notifications/stats
+[2025-06-13 21:29:56,331] [INFO] app.middleware: Request c839995b-0833-45f7-bbf7-22d15aeca3cb: GET /api/notifications
+[2025-06-13 21:29:56,364] [INFO] app.database: Connected to DB postgresql://postgres:CodeSD.com@localhost (connection open: True)
+[2025-06-13 21:29:56,364] [INFO] app.database: Connected to DB postgresql://postgres:CodeSD.com@localhost (connection open: True)
+[2025-06-13 21:29:56,373] [INFO] app.middleware: Response 36600a0c-aca8-4402-bc41-cd171841d60a: 200 (0.041s)
+[2025-06-13 21:29:56,376] [INFO] app.middleware: Response c839995b-0833-45f7-bbf7-22d15aeca3cb: 200 (0.044s)
+[2025-06-13 21:30:26,709] [INFO] app.middleware: Request 90e9f9cb-3cda-4e24-afe2-f4270f425041: OPTIONS /api/notifications
+[2025-06-13 21:30:26,709] [INFO] app.middleware: Request d168e9e0-55ad-49e2-972d-16cbbf0bdeaa: OPTIONS /api/notifications/stats
+[2025-06-13 21:30:26,711] [INFO] app.middleware: Response 90e9f9cb-3cda-4e24-afe2-f4270f425041: 200 (0.002s)
+[2025-06-13 21:30:26,711] [INFO] app.middleware: Response d168e9e0-55ad-49e2-972d-16cbbf0bdeaa: 200 (0.002s)
+[2025-06-13 21:30:26,714] [INFO] app.middleware: Request 8bc13107-f580-4a2d-bb83-495b7deccdb8: GET /api/notifications
+[2025-06-13 21:30:26,714] [INFO] app.middleware: Request 247079ac-cbf8-4d25-9e7e-6848d0caad29: GET /api/notifications/stats
+[2025-06-13 21:30:26,754] [INFO] app.database: Connected to DB postgresql://postgres:CodeSD.com@localhost (connection open: True)
+[2025-06-13 21:30:26,754] [INFO] app.database: Connected to DB postgresql://postgres:CodeSD.com@localhost (connection open: True)
+[2025-06-13 21:30:26,754] [INFO] app.middleware: Response 8bc13107-f580-4a2d-bb83-495b7deccdb8: 200 (0.040s)
+[2025-06-13 21:30:26,754] [INFO] app.middleware: Response 247079ac-cbf8-4d25-9e7e-6848d0caad29: 200 (0.040s)
+[2025-06-13 21:30:57,024] [INFO] app.middleware: Request abf7eb94-a177-4749-8f7c-18980b16d892: OPTIONS /api/notifications
+[2025-06-13 21:30:57,027] [INFO] app.middleware: Response abf7eb94-a177-4749-8f7c-18980b16d892: 200 (0.003s)
+[2025-06-13 21:30:57,029] [INFO] app.middleware: Request a544cacc-2620-4c25-8a56-355f7ad6915a: OPTIONS /api/notifications/stats
+[2025-06-13 21:30:57,031] [INFO] app.middleware: Request 0e188e65-1625-4fca-8322-5352959356db: GET /api/notifications
+[2025-06-13 21:30:57,031] [INFO] app.middleware: Response a544cacc-2620-4c25-8a56-355f7ad6915a: 200 (0.002s)
+[2025-06-13 21:30:57,032] [INFO] app.middleware: Request 5b520136-ecf4-40bc-8cc1-1474ad7e895e: GET /api/notifications/stats
+[2025-06-13 21:30:57,064] [INFO] app.database: Connected to DB postgresql://postgres:CodeSD.com@localhost (connection open: True)
+[2025-06-13 21:30:57,064] [INFO] app.database: Connected to DB postgresql://postgres:CodeSD.com@localhost (connection open: True)
+[2025-06-13 21:30:57,072] [INFO] app.middleware: Response 5b520136-ecf4-40bc-8cc1-1474ad7e895e: 200 (0.040s)
+[2025-06-13 21:30:57,072] [INFO] app.middleware: Response 0e188e65-1625-4fca-8322-5352959356db: 200 (0.041s)
+[2025-06-13 21:31:27,323] [INFO] app.middleware: Request 5a077a17-4dcc-4890-8299-0cce9806b66b: OPTIONS /api/notifications
+[2025-06-13 21:31:27,323] [INFO] app.middleware: Response 5a077a17-4dcc-4890-8299-0cce9806b66b: 200 (0.000s)
+[2025-06-13 21:31:27,326] [INFO] app.middleware: Request 0e230757-dce7-4326-8ce7-8c9c487e01f4: OPTIONS /api/notifications/stats
+[2025-06-13 21:31:27,326] [INFO] app.middleware: Response 0e230757-dce7-4326-8ce7-8c9c487e01f4: 200 (0.000s)
+[2025-06-13 21:31:27,326] [INFO] app.middleware: Request d1261564-7e63-4b84-b81f-bee1007ee24a: GET /api/notifications
+[2025-06-13 21:31:27,333] [INFO] app.middleware: Request 1242c466-feda-4c6d-a887-aeff0f59e8ad: GET /api/notifications/stats
+[2025-06-13 21:31:27,364] [INFO] app.database: Connected to DB postgresql://postgres:CodeSD.com@localhost (connection open: True)
+[2025-06-13 21:31:27,364] [INFO] app.database: Connected to DB postgresql://postgres:CodeSD.com@localhost (connection open: True)
+[2025-06-13 21:31:27,371] [INFO] app.middleware: Response d1261564-7e63-4b84-b81f-bee1007ee24a: 200 (0.045s)
+[2025-06-13 21:31:27,371] [INFO] app.middleware: Response 1242c466-feda-4c6d-a887-aeff0f59e8ad: 200 (0.038s)
+[2025-06-13 21:31:57,446] [INFO] app.middleware: Request 2c43706a-6c86-4ec4-bc0c-9cb87db55b6c: OPTIONS /api/notifications
+[2025-06-13 21:31:57,446] [INFO] app.middleware: Response 2c43706a-6c86-4ec4-bc0c-9cb87db55b6c: 200 (0.000s)
+[2025-06-13 21:31:57,446] [INFO] app.middleware: Request 5f7a6e82-abdb-4a7a-91be-a85f0eedbe48: OPTIONS /api/notifications/stats
+[2025-06-13 21:31:57,446] [INFO] app.middleware: Response 5f7a6e82-abdb-4a7a-91be-a85f0eedbe48: 200 (0.000s)
+[2025-06-13 21:31:57,450] [INFO] app.middleware: Request 1efc288e-3d40-483c-a775-b393213cecf6: GET /api/notifications/stats
+[2025-06-13 21:31:57,450] [INFO] app.middleware: Request 0209f002-af38-4398-96a8-6d93ac93f424: GET /api/notifications
+[2025-06-13 21:31:57,490] [INFO] app.database: Connected to DB postgresql://postgres:CodeSD.com@localhost (connection open: True)
+[2025-06-13 21:31:57,490] [INFO] app.database: Connected to DB postgresql://postgres:CodeSD.com@localhost (connection open: True)
+[2025-06-13 21:31:57,490] [INFO] app.middleware: Response 1efc288e-3d40-483c-a775-b393213cecf6: 200 (0.041s)
+[2025-06-13 21:31:57,490] [INFO] app.middleware: Response 0209f002-af38-4398-96a8-6d93ac93f424: 200 (0.041s)
+[2025-06-13 21:32:28,255] [INFO] app.middleware: Request 708b59b7-9600-4a06-b938-6cfe9eaa422a: OPTIONS /api/notifications/stats
+[2025-06-13 21:32:28,255] [INFO] app.middleware: Request 8910d5e8-dfa6-4221-848b-1484550c8fbb: OPTIONS /api/notifications
+[2025-06-13 21:32:28,259] [INFO] app.middleware: Response 708b59b7-9600-4a06-b938-6cfe9eaa422a: 200 (0.004s)
+[2025-06-13 21:32:28,259] [INFO] app.middleware: Response 8910d5e8-dfa6-4221-848b-1484550c8fbb: 200 (0.004s)
+[2025-06-13 21:32:28,266] [INFO] app.middleware: Request 56f0f552-76cc-492c-917c-9cddcec948a7: GET /api/notifications
+[2025-06-13 21:32:28,266] [INFO] app.middleware: Request 26037b08-0e97-4bd2-a39a-5a18f342e240: GET /api/notifications/stats
+[2025-06-13 21:32:28,315] [INFO] app.database: Connected to DB postgresql://postgres:CodeSD.com@localhost (connection open: True)
+[2025-06-13 21:32:28,315] [INFO] app.database: Connected to DB postgresql://postgres:CodeSD.com@localhost (connection open: True)
+[2025-06-13 21:32:28,315] [INFO] app.middleware: Response 56f0f552-76cc-492c-917c-9cddcec948a7: 200 (0.049s)
+[2025-06-13 21:32:28,315] [INFO] app.middleware: Response 26037b08-0e97-4bd2-a39a-5a18f342e240: 200 (0.049s)
+[2025-06-13 21:32:58,442] [INFO] app.middleware: Request 70f71dce-aeea-47af-a131-715750abd99f: OPTIONS /api/notifications
+[2025-06-13 21:32:58,446] [INFO] app.middleware: Response 70f71dce-aeea-47af-a131-715750abd99f: 200 (0.005s)
+[2025-06-13 21:32:58,446] [INFO] app.middleware: Request d062da20-1a89-4569-aa71-bdd88aa257e4: OPTIONS /api/notifications/stats
+[2025-06-13 21:32:58,446] [INFO] app.middleware: Response d062da20-1a89-4569-aa71-bdd88aa257e4: 200 (0.000s)
+[2025-06-13 21:32:58,446] [INFO] app.middleware: Request 39652340-c3c3-4964-a484-da11fbe36fbd: GET /api/notifications
+[2025-06-13 21:32:58,446] [INFO] app.middleware: Request f2fdafac-2d78-406e-b2ef-ddd59daa4fad: GET /api/notifications/stats
+[2025-06-13 21:32:58,487] [INFO] app.database: Connected to DB postgresql://postgres:CodeSD.com@localhost (connection open: True)
+[2025-06-13 21:32:58,487] [INFO] app.database: Connected to DB postgresql://postgres:CodeSD.com@localhost (connection open: True)
+[2025-06-13 21:32:58,495] [INFO] app.middleware: Response 39652340-c3c3-4964-a484-da11fbe36fbd: 200 (0.049s)
+[2025-06-13 21:32:58,495] [INFO] app.middleware: Response f2fdafac-2d78-406e-b2ef-ddd59daa4fad: 200 (0.049s)
+[2025-06-13 21:35:00,593] [INFO] app.middleware: Request 0e3ca4b7-4119-48b1-ae58-1db60bcbd2a6: OPTIONS /api/notifications
+[2025-06-13 21:35:00,593] [INFO] app.middleware: Response 0e3ca4b7-4119-48b1-ae58-1db60bcbd2a6: 200 (0.000s)
+[2025-06-13 21:35:00,597] [INFO] app.middleware: Request ca5bb9ec-dcc9-4cb3-8e6a-3ab570564018: OPTIONS /api/notifications/stats
+[2025-06-13 21:35:00,597] [INFO] app.middleware: Response ca5bb9ec-dcc9-4cb3-8e6a-3ab570564018: 200 (0.000s)
+[2025-06-13 21:35:00,599] [INFO] app.middleware: Request d3735edd-062e-4eb6-8561-ee27074d7030: GET /api/notifications
+[2025-06-13 21:35:00,599] [INFO] app.middleware: Request 84a62510-723c-4b3b-b7d4-f89d95358a7b: GET /api/notifications/stats
+[2025-06-13 21:35:00,638] [INFO] app.database: Connected to DB postgresql://postgres:CodeSD.com@localhost (connection open: True)
+[2025-06-13 21:35:00,638] [INFO] app.database: Connected to DB postgresql://postgres:CodeSD.com@localhost (connection open: True)
+[2025-06-13 21:35:00,638] [INFO] app.middleware: Response d3735edd-062e-4eb6-8561-ee27074d7030: 200 (0.039s)
+[2025-06-13 21:35:00,638] [INFO] app.middleware: Response 84a62510-723c-4b3b-b7d4-f89d95358a7b: 200 (0.039s)
+[2025-06-13 21:36:00,665] [INFO] app.middleware: Request 84c8557a-037e-44d7-b9bf-1c69add52f76: OPTIONS /api/notifications
+[2025-06-13 21:36:00,665] [INFO] app.middleware: Request 7c6801ae-0956-42f2-8d92-32f0a0bb0e95: OPTIONS /api/notifications/stats
+[2025-06-13 21:36:00,669] [INFO] app.middleware: Response 84c8557a-037e-44d7-b9bf-1c69add52f76: 200 (0.004s)
+[2025-06-13 21:36:00,669] [INFO] app.middleware: Response 7c6801ae-0956-42f2-8d92-32f0a0bb0e95: 200 (0.004s)
+[2025-06-13 21:36:00,671] [INFO] app.middleware: Request 0c8b9e10-c943-4cf0-aaf7-1fe40ecf0700: GET /api/notifications
+[2025-06-13 21:36:00,671] [INFO] app.middleware: Request 6fac2650-65c0-42d8-8e0d-dc93e3e20759: GET /api/notifications/stats
+[2025-06-13 21:36:00,709] [INFO] app.database: Connected to DB postgresql://postgres:CodeSD.com@localhost (connection open: True)
+[2025-06-13 21:36:00,709] [INFO] app.database: Connected to DB postgresql://postgres:CodeSD.com@localhost (connection open: True)
+[2025-06-13 21:36:00,717] [INFO] app.middleware: Response 6fac2650-65c0-42d8-8e0d-dc93e3e20759: 200 (0.046s)
+[2025-06-13 21:36:00,717] [INFO] app.middleware: Response 0c8b9e10-c943-4cf0-aaf7-1fe40ecf0700: 200 (0.046s)
+[2025-06-13 21:36:30,732] [INFO] app.middleware: Request 732118ae-f475-43f4-b9d9-f2e0b56d6934: OPTIONS /api/notifications/stats
+[2025-06-13 21:36:30,732] [INFO] app.middleware: Response 732118ae-f475-43f4-b9d9-f2e0b56d6934: 200 (0.000s)
+[2025-06-13 21:36:30,732] [INFO] app.middleware: Request e4bada32-3092-4529-82bf-ec3aff43a30a: OPTIONS /api/notifications
+[2025-06-13 21:36:30,737] [INFO] app.middleware: Response e4bada32-3092-4529-82bf-ec3aff43a30a: 200 (0.005s)
+[2025-06-13 21:36:30,737] [INFO] app.middleware: Request 58708b9a-c59e-4ecf-9a48-492baa4ed489: GET /api/notifications/stats
+[2025-06-13 21:36:30,737] [INFO] app.middleware: Request 15717ff4-a8d7-4428-9b27-f431afffc21d: GET /api/notifications
+[2025-06-13 21:36:30,778] [INFO] app.database: Connected to DB postgresql://postgres:CodeSD.com@localhost (connection open: True)
+[2025-06-13 21:36:30,778] [INFO] app.database: Connected to DB postgresql://postgres:CodeSD.com@localhost (connection open: True)
+[2025-06-13 21:36:30,778] [INFO] app.middleware: Response 58708b9a-c59e-4ecf-9a48-492baa4ed489: 200 (0.041s)
+[2025-06-13 21:36:30,778] [INFO] app.middleware: Response 15717ff4-a8d7-4428-9b27-f431afffc21d: 200 (0.041s)
+[2025-06-13 21:36:45,375] [INFO] app.middleware: Request c762cb19-5c3b-410f-8ce1-704b7d3bec4f: OPTIONS /api/webhooks
+[2025-06-13 21:36:45,375] [INFO] app.middleware: Response c762cb19-5c3b-410f-8ce1-704b7d3bec4f: 200 (0.000s)
+[2025-06-13 21:36:45,375] [INFO] app.middleware: Request cabf5fab-3903-4dd7-9482-67e756605308: POST /api/webhooks
+[2025-06-13 21:36:45,409] [INFO] app.database: Connected to DB postgresql://postgres:CodeSD.com@localhost (connection open: True)
+[2025-06-13 21:36:45,458] [INFO] app.middleware: Response cabf5fab-3903-4dd7-9482-67e756605308: 201 (0.083s)
+[2025-06-13 21:36:49,277] [INFO] app.middleware: Request 9991740d-1bd4-4ea3-82ea-8b6a2c14465a: OPTIONS /api/reports/performance
+[2025-06-13 21:36:49,277] [INFO] app.middleware: Request 73a4c72b-ad84-44ff-824c-401438d59f55: OPTIONS /api/reports/sla-compliance
+[2025-06-13 21:36:49,277] [INFO] app.middleware: Response 9991740d-1bd4-4ea3-82ea-8b6a2c14465a: 200 (0.000s)
+[2025-06-13 21:36:49,277] [INFO] app.middleware: Response 73a4c72b-ad84-44ff-824c-401438d59f55: 200 (0.000s)
+[2025-06-13 21:36:49,287] [INFO] app.middleware: Request 0c02535e-2d4c-4ac6-bd0f-296786efbe46: GET /api/reports/performance
+[2025-06-13 21:36:49,287] [INFO] app.middleware: Request cf7813eb-30f0-4b03-99ea-7c592840b561: GET /api/reports/sla-compliance
+[2025-06-13 21:36:49,325] [INFO] app.database: Connected to DB postgresql://postgres:CodeSD.com@localhost (connection open: True)
+[2025-06-13 21:36:49,325] [INFO] app.database: Connected to DB postgresql://postgres:CodeSD.com@localhost (connection open: True)
+[2025-06-13 21:36:49,334] [INFO] app.middleware: Response 0c02535e-2d4c-4ac6-bd0f-296786efbe46: 200 (0.047s)
+[2025-06-13 21:36:49,341] [INFO] app.middleware: Response cf7813eb-30f0-4b03-99ea-7c592840b561: 200 (0.055s)
+[2025-06-13 21:36:56,374] [INFO] app.middleware: Request 14446ae5-a91b-47a8-b56b-e1491b5afc7f: OPTIONS /api/tasks/dashboard-stats
+[2025-06-13 21:36:56,374] [INFO] app.middleware: Response 14446ae5-a91b-47a8-b56b-e1491b5afc7f: 200 (0.000s)
+[2025-06-13 21:36:56,374] [INFO] app.middleware: Request 85945e23-f2b4-4c1a-93b1-3a2a9be477b6: OPTIONS /api/reports/dashboard-stats
+[2025-06-13 21:36:56,374] [INFO] app.middleware: Response 85945e23-f2b4-4c1a-93b1-3a2a9be477b6: 200 (0.000s)
+[2025-06-13 21:36:56,374] [INFO] app.middleware: Request a7e09e35-608e-42e8-abd4-fc5b9a684a80: GET /api/reports/dashboard-stats
+[2025-06-13 21:36:56,382] [INFO] app.middleware: Request 9fd73f42-fa13-4820-8487-219f51aecc95: GET /api/tasks/dashboard-stats
+[2025-06-13 21:36:56,423] [INFO] app.database: Connected to DB postgresql://postgres:CodeSD.com@localhost (connection open: True)
+[2025-06-13 21:36:56,423] [INFO] app.database: Connected to DB postgresql://postgres:CodeSD.com@localhost (connection open: True)
+[2025-06-13 21:36:56,431] [INFO] app.middleware: Response 9fd73f42-fa13-4820-8487-219f51aecc95: 200 (0.049s)
+[2025-06-13 21:36:56,438] [INFO] app.middleware: Response a7e09e35-608e-42e8-abd4-fc5b9a684a80: 200 (0.065s)
+[2025-06-13 21:37:00,803] [INFO] app.middleware: Request 8fcec681-e0ec-48da-9f0a-dc791a620ec6: OPTIONS /api/notifications/stats
+[2025-06-13 21:37:00,803] [INFO] app.middleware: Response 8fcec681-e0ec-48da-9f0a-dc791a620ec6: 200 (0.000s)
+[2025-06-13 21:37:00,809] [INFO] app.middleware: Request 8383bdd6-4956-48d7-815a-672ff758b87d: OPTIONS /api/notifications
+[2025-06-13 21:37:00,809] [INFO] app.middleware: Response 8383bdd6-4956-48d7-815a-672ff758b87d: 200 (0.000s)
+[2025-06-13 21:37:00,809] [INFO] app.middleware: Request 77d32b88-7a10-4d58-9e68-5adf37c64df2: GET /api/notifications/stats
+[2025-06-13 21:37:00,813] [INFO] app.middleware: Request 5d093234-ed77-427f-94fa-d775aac45064: GET /api/notifications
+[2025-06-13 21:37:00,849] [INFO] app.database: Connected to DB postgresql://postgres:CodeSD.com@localhost (connection open: True)
+[2025-06-13 21:37:00,849] [INFO] app.database: Connected to DB postgresql://postgres:CodeSD.com@localhost (connection open: True)
+[2025-06-13 21:37:00,849] [INFO] app.middleware: Response 77d32b88-7a10-4d58-9e68-5adf37c64df2: 200 (0.040s)
+[2025-06-13 21:37:00,860] [INFO] app.middleware: Response 5d093234-ed77-427f-94fa-d775aac45064: 200 (0.045s)
+[2025-06-13 21:37:05,129] [INFO] app.middleware: Request 3e400863-ae77-405d-9411-bec6698cfa61: OPTIONS /api/tasks
+[2025-06-13 21:37:05,129] [INFO] app.middleware: Response 3e400863-ae77-405d-9411-bec6698cfa61: 200 (0.000s)
+[2025-06-13 21:37:05,135] [INFO] app.middleware: Request 501ef29c-1385-41da-950b-2991b18fcfd0: GET /api/tasks
+[2025-06-13 21:37:05,170] [INFO] app.database: Connected to DB postgresql://postgres:CodeSD.com@localhost (connection open: True)
+[2025-06-13 21:37:05,178] [INFO] app.middleware: Response 501ef29c-1385-41da-950b-2991b18fcfd0: 200 (0.044s)
+[2025-06-13 21:37:19,622] [INFO] app.middleware: Request fdc6b230-b890-4e40-8354-89f9b0a66bf3: OPTIONS /api/workflows
+[2025-06-13 21:37:19,622] [INFO] app.middleware: Response fdc6b230-b890-4e40-8354-89f9b0a66bf3: 200 (0.000s)
+[2025-06-13 21:37:19,626] [INFO] app.middleware: Request 838a1adc-160d-48f0-bdda-4180b5e34cb5: GET /api/workflows
+[2025-06-13 21:37:19,659] [INFO] app.database: Connected to DB postgresql://postgres:CodeSD.com@localhost (connection open: True)
+[2025-06-13 21:37:19,668] [INFO] app.middleware: Response 838a1adc-160d-48f0-bdda-4180b5e34cb5: 200 (0.042s)
+[2025-06-13 21:38:21,551] [INFO] app.middleware: Request c956c4ab-da23-4b09-a69f-02118ddb95ac: GET /api/workflows/2db74003-42a5-4f6b-ab2d-b03dc42e146d/instances
+[2025-06-13 21:38:21,592] [INFO] app.database: Connected to DB postgresql://postgres:CodeSD.com@localhost (connection open: True)
+[2025-06-13 21:38:21,592] [INFO] app.middleware: Response c956c4ab-da23-4b09-a69f-02118ddb95ac: 200 (0.041s)
+[2025-06-13 21:38:55,810] [INFO] app.middleware: Request 539c668e-3b8d-4b3e-b18b-e35f725bd5ae: GET /api/workflows/instances/91253eac-ff58-4342-b5dc-de013919f675
+[2025-06-13 21:38:55,842] [INFO] app.database: Connected to DB postgresql://postgres:CodeSD.com@localhost (connection open: True)
+[2025-06-13 21:38:55,842] [INFO] app.middleware: Response 539c668e-3b8d-4b3e-b18b-e35f725bd5ae: 404 (0.032s)
+[2025-06-13 21:40:42,410] [INFO] app.middleware: Request 0d41273a-8ebd-44be-8ee9-1b26e7c0b1b4: GET /api/workflows/91253eac-ff58-4342-b5dc-de013919f675/instances
+[2025-06-13 21:40:42,444] [INFO] app.database: Connected to DB postgresql://postgres:CodeSD.com@localhost (connection open: True)
+[2025-06-13 21:40:42,444] [INFO] app.middleware: Response 0d41273a-8ebd-44be-8ee9-1b26e7c0b1b4: 200 (0.033s)
+[2025-06-13 21:41:31,400] [INFO] app.middleware: Request 975fbadc-becd-4cb4-b622-1b0f23667ab1: OPTIONS /api/auth/profile
+[2025-06-13 21:41:31,400] [INFO] app.middleware: Response 975fbadc-becd-4cb4-b622-1b0f23667ab1: 200 (0.000s)
+[2025-06-13 21:41:31,406] [INFO] app.middleware: Request d150d9b5-aaff-4672-b8f0-191b0bbc01c5: OPTIONS /api/auth/profile
+[2025-06-13 21:41:31,410] [INFO] app.middleware: Response d150d9b5-aaff-4672-b8f0-191b0bbc01c5: 200 (0.004s)
+[2025-06-13 21:41:31,410] [INFO] app.middleware: Request fe3147aa-71ab-4d21-a9de-c793d589958d: GET /api/auth/profile
+[2025-06-13 21:41:31,410] [INFO] app.middleware: Request 62801092-ee9f-42ed-832a-0791d75d7729: GET /api/auth/profile
+[2025-06-13 21:41:31,466] [INFO] app.database: Connected to DB postgresql://postgres:CodeSD.com@localhost (connection open: True)
+[2025-06-13 21:41:31,466] [INFO] app.database: Connected to DB postgresql://postgres:CodeSD.com@localhost (connection open: True)
+[2025-06-13 21:41:31,474] [INFO] app.middleware: Response fe3147aa-71ab-4d21-a9de-c793d589958d: 200 (0.065s)
+[2025-06-13 21:41:31,474] [INFO] app.middleware: Response 62801092-ee9f-42ed-832a-0791d75d7729: 200 (0.065s)
+[2025-06-13 21:41:57,604] [INFO] app.middleware: Request 46b46870-b628-4396-8866-fee52a626cdc: OPTIONS /api/workflows/91253eac-ff58-4342-b5dc-de013919f675/execute
+[2025-06-13 21:41:57,604] [INFO] app.middleware: Response 46b46870-b628-4396-8866-fee52a626cdc: 200 (0.000s)
+[2025-06-13 21:41:57,611] [INFO] app.middleware: Request dab60572-9543-4d82-aad2-799013821523: POST /api/workflows/91253eac-ff58-4342-b5dc-de013919f675/execute
+[2025-06-13 21:41:57,644] [INFO] app.database: Connected to DB postgresql://postgres:CodeSD.com@localhost (connection open: True)
+[2025-06-13 21:41:57,652] [INFO] app.services.workflow_engine: Executing step submit_request of type task for instance c3fb1cbb-3094-4213-b500-85269652ab6c
+[2025-06-13 21:41:57,652] [ERROR] app.services.workflow_engine: Step submit_request execution failed (attempt 1): No executor for step type task
+[2025-06-13 21:41:57,660] [ERROR] app.services.workflow_engine: Failed to execute first step: relation "workflow_step_executions" does not exist
+LINE 2:             INSERT INTO workflow_step_executions 
+                                ^
+
+[2025-06-13 21:41:57,660] [ERROR] app.services.workflow_engine: Failed to execute workflow 91253eac-ff58-4342-b5dc-de013919f675: column "error_details" of relation "workflow_instances" does not exist
+LINE 3:             SET error_details = '{"step_id": "submit_request...
+                        ^
+Traceback (most recent call last):
+  File "D:\Dynamic Workflow\workflow-management-system\backend\app\services\workflow_engine.py", line 331, in _execute_step
+    raise StepExecutionError(f"No executor for step type {step_type.value}")
+app.services.workflow_engine.StepExecutionError: No executor for step type task
+
+During handling of the above exception, another exception occurred:
+
+Traceback (most recent call last):
+  File "D:\Dynamic Workflow\workflow-management-system\backend\app\services\workflow_engine.py", line 781, in _start_workflow_execution
+    cls._execute_step(context, first_step, definition)
+  File "D:\Dynamic Workflow\workflow-management-system\backend\app\services\workflow_engine.py", line 350, in _execute_step
+    cls._save_step_execution(context.instance_id, step['id'], False,
+  File "D:\Dynamic Workflow\workflow-management-system\backend\app\services\workflow_engine.py", line 762, in _save_step_execution
+    Database.execute_insert(query, (
+  File "D:\Dynamic Workflow\workflow-management-system\backend\app\database.py", line 81, in execute_insert
+    cursor.execute(query + " RETURNING id", params)
+  File "D:\Dynamic Workflow\workflow-management-system\backend\.venv\Lib\site-packages\psycopg2\extras.py", line 236, in execute
+    return super().execute(query, vars)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+psycopg2.errors.UndefinedTable: relation "workflow_step_executions" does not exist
+LINE 2:             INSERT INTO workflow_step_executions 
+                                ^
+
+
+During handling of the above exception, another exception occurred:
+
+Traceback (most recent call last):
+  File "D:\Dynamic Workflow\workflow-management-system\backend\app\services\workflow_engine.py", line 157, in execute_workflow
+    cls._start_workflow_execution(context, definition)
+  File "D:\Dynamic Workflow\workflow-management-system\backend\app\services\workflow_engine.py", line 784, in _start_workflow_execution
+    cls._handle_workflow_failure(context.instance_id, first_step['id'], str(e))
+  File "D:\Dynamic Workflow\workflow-management-system\backend\app\services\workflow_engine.py", line 686, in _handle_workflow_failure
+    Database.execute_query(query, (
+  File "D:\Dynamic Workflow\workflow-management-system\backend\app\database.py", line 63, in execute_query
+    cursor.execute(query, params)
+  File "D:\Dynamic Workflow\workflow-management-system\backend\.venv\Lib\site-packages\psycopg2\extras.py", line 236, in execute
+    return super().execute(query, vars)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+psycopg2.errors.UndefinedColumn: column "error_details" of relation "workflow_instances" does not exist
+LINE 3:             SET error_details = '{"step_id": "submit_request...
+                        ^
+
+[2025-06-13 21:41:57,668] [ERROR] app.blueprints.workflows: Error executing workflow 91253eac-ff58-4342-b5dc-de013919f675: column "error_details" of relation "workflow_instances" does not exist
+LINE 3:             (workflow_id, title, status, error_details, init...
+                                                 ^
+
+[2025-06-13 21:41:57,676] [INFO] app.middleware: Response dab60572-9543-4d82-aad2-799013821523: 500 (0.065s)
+[2025-06-13 21:42:22,202] [INFO] app.middleware: Request 221b7d76-2e33-476c-b04b-bbec0b4802fa: OPTIONS /api/workflows/91253eac-ff58-4342-b5dc-de013919f675
+[2025-06-13 21:42:22,202] [INFO] app.middleware: Response 221b7d76-2e33-476c-b04b-bbec0b4802fa: 200 (0.000s)
+[2025-06-13 21:42:22,202] [INFO] app.middleware: Request 905f9c9e-53d0-456b-aee7-9fbf60c39157: GET /api/workflows/91253eac-ff58-4342-b5dc-de013919f675
+[2025-06-13 21:42:22,240] [INFO] app.database: Connected to DB postgresql://postgres:CodeSD.com@localhost (connection open: True)
+[2025-06-13 21:42:22,240] [INFO] app.middleware: Response 905f9c9e-53d0-456b-aee7-9fbf60c39157: 200 (0.038s)
+[2025-06-13 21:42:24,938] [INFO] app.middleware: Request 0a7ff897-1f67-45b2-b180-85dfe952660a: OPTIONS /api/notifications/stats
+[2025-06-13 21:42:24,938] [INFO] app.middleware: Request be53cd09-ccf0-4d08-9f38-f29c480832d1: OPTIONS /api/notifications
+[2025-06-13 21:42:24,938] [INFO] app.middleware: Response 0a7ff897-1f67-45b2-b180-85dfe952660a: 200 (0.000s)
+[2025-06-13 21:42:24,938] [INFO] app.middleware: Response be53cd09-ccf0-4d08-9f38-f29c480832d1: 200 (0.000s)
+[2025-06-13 21:42:24,944] [INFO] app.middleware: Request bef94bec-70d7-40a5-8c79-d11a4789eb78: GET /api/notifications/stats
+[2025-06-13 21:42:24,944] [INFO] app.middleware: Request cba154bd-52f7-42d7-90f6-6a4b88ec277d: GET /api/notifications
+[2025-06-13 21:42:24,977] [INFO] app.database: Connected to DB postgresql://postgres:CodeSD.com@localhost (connection open: True)
+[2025-06-13 21:42:24,985] [INFO] app.middleware: Response bef94bec-70d7-40a5-8c79-d11a4789eb78: 200 (0.041s)
+[2025-06-13 21:42:24,989] [INFO] app.database: Connected to DB postgresql://postgres:CodeSD.com@localhost (connection open: True)
+[2025-06-13 21:42:24,994] [INFO] app.middleware: Response cba154bd-52f7-42d7-90f6-6a4b88ec277d: 200 (0.049s)
+[2025-06-13 21:42:31,151] [INFO] app.middleware: Request 0ae115fe-18fe-4b2c-aa11-e0f1e90a22dc: OPTIONS /api/workflows
+[2025-06-13 21:42:31,151] [INFO] app.middleware: Response 0ae115fe-18fe-4b2c-aa11-e0f1e90a22dc: 200 (0.000s)
+[2025-06-13 21:42:31,156] [INFO] app.middleware: Request 3b931227-6aa5-4f7a-9feb-b2c8a6624eb5: GET /api/workflows
+[2025-06-13 21:42:31,189] [INFO] app.database: Connected to DB postgresql://postgres:CodeSD.com@localhost (connection open: True)
+[2025-06-13 21:42:31,189] [INFO] app.middleware: Response 3b931227-6aa5-4f7a-9feb-b2c8a6624eb5: 200 (0.033s)
+[2025-06-13 21:42:38,569] [INFO] app.middleware: Request feb0719b-81ed-447b-839e-04f24ac0d8c1: OPTIONS /api/admin/users
+[2025-06-13 21:42:38,572] [INFO] app.middleware: Response feb0719b-81ed-447b-839e-04f24ac0d8c1: 200 (0.003s)
+[2025-06-13 21:42:38,572] [INFO] app.middleware: Request ae1b360e-2c8e-482d-bd88-831b4d014274: OPTIONS /api/admin/roles
+[2025-06-13 21:42:38,572] [INFO] app.middleware: Response ae1b360e-2c8e-482d-bd88-831b4d014274: 200 (0.000s)
+[2025-06-13 21:42:38,572] [INFO] app.middleware: Request 27daeb80-2a0f-4aac-ab94-4a584fc9e625: GET /api/admin/users
+[2025-06-13 21:42:38,581] [INFO] app.middleware: Request 4017e7cf-4054-4f06-9a10-d0e635c5fe17: GET /api/admin/roles
+[2025-06-13 21:42:38,613] [INFO] app.database: Connected to DB postgresql://postgres:CodeSD.com@localhost (connection open: True)
+[2025-06-13 21:42:38,613] [INFO] app.database: Connected to DB postgresql://postgres:CodeSD.com@localhost (connection open: True)
+[2025-06-13 21:42:38,622] [INFO] app.middleware: Response 4017e7cf-4054-4f06-9a10-d0e635c5fe17: 200 (0.040s)
+[2025-06-13 21:42:38,622] [INFO] app.middleware: Response 27daeb80-2a0f-4aac-ab94-4a584fc9e625: 200 (0.050s)
+[2025-06-13 21:42:43,912] [INFO] app.middleware: Request 998f1247-e89e-44d1-b6d6-53fc5592642a: OPTIONS /api/admin/users
+[2025-06-13 21:42:43,912] [INFO] app.middleware: Response 998f1247-e89e-44d1-b6d6-53fc5592642a: 200 (0.000s)
+[2025-06-13 21:42:43,917] [INFO] app.middleware: Request e0bbb849-f94c-45f9-9ce7-611d34a32fd9: GET /api/admin/users
+[2025-06-13 21:42:43,954] [INFO] app.database: Connected to DB postgresql://postgres:CodeSD.com@localhost (connection open: True)
+[2025-06-13 21:42:43,955] [INFO] app.middleware: Response e0bbb849-f94c-45f9-9ce7-611d34a32fd9: 200 (0.037s)
+[2025-06-13 21:42:46,332] [INFO] app.middleware: Request 931e20dd-4c11-4779-bf5f-efde7f96f893: OPTIONS /api/admin/users
+[2025-06-13 21:42:46,332] [INFO] app.middleware: Response 931e20dd-4c11-4779-bf5f-efde7f96f893: 200 (0.000s)
+[2025-06-13 21:42:46,341] [INFO] app.middleware: Request cc599559-453f-4d46-87ae-622528aea0a2: GET /api/admin/users
+[2025-06-13 21:42:46,373] [INFO] app.database: Connected to DB postgresql://postgres:CodeSD.com@localhost (connection open: True)
+[2025-06-13 21:42:46,373] [INFO] app.middleware: Response cc599559-453f-4d46-87ae-622528aea0a2: 200 (0.032s)
+[2025-06-13 21:42:55,006] [INFO] app.middleware: Request a1139754-c176-43e2-91ab-32fdb079a379: OPTIONS /api/notifications/stats
+[2025-06-13 21:42:55,006] [INFO] app.middleware: Response a1139754-c176-43e2-91ab-32fdb079a379: 200 (0.000s)
+[2025-06-13 21:42:55,013] [INFO] app.middleware: Request a3dd0d2f-1985-4b5f-86be-6af6a09a399c: GET /api/notifications/stats
+[2025-06-13 21:42:55,013] [INFO] app.middleware: Request 3d3df562-a0e0-4c67-8e48-c679e96fada3: OPTIONS /api/notifications
+[2025-06-13 21:42:55,013] [INFO] app.middleware: Response 3d3df562-a0e0-4c67-8e48-c679e96fada3: 200 (0.000s)
+[2025-06-13 21:42:55,013] [INFO] app.middleware: Request 7a8258c3-8b3f-4f79-b067-7cd20ee50319: GET /api/notifications
+[2025-06-13 21:42:55,045] [INFO] app.database: Connected to DB postgresql://postgres:CodeSD.com@localhost (connection open: True)
+[2025-06-13 21:42:55,053] [INFO] app.middleware: Response a3dd0d2f-1985-4b5f-86be-6af6a09a399c: 200 (0.040s)
+[2025-06-13 21:42:55,057] [INFO] app.database: Connected to DB postgresql://postgres:CodeSD.com@localhost (connection open: True)
+[2025-06-13 21:42:55,061] [INFO] app.middleware: Response 7a8258c3-8b3f-4f79-b067-7cd20ee50319: 200 (0.049s)
+[2025-06-13 21:43:26,405] [INFO] app.middleware: Request c52365ea-c782-4c20-b2f6-b944cf2269d9: OPTIONS /api/notifications/stats
+[2025-06-13 21:43:26,408] [INFO] app.middleware: Request 99646985-5a61-481a-a256-cc29e2c0835a: OPTIONS /api/notifications
+[2025-06-13 21:43:26,409] [INFO] app.middleware: Response 99646985-5a61-481a-a256-cc29e2c0835a: 200 (0.004s)
+[2025-06-13 21:43:26,409] [INFO] app.middleware: Response c52365ea-c782-4c20-b2f6-b944cf2269d9: 200 (0.004s)
+[2025-06-13 21:43:26,409] [INFO] app.middleware: Request 435799c5-68e0-46f2-8ced-f84db5c3080f: GET /api/notifications
+[2025-06-13 21:43:26,409] [INFO] app.middleware: Request ba2c979a-eaa9-4700-a6ab-dd6a7b07ba9a: GET /api/notifications/stats
+[2025-06-13 21:43:26,449] [INFO] app.database: Connected to DB postgresql://postgres:CodeSD.com@localhost (connection open: True)
+[2025-06-13 21:43:26,449] [INFO] app.database: Connected to DB postgresql://postgres:CodeSD.com@localhost (connection open: True)
+[2025-06-13 21:43:26,449] [INFO] app.middleware: Response 435799c5-68e0-46f2-8ced-f84db5c3080f: 200 (0.040s)
+[2025-06-13 21:43:26,449] [INFO] app.middleware: Response ba2c979a-eaa9-4700-a6ab-dd6a7b07ba9a: 200 (0.040s)
+[2025-06-13 21:43:45,111] [INFO] app.middleware: Request 1d3d9c09-9d06-483e-8a82-5997c738513f: OPTIONS /api/admin/health
+[2025-06-13 21:43:45,111] [INFO] app.middleware: Response 1d3d9c09-9d06-483e-8a82-5997c738513f: 200 (0.000s)
+[2025-06-13 21:43:45,115] [INFO] app.middleware: Request 2ec97842-220c-4c1e-a1f0-f3201816e280: GET /api/admin/health
+[2025-06-13 21:43:45,177] [INFO] app.database: Connected to DB postgresql://postgres:CodeSD.com@localhost (connection open: True)
+[2025-06-13 21:43:45,189] [INFO] app.middleware: Response 2ec97842-220c-4c1e-a1f0-f3201816e280: 200 (0.074s)
+[2025-06-13 21:43:55,297] [INFO] app.middleware: Request 4d579bd9-d8e5-4797-996d-ed45549d03e8: OPTIONS /api/admin/users
+[2025-06-13 21:43:55,298] [INFO] app.middleware: Response 4d579bd9-d8e5-4797-996d-ed45549d03e8: 200 (0.002s)
+[2025-06-13 21:43:55,302] [INFO] app.middleware: Request 0b890773-df73-4ac0-96c1-3f32b22f6f57: GET /api/admin/users
+[2025-06-13 21:43:55,351] [INFO] app.database: Connected to DB postgresql://postgres:CodeSD.com@localhost (connection open: True)
+[2025-06-13 21:43:55,356] [INFO] app.middleware: Response 0b890773-df73-4ac0-96c1-3f32b22f6f57: 200 (0.055s)
+[2025-06-13 21:43:57,157] [INFO] app.middleware: Request aa59fb6a-bbc4-420a-85c4-fc88158bf074: OPTIONS /api/admin/users
+[2025-06-13 21:43:57,159] [INFO] app.middleware: Response aa59fb6a-bbc4-420a-85c4-fc88158bf074: 200 (0.002s)
+[2025-06-13 21:43:57,161] [INFO] app.middleware: Request e1126ccc-924e-494c-8741-cbe37204bca1: GET /api/admin/users
+[2025-06-13 21:43:57,163] [INFO] app.middleware: Request ba4d5465-ea4c-4fd9-90d3-b866c0a9d6bc: OPTIONS /api/notifications
+[2025-06-13 21:43:57,163] [INFO] app.middleware: Response ba4d5465-ea4c-4fd9-90d3-b866c0a9d6bc: 200 (0.000s)
+[2025-06-13 21:43:57,164] [INFO] app.middleware: Request 045857f3-7b73-4beb-80f1-4c9cb0119ab2: OPTIONS /api/notifications/stats
+[2025-06-13 21:43:57,165] [INFO] app.middleware: Response 045857f3-7b73-4beb-80f1-4c9cb0119ab2: 200 (0.001s)
+[2025-06-13 21:43:57,168] [INFO] app.middleware: Request 41728136-61d7-4be3-8e3a-354b1f03db02: GET /api/notifications
+[2025-06-13 21:43:57,174] [INFO] app.middleware: Request c1c53db6-ee08-4af1-95a3-6f6f7a8c019e: GET /api/notifications/stats
+[2025-06-13 21:43:57,234] [INFO] app.database: Connected to DB postgresql://postgres:CodeSD.com@localhost (connection open: True)
+[2025-06-13 21:43:57,237] [INFO] app.database: Connected to DB postgresql://postgres:CodeSD.com@localhost (connection open: True)
+[2025-06-13 21:43:57,238] [INFO] app.middleware: Response 41728136-61d7-4be3-8e3a-354b1f03db02: 200 (0.070s)
+[2025-06-13 21:43:57,242] [INFO] app.middleware: Response c1c53db6-ee08-4af1-95a3-6f6f7a8c019e: 200 (0.068s)
+[2025-06-13 21:43:57,317] [INFO] app.database: Connected to DB postgresql://postgres:CodeSD.com@localhost (connection open: True)
+[2025-06-13 21:43:57,322] [INFO] app.middleware: Response e1126ccc-924e-494c-8741-cbe37204bca1: 200 (0.162s)
+[2025-06-13 21:44:00,862] [INFO] app.middleware: Request b4acb24c-653e-458a-ade6-580a294b7716: OPTIONS /api/admin/users
+[2025-06-13 21:44:00,863] [INFO] app.middleware: Response b4acb24c-653e-458a-ade6-580a294b7716: 200 (0.001s)
+[2025-06-13 21:44:00,868] [INFO] app.middleware: Request a05a573a-9292-40e0-a11e-e1231c601287: GET /api/admin/users
+[2025-06-13 21:44:00,912] [INFO] app.database: Connected to DB postgresql://postgres:CodeSD.com@localhost (connection open: True)
+[2025-06-13 21:44:00,918] [INFO] app.middleware: Response a05a573a-9292-40e0-a11e-e1231c601287: 200 (0.050s)
+[2025-06-13 21:44:04,784] [INFO] app.middleware: Request 1e6104d8-90d4-4452-91f5-d86830041988: OPTIONS /api/admin/users
+[2025-06-13 21:44:04,785] [INFO] app.middleware: Response 1e6104d8-90d4-4452-91f5-d86830041988: 200 (0.001s)
+[2025-06-13 21:44:04,789] [INFO] app.middleware: Request 580f4803-19c6-4ecc-a84a-2665980d9d6c: GET /api/admin/users
+[2025-06-13 21:44:04,844] [INFO] app.database: Connected to DB postgresql://postgres:CodeSD.com@localhost (connection open: True)
+[2025-06-13 21:44:04,857] [INFO] app.middleware: Response 580f4803-19c6-4ecc-a84a-2665980d9d6c: 200 (0.068s)
+[2025-06-13 21:44:06,883] [INFO] app.middleware: Request 72ee4d9a-d062-4d2a-ae3d-c0fd5ac1cc62: OPTIONS /api/admin/users
+[2025-06-13 21:44:06,883] [INFO] app.middleware: Response 72ee4d9a-d062-4d2a-ae3d-c0fd5ac1cc62: 200 (0.001s)
+[2025-06-13 21:44:06,890] [INFO] app.middleware: Request 2913cf2e-c6af-4ebe-9fbf-ed652f0bf757: GET /api/admin/users
+[2025-06-13 21:44:06,939] [INFO] app.database: Connected to DB postgresql://postgres:CodeSD.com@localhost (connection open: True)
+[2025-06-13 21:44:06,944] [INFO] app.middleware: Response 2913cf2e-c6af-4ebe-9fbf-ed652f0bf757: 200 (0.054s)
+[2025-06-13 21:44:08,825] [INFO] app.middleware: Request cee9df8c-5342-4e93-95d0-83ed926fe3da: OPTIONS /api/reports/performance
+[2025-06-13 21:44:08,826] [INFO] app.middleware: Request 76bc6f43-6e48-49e5-86b9-323be34305c4: OPTIONS /api/reports/sla-compliance
+[2025-06-13 21:44:08,826] [INFO] app.middleware: Response cee9df8c-5342-4e93-95d0-83ed926fe3da: 200 (0.001s)
+[2025-06-13 21:44:08,826] [INFO] app.middleware: Response 76bc6f43-6e48-49e5-86b9-323be34305c4: 200 (0.000s)
+[2025-06-13 21:44:08,829] [INFO] app.middleware: Request 27df071f-4c94-4dc4-b056-6aaac81cb79d: GET /api/reports/performance
+[2025-06-13 21:44:08,832] [INFO] app.middleware: Request 4bbe5c61-bd42-4eae-8abb-1b5a47800ef1: GET /api/reports/sla-compliance
+[2025-06-13 21:44:08,895] [INFO] app.database: Connected to DB postgresql://postgres:CodeSD.com@localhost (connection open: True)
+[2025-06-13 21:44:08,899] [INFO] app.database: Connected to DB postgresql://postgres:CodeSD.com@localhost (connection open: True)
+[2025-06-13 21:44:08,912] [INFO] app.middleware: Response 27df071f-4c94-4dc4-b056-6aaac81cb79d: 200 (0.082s)
+[2025-06-13 21:44:08,917] [INFO] app.middleware: Response 4bbe5c61-bd42-4eae-8abb-1b5a47800ef1: 200 (0.084s)
+[2025-06-13 21:44:13,245] [INFO] app.middleware: Request 678fa00f-b7e7-479d-bb8b-790c6ad5db1d: OPTIONS /api/reports/export/tasks
+[2025-06-13 21:44:13,246] [INFO] app.middleware: Response 678fa00f-b7e7-479d-bb8b-790c6ad5db1d: 200 (0.001s)
+[2025-06-13 21:44:13,247] [INFO] app.middleware: Request f9b6d006-7625-42cd-8133-b06344d7c07b: GET /api/reports/export/tasks
+[2025-06-13 21:44:13,287] [INFO] app.database: Connected to DB postgresql://postgres:CodeSD.com@localhost (connection open: True)
+[2025-06-13 21:44:13,295] [INFO] app.middleware: Response f9b6d006-7625-42cd-8133-b06344d7c07b: 200 (0.048s)
+[2025-06-13 21:44:16,613] [INFO] app.middleware: Request 3a370618-fb26-4f3d-b82d-d74d9762c62f: OPTIONS /api/reports/export/workflow_instances
+[2025-06-13 21:44:16,615] [INFO] app.middleware: Response 3a370618-fb26-4f3d-b82d-d74d9762c62f: 200 (0.002s)
+[2025-06-13 21:44:16,617] [INFO] app.middleware: Request 4a52a8dd-c975-4265-8ef7-4b150ccc8a25: GET /api/reports/export/workflow_instances
+[2025-06-13 21:44:16,681] [INFO] app.database: Connected to DB postgresql://postgres:CodeSD.com@localhost (connection open: True)
+[2025-06-13 21:44:16,687] [INFO] app.middleware: Response 4a52a8dd-c975-4265-8ef7-4b150ccc8a25: 200 (0.069s)
+[2025-06-13 21:44:27,253] [INFO] app.middleware: Request 7e6ada05-30db-4181-9d97-4af2b80393f1: OPTIONS /api/notifications
+[2025-06-13 21:44:27,253] [INFO] app.middleware: Response 7e6ada05-30db-4181-9d97-4af2b80393f1: 200 (0.000s)
+[2025-06-13 21:44:27,258] [INFO] app.middleware: Request b61ab599-f7d8-4e57-b769-5ceb97ef5769: OPTIONS /api/notifications/stats
+[2025-06-13 21:44:27,258] [INFO] app.middleware: Response b61ab599-f7d8-4e57-b769-5ceb97ef5769: 200 (0.000s)
+[2025-06-13 21:44:27,265] [INFO] app.middleware: Request 4c327159-f8b7-472e-aac8-cecb08b3aaee: GET /api/notifications
+[2025-06-13 21:44:27,270] [INFO] app.middleware: Request a86e3b40-3b28-43eb-b2cf-ce3430a24045: GET /api/notifications/stats
+[2025-06-13 21:44:27,314] [INFO] app.database: Connected to DB postgresql://postgres:CodeSD.com@localhost (connection open: True)
+[2025-06-13 21:44:27,321] [INFO] app.middleware: Response 4c327159-f8b7-472e-aac8-cecb08b3aaee: 200 (0.057s)
+[2025-06-13 21:44:27,323] [INFO] app.database: Connected to DB postgresql://postgres:CodeSD.com@localhost (connection open: True)
+[2025-06-13 21:44:27,328] [INFO] app.middleware: Response a86e3b40-3b28-43eb-b2cf-ce3430a24045: 200 (0.058s)
+[2025-06-13 21:44:28,482] [INFO] app.middleware: Request be11cbf0-fd58-492e-86b6-82e4de7460c1: OPTIONS /api/files
+[2025-06-13 21:44:28,482] [INFO] app.middleware: Request fcbfcea5-8250-4e3f-929c-f100f4f27c61: OPTIONS /api/files/stats
+[2025-06-13 21:44:28,482] [INFO] app.middleware: Response be11cbf0-fd58-492e-86b6-82e4de7460c1: 200 (0.000s)
+[2025-06-13 21:44:28,482] [INFO] app.middleware: Response fcbfcea5-8250-4e3f-929c-f100f4f27c61: 200 (0.000s)
+[2025-06-13 21:44:28,489] [INFO] app.middleware: Request 0103bab2-bf25-4106-8a43-5df979e3cd7a: GET /api/files
+[2025-06-13 21:44:28,489] [INFO] app.middleware: Request 9e327e8c-3165-4fa1-8b37-cf0dc17ed5db: GET /api/files/stats
+[2025-06-13 21:44:28,552] [INFO] app.database: Connected to DB postgresql://postgres:CodeSD.com@localhost (connection open: True)
+[2025-06-13 21:44:28,553] [INFO] app.database: Connected to DB postgresql://postgres:CodeSD.com@localhost (connection open: True)
+[2025-06-13 21:44:28,562] [INFO] app.middleware: Response 9e327e8c-3165-4fa1-8b37-cf0dc17ed5db: 200 (0.073s)
+[2025-06-13 21:44:28,571] [INFO] app.middleware: Response 0103bab2-bf25-4106-8a43-5df979e3cd7a: 200 (0.082s)
+[2025-06-13 21:44:47,410] [INFO] app.middleware: Request 3b5a19ba-8815-4a0a-9ce8-7914680e519e: OPTIONS /api/files/upload
+[2025-06-13 21:44:47,412] [INFO] app.middleware: Response 3b5a19ba-8815-4a0a-9ce8-7914680e519e: 200 (0.002s)
+[2025-06-13 21:44:47,418] [INFO] app.middleware: Request 1a31c333-405c-4c85-b51c-7f58d13eb34c: POST /api/files/upload
+[2025-06-13 21:44:47,495] [INFO] app.database: Connected to DB postgresql://postgres:CodeSD.com@localhost (connection open: True)
+[2025-06-13 21:44:47,500] [WARNING] app.utils.file_handler: File extension 'csv' not allowed
+[2025-06-13 21:44:47,514] [INFO] app.middleware: Response 1a31c333-405c-4c85-b51c-7f58d13eb34c: 400 (0.096s)
+[2025-06-13 21:44:57,333] [INFO] app.middleware: Request c21cd42a-6d18-424e-a15c-15834fb46534: OPTIONS /api/notifications
+[2025-06-13 21:44:57,333] [INFO] app.middleware: Response c21cd42a-6d18-424e-a15c-15834fb46534: 200 (0.000s)
+[2025-06-13 21:44:57,338] [INFO] app.middleware: Request d7f809d6-c749-4da0-942a-d50bf4c6a591: GET /api/notifications
+[2025-06-13 21:44:57,341] [INFO] app.middleware: Request 13c21faa-b5b7-4e80-afe2-d9b02a5864bb: OPTIONS /api/notifications/stats
+[2025-06-13 21:44:57,341] [INFO] app.middleware: Response 13c21faa-b5b7-4e80-afe2-d9b02a5864bb: 200 (0.000s)
+[2025-06-13 21:44:57,345] [INFO] app.middleware: Request e6625e40-27e5-4c6f-9457-ffbbb680a890: GET /api/notifications/stats
+[2025-06-13 21:44:57,388] [INFO] app.database: Connected to DB postgresql://postgres:CodeSD.com@localhost (connection open: True)
+[2025-06-13 21:44:57,393] [INFO] app.middleware: Response d7f809d6-c749-4da0-942a-d50bf4c6a591: 200 (0.055s)
+[2025-06-13 21:44:57,397] [INFO] app.database: Connected to DB postgresql://postgres:CodeSD.com@localhost (connection open: True)
+[2025-06-13 21:44:57,403] [INFO] app.middleware: Response e6625e40-27e5-4c6f-9457-ffbbb680a890: 200 (0.058s)
+[2025-06-13 21:44:59,024] [INFO] app.middleware: Request 312c5788-acc1-4ae5-a696-4e175351fa52: OPTIONS /api/files/upload
+[2025-06-13 21:44:59,024] [INFO] app.middleware: Response 312c5788-acc1-4ae5-a696-4e175351fa52: 200 (0.000s)
+[2025-06-13 21:44:59,030] [INFO] app.middleware: Request e7bb71d8-18dc-4092-a48e-d0ee5c1b5051: POST /api/files/upload
+[2025-06-13 21:44:59,116] [INFO] app.database: Connected to DB postgresql://postgres:CodeSD.com@localhost (connection open: True)
+[2025-06-13 21:44:59,126] [INFO] app.utils.file_handler: Detected MIME type: application/pdf for file: Final Implementation Guide.pdf
+[2025-06-13 21:44:59,130] [INFO] app.utils.file_handler: File saved: uploads\00000000-0000-0000-0000-000000000001\2025/06/13\Final_Implementation_Guide_1749843899.pdf
+[2025-06-13 21:44:59,158] [ERROR] app.blueprints.files: Error uploading file: too many values to unpack (expected 3)
+[2025-06-13 21:44:59,175] [INFO] app.middleware: Response e7bb71d8-18dc-4092-a48e-d0ee5c1b5051: 500 (0.144s)
+[2025-06-13 21:45:08,790] [INFO] app.middleware: Request aa928063-c935-45a8-ae19-fe4f6e79811b: OPTIONS /api/files/upload
+[2025-06-13 21:45:08,792] [INFO] app.middleware: Response aa928063-c935-45a8-ae19-fe4f6e79811b: 200 (0.002s)
+[2025-06-13 21:45:08,797] [INFO] app.middleware: Request 266cc6b8-646e-4bb0-9f7c-d9113444b795: POST /api/files/upload
+[2025-06-13 21:45:08,871] [INFO] app.database: Connected to DB postgresql://postgres:CodeSD.com@localhost (connection open: True)
+[2025-06-13 21:45:09,151] [INFO] app.utils.file_handler: Detected MIME type: text/plain for file: message.txt
+[2025-06-13 21:45:09,157] [INFO] app.utils.file_handler: File saved: uploads\00000000-0000-0000-0000-000000000001\2025/06/13\message_1749843909.txt
+[2025-06-13 21:45:09,217] [ERROR] app.blueprints.files: Error uploading file: too many values to unpack (expected 3)
+[2025-06-13 21:45:09,242] [INFO] app.middleware: Response 266cc6b8-646e-4bb0-9f7c-d9113444b795: 500 (0.445s)
+[2025-06-13 21:45:27,428] [INFO] app.middleware: Request 4f881671-4f2e-48a8-b880-cc4502b6d5a8: OPTIONS /api/notifications
+[2025-06-13 21:45:27,430] [INFO] app.middleware: Request 20964196-34b5-4d34-a576-ea5114fa897c: OPTIONS /api/notifications/stats
+[2025-06-13 21:45:27,430] [INFO] app.middleware: Response 4f881671-4f2e-48a8-b880-cc4502b6d5a8: 200 (0.002s)
+[2025-06-13 21:45:27,431] [INFO] app.middleware: Response 20964196-34b5-4d34-a576-ea5114fa897c: 200 (0.001s)
+[2025-06-13 21:45:27,437] [INFO] app.middleware: Request fba4f006-7302-4ed7-b42f-9c31f5a4d1cd: GET /api/notifications
+[2025-06-13 21:45:27,438] [INFO] app.middleware: Request 5fdae4f1-2edc-4cf9-805d-4ab3c6afc4ab: GET /api/notifications/stats
+[2025-06-13 21:45:27,495] [INFO] app.database: Connected to DB postgresql://postgres:CodeSD.com@localhost (connection open: True)
+[2025-06-13 21:45:27,500] [INFO] app.middleware: Response 5fdae4f1-2edc-4cf9-805d-4ab3c6afc4ab: 200 (0.062s)
+[2025-06-13 21:45:27,501] [INFO] app.database: Connected to DB postgresql://postgres:CodeSD.com@localhost (connection open: True)
+[2025-06-13 21:45:27,508] [INFO] app.middleware: Response fba4f006-7302-4ed7-b42f-9c31f5a4d1cd: 200 (0.071s)
+[2025-06-13 21:45:58,202] [INFO] app.middleware: Request bc7cbe86-5082-427d-a6c8-06f97f4fdc49: OPTIONS /api/notifications/stats
+[2025-06-13 21:45:58,202] [INFO] app.middleware: Request 30eb9b35-f45a-4b66-9906-d3e4c5ec3a35: OPTIONS /api/notifications
+[2025-06-13 21:45:58,202] [INFO] app.middleware: Response bc7cbe86-5082-427d-a6c8-06f97f4fdc49: 200 (0.000s)
+[2025-06-13 21:45:58,202] [INFO] app.middleware: Response 30eb9b35-f45a-4b66-9906-d3e4c5ec3a35: 200 (0.000s)
+[2025-06-13 21:45:58,208] [INFO] app.middleware: Request b0f28109-21aa-408d-a0f6-efc75ebc906c: GET /api/notifications/stats
+[2025-06-13 21:45:58,210] [INFO] app.middleware: Request 280e1322-ff33-446e-a03a-8c9c28afd5e1: GET /api/notifications
+[2025-06-13 21:45:58,275] [INFO] app.database: Connected to DB postgresql://postgres:CodeSD.com@localhost (connection open: True)
+[2025-06-13 21:45:58,282] [INFO] app.middleware: Response b0f28109-21aa-408d-a0f6-efc75ebc906c: 200 (0.074s)
+[2025-06-13 21:45:58,388] [INFO] app.database: Connected to DB postgresql://postgres:CodeSD.com@localhost (connection open: True)
+[2025-06-13 21:45:58,393] [INFO] app.middleware: Response 280e1322-ff33-446e-a03a-8c9c28afd5e1: 200 (0.183s)
+[2025-06-13 21:46:28,417] [INFO] app.middleware: Request cc562082-f117-492a-bdfb-c02e4cadbc72: OPTIONS /api/notifications/stats
+[2025-06-13 21:46:28,417] [INFO] app.middleware: Response cc562082-f117-492a-bdfb-c02e4cadbc72: 200 (0.000s)
+[2025-06-13 21:46:28,420] [INFO] app.middleware: Request 38d01ba9-4d82-4b78-8d9c-43b25094c764: OPTIONS /api/notifications
+[2025-06-13 21:46:28,420] [INFO] app.middleware: Response 38d01ba9-4d82-4b78-8d9c-43b25094c764: 200 (0.000s)
+[2025-06-13 21:46:28,423] [INFO] app.middleware: Request 72b503ac-9e57-477e-bdb8-4eae1b5718db: GET /api/notifications/stats
+[2025-06-13 21:46:28,425] [INFO] app.middleware: Request 4dfb07ae-1c11-4fe7-a820-a5c82f8854a8: GET /api/notifications
+[2025-06-13 21:46:28,474] [INFO] app.database: Connected to DB postgresql://postgres:CodeSD.com@localhost (connection open: True)
+[2025-06-13 21:46:28,476] [INFO] app.middleware: Response 4dfb07ae-1c11-4fe7-a820-a5c82f8854a8: 200 (0.054s)
+[2025-06-13 21:46:28,563] [INFO] app.database: Connected to DB postgresql://postgres:CodeSD.com@localhost (connection open: True)
+[2025-06-13 21:46:28,568] [INFO] app.middleware: Response 72b503ac-9e57-477e-bdb8-4eae1b5718db: 200 (0.145s)
+[2025-06-13 21:46:58,552] [INFO] app.middleware: Request 7120ab3b-f85f-4fff-ba47-9c155cb3d035: OPTIONS /api/notifications
+[2025-06-13 21:46:58,552] [INFO] app.middleware: Response 7120ab3b-f85f-4fff-ba47-9c155cb3d035: 200 (0.000s)
+[2025-06-13 21:46:58,552] [INFO] app.middleware: Request 23adab87-34ec-44ca-ab86-9c25f23fd96a: GET /api/notifications
+[2025-06-13 21:46:58,577] [INFO] app.middleware: Request 1eaf9dfb-b69f-47d7-b31b-d2c2441f0c41: OPTIONS /api/notifications/stats
+[2025-06-13 21:46:58,577] [INFO] app.middleware: Response 1eaf9dfb-b69f-47d7-b31b-d2c2441f0c41: 200 (0.000s)
+[2025-06-13 21:46:58,582] [INFO] app.middleware: Request 08e86b7f-c71f-4115-920a-1f65769ea4d4: GET /api/notifications/stats
+[2025-06-13 21:46:58,595] [INFO] app.database: Connected to DB postgresql://postgres:CodeSD.com@localhost (connection open: True)
+[2025-06-13 21:46:58,599] [INFO] app.middleware: Response 23adab87-34ec-44ca-ab86-9c25f23fd96a: 200 (0.047s)
+[2025-06-13 21:46:58,634] [INFO] app.database: Connected to DB postgresql://postgres:CodeSD.com@localhost (connection open: True)
+[2025-06-13 21:46:58,638] [INFO] app.middleware: Response 08e86b7f-c71f-4115-920a-1f65769ea4d4: 200 (0.056s)
+[2025-06-13 21:47:28,713] [INFO] app.middleware: Request ec9e6d05-0951-460e-862b-e5cc65403c0e: OPTIONS /api/notifications
+[2025-06-13 21:47:28,716] [INFO] app.middleware: Response ec9e6d05-0951-460e-862b-e5cc65403c0e: 200 (0.003s)
+[2025-06-13 21:47:28,717] [INFO] app.middleware: Request 9b95787e-c6a1-422a-ac5c-ac8511089a4b: OPTIONS /api/notifications/stats
+[2025-06-13 21:47:28,719] [INFO] app.middleware: Response 9b95787e-c6a1-422a-ac5c-ac8511089a4b: 200 (0.002s)
+[2025-06-13 21:47:28,720] [INFO] app.middleware: Request ef70df5d-dd57-42c0-818a-38e6bd239e27: GET /api/notifications
+[2025-06-13 21:47:28,722] [INFO] app.middleware: Request 75c79889-6ad5-4d7b-948d-18097f9b3b4d: GET /api/notifications/stats
+[2025-06-13 21:47:28,793] [INFO] app.database: Connected to DB postgresql://postgres:CodeSD.com@localhost (connection open: True)
+[2025-06-13 21:47:28,798] [INFO] app.database: Connected to DB postgresql://postgres:CodeSD.com@localhost (connection open: True)
+[2025-06-13 21:47:28,800] [INFO] app.middleware: Response ef70df5d-dd57-42c0-818a-38e6bd239e27: 200 (0.080s)
+[2025-06-13 21:47:28,802] [INFO] app.middleware: Response 75c79889-6ad5-4d7b-948d-18097f9b3b4d: 200 (0.080s)
+[2025-06-13 21:47:36,144] [INFO] app.middleware: Request 5dae073a-b8e6-4123-ab18-092c91ef703d: OPTIONS /api/forms
+[2025-06-13 21:47:36,144] [INFO] app.middleware: Response 5dae073a-b8e6-4123-ab18-092c91ef703d: 200 (0.000s)
+[2025-06-13 21:47:36,144] [INFO] app.middleware: Request d98826b6-2e88-4731-b2cb-ee10fc03091e: POST /api/forms
+[2025-06-13 21:47:36,200] [INFO] app.database: Connected to DB postgresql://postgres:CodeSD.com@localhost (connection open: True)
+[2025-06-13 21:47:36,219] [INFO] app.middleware: Response d98826b6-2e88-4731-b2cb-ee10fc03091e: 201 (0.075s)
+[2025-06-13 21:48:58,828] [INFO] app.middleware: Request 78b9c936-9fff-4cfd-857d-8d4719d1c20b: OPTIONS /api/notifications
+[2025-06-13 21:48:58,828] [INFO] app.middleware: Request e310063a-acb6-4c3a-a8ba-5832b26a0b2c: OPTIONS /api/notifications/stats
+[2025-06-13 21:48:58,828] [INFO] app.middleware: Response 78b9c936-9fff-4cfd-857d-8d4719d1c20b: 200 (0.000s)
+[2025-06-13 21:48:58,828] [INFO] app.middleware: Response e310063a-acb6-4c3a-a8ba-5832b26a0b2c: 200 (0.000s)
+[2025-06-13 21:48:58,832] [INFO] app.middleware: Request d373a88d-3cc6-47da-bf8e-163f7bae17b9: GET /api/notifications
+[2025-06-13 21:48:58,836] [INFO] app.middleware: Request 7010a624-6024-4add-8ee9-8d1cd7367803: GET /api/notifications/stats
+[2025-06-13 21:48:58,897] [INFO] app.database: Connected to DB postgresql://postgres:CodeSD.com@localhost (connection open: True)
+[2025-06-13 21:48:58,902] [INFO] app.database: Connected to DB postgresql://postgres:CodeSD.com@localhost (connection open: True)
+[2025-06-13 21:48:58,906] [INFO] app.middleware: Response d373a88d-3cc6-47da-bf8e-163f7bae17b9: 200 (0.074s)
+[2025-06-13 21:48:58,909] [INFO] app.middleware: Response 7010a624-6024-4add-8ee9-8d1cd7367803: 200 (0.074s)
+[2025-06-13 21:49:28,928] [INFO] app.middleware: Request fa1ffb49-af97-4292-bfeb-61065a9a2e9f: OPTIONS /api/notifications
+[2025-06-13 21:49:28,928] [INFO] app.middleware: Request 4f55e1ea-4a50-4ce3-b836-033592de3e08: OPTIONS /api/notifications/stats
+[2025-06-13 21:49:28,928] [INFO] app.middleware: Response fa1ffb49-af97-4292-bfeb-61065a9a2e9f: 200 (0.000s)
+[2025-06-13 21:49:28,928] [INFO] app.middleware: Response 4f55e1ea-4a50-4ce3-b836-033592de3e08: 200 (0.000s)
+[2025-06-13 21:49:28,932] [INFO] app.middleware: Request 81b9b2f9-38e4-4b7e-a901-3e12ede831dd: GET /api/notifications
+[2025-06-13 21:49:28,942] [INFO] app.middleware: Request 4b3f8ad8-90b8-4fac-a038-2b68e134cce7: GET /api/notifications/stats
+[2025-06-13 21:49:29,016] [INFO] app.database: Connected to DB postgresql://postgres:CodeSD.com@localhost (connection open: True)
+[2025-06-13 21:49:29,021] [INFO] app.database: Connected to DB postgresql://postgres:CodeSD.com@localhost (connection open: True)
+[2025-06-13 21:49:29,028] [INFO] app.middleware: Response 81b9b2f9-38e4-4b7e-a901-3e12ede831dd: 200 (0.096s)
+[2025-06-13 21:49:29,032] [INFO] app.middleware: Response 4b3f8ad8-90b8-4fac-a038-2b68e134cce7: 200 (0.090s)
+[2025-06-13 21:50:00,851] [INFO] app.middleware: Request 9c4b7322-47ce-4b60-8cb5-632a34e6f28d: OPTIONS /api/notifications
+[2025-06-13 21:50:00,859] [INFO] app.middleware: Request e3963dc9-a939-45b9-b79f-afd5c4136268: OPTIONS /api/notifications/stats
+[2025-06-13 21:50:00,860] [INFO] app.middleware: Response 9c4b7322-47ce-4b60-8cb5-632a34e6f28d: 200 (0.009s)
+[2025-06-13 21:50:00,861] [INFO] app.middleware: Response e3963dc9-a939-45b9-b79f-afd5c4136268: 200 (0.003s)
+[2025-06-13 21:50:00,867] [INFO] app.middleware: Request 4bb14460-ff52-4e38-b64f-f1060adcb5c6: GET /api/notifications
+[2025-06-13 21:50:00,875] [INFO] app.middleware: Request d14a8020-44d1-4148-8689-7aca0e6b05ff: GET /api/notifications/stats
+[2025-06-13 21:50:00,949] [INFO] app.database: Connected to DB postgresql://postgres:CodeSD.com@localhost (connection open: True)
+[2025-06-13 21:50:00,952] [INFO] app.database: Connected to DB postgresql://postgres:CodeSD.com@localhost (connection open: True)
+[2025-06-13 21:50:00,959] [INFO] app.middleware: Response 4bb14460-ff52-4e38-b64f-f1060adcb5c6: 200 (0.092s)
+[2025-06-13 21:50:00,962] [INFO] app.middleware: Response d14a8020-44d1-4148-8689-7aca0e6b05ff: 200 (0.087s)
+[2025-06-13 21:50:18,445] [INFO] app.middleware: Request 362f3f8f-e412-4780-9f07-7045f955b402: OPTIONS /api/tasks
+[2025-06-13 21:50:18,445] [INFO] app.middleware: Response 362f3f8f-e412-4780-9f07-7045f955b402: 200 (0.000s)
+[2025-06-13 21:50:18,445] [INFO] app.middleware: Request c097ac3e-7c53-4ea0-acf7-416604d636fa: GET /api/tasks
+[2025-06-13 21:50:18,492] [INFO] app.database: Connected to DB postgresql://postgres:CodeSD.com@localhost (connection open: True)
+[2025-06-13 21:50:18,500] [INFO] app.middleware: Response c097ac3e-7c53-4ea0-acf7-416604d636fa: 200 (0.055s)
+[2025-06-13 21:50:22,642] [INFO] app.middleware: Request 7d1f327f-84ef-4b0d-977b-7f0fa1e6ba4d: OPTIONS /api/tasks
+[2025-06-13 21:50:22,643] [INFO] app.middleware: Response 7d1f327f-84ef-4b0d-977b-7f0fa1e6ba4d: 200 (0.002s)
+[2025-06-13 21:50:22,643] [INFO] app.middleware: Request ba116ed1-292e-4b97-be94-2db1ae5a09bc: GET /api/tasks
+[2025-06-13 21:50:22,676] [INFO] app.database: Connected to DB postgresql://postgres:CodeSD.com@localhost (connection open: True)
+[2025-06-13 21:50:22,682] [INFO] app.middleware: Response ba116ed1-292e-4b97-be94-2db1ae5a09bc: 200 (0.039s)
+[2025-06-13 21:50:26,506] [INFO] app.middleware: Request 2ea11096-389d-45fd-83d2-850ee942eb2c: OPTIONS /api/tasks/dashboard-stats
+[2025-06-13 21:50:26,506] [INFO] app.middleware: Request 6a5b7819-d679-4406-aad6-1a9a4d3fac12: OPTIONS /api/reports/dashboard-stats
+[2025-06-13 21:50:26,506] [INFO] app.middleware: Response 2ea11096-389d-45fd-83d2-850ee942eb2c: 200 (0.000s)
+[2025-06-13 21:50:26,506] [INFO] app.middleware: Response 6a5b7819-d679-4406-aad6-1a9a4d3fac12: 200 (0.000s)
+[2025-06-13 21:50:26,506] [INFO] app.middleware: Request 29cb48af-b8c6-4e91-bada-abae47241977: GET /api/tasks/dashboard-stats
+[2025-06-13 21:50:26,511] [INFO] app.middleware: Request c57f1738-bf66-474d-bf21-f03c29de4825: GET /api/reports/dashboard-stats
+[2025-06-13 21:50:26,554] [INFO] app.database: Connected to DB postgresql://postgres:CodeSD.com@localhost (connection open: True)
+[2025-06-13 21:50:26,554] [INFO] app.database: Connected to DB postgresql://postgres:CodeSD.com@localhost (connection open: True)
+[2025-06-13 21:50:26,563] [INFO] app.middleware: Response 29cb48af-b8c6-4e91-bada-abae47241977: 200 (0.057s)
+[2025-06-13 21:50:26,570] [INFO] app.middleware: Response c57f1738-bf66-474d-bf21-f03c29de4825: 200 (0.057s)
+[2025-06-13 21:50:31,035] [INFO] app.middleware: Request 45282d04-3ecb-4554-9474-f266c0fcedfa: OPTIONS /api/notifications
+[2025-06-13 21:50:31,035] [INFO] app.middleware: Response 45282d04-3ecb-4554-9474-f266c0fcedfa: 200 (0.000s)
+[2025-06-13 21:50:31,035] [INFO] app.middleware: Request 34e5b0ed-b2e7-42c1-9f4b-a78d824555d4: OPTIONS /api/notifications/stats
+[2025-06-13 21:50:31,035] [INFO] app.middleware: Response 34e5b0ed-b2e7-42c1-9f4b-a78d824555d4: 200 (0.000s)
+[2025-06-13 21:50:31,043] [INFO] app.middleware: Request 47a4c230-f811-4950-b4f1-8a053f4ea008: GET /api/notifications
+[2025-06-13 21:50:31,043] [INFO] app.middleware: Request b1cac3ec-291d-48e2-946a-8f767854c6f0: GET /api/notifications/stats
+[2025-06-13 21:50:31,085] [INFO] app.database: Connected to DB postgresql://postgres:CodeSD.com@localhost (connection open: True)
+[2025-06-13 21:50:31,085] [INFO] app.database: Connected to DB postgresql://postgres:CodeSD.com@localhost (connection open: True)
+[2025-06-13 21:50:31,091] [INFO] app.middleware: Response 47a4c230-f811-4950-b4f1-8a053f4ea008: 200 (0.048s)
+[2025-06-13 21:50:31,091] [INFO] app.middleware: Response b1cac3ec-291d-48e2-946a-8f767854c6f0: 200 (0.048s)
+[2025-06-13 21:50:49,013] [INFO] app.middleware: Request 25390ead-b448-4b09-85f4-e286578b5155: OPTIONS /api/reports/performance
+[2025-06-13 21:50:49,013] [INFO] app.middleware: Response 25390ead-b448-4b09-85f4-e286578b5155: 200 (0.000s)
+[2025-06-13 21:50:49,013] [INFO] app.middleware: Request 506aa8c4-f3a0-4b60-bad3-e19b4a47bfe6: OPTIONS /api/reports/sla-compliance
+[2025-06-13 21:50:49,013] [INFO] app.middleware: Response 506aa8c4-f3a0-4b60-bad3-e19b4a47bfe6: 200 (0.000s)
+[2025-06-13 21:50:49,023] [INFO] app.middleware: Request 921728e7-d00b-45f2-a99b-912c67694539: GET /api/reports/performance
+[2025-06-13 21:50:49,023] [INFO] app.middleware: Request c791ebb1-e74b-4abb-b715-7b938b611f68: GET /api/reports/sla-compliance
+[2025-06-13 21:50:49,071] [INFO] app.database: Connected to DB postgresql://postgres:CodeSD.com@localhost (connection open: True)
+[2025-06-13 21:50:49,071] [INFO] app.database: Connected to DB postgresql://postgres:CodeSD.com@localhost (connection open: True)
+[2025-06-13 21:50:49,087] [INFO] app.middleware: Response 921728e7-d00b-45f2-a99b-912c67694539: 200 (0.064s)
+[2025-06-13 21:50:49,087] [INFO] app.middleware: Response c791ebb1-e74b-4abb-b715-7b938b611f68: 200 (0.064s)
+[2025-06-13 21:51:01,157] [INFO] app.middleware: Request 0537f451-9a1f-4b07-8720-5de1fd660b40: OPTIONS /api/notifications
+[2025-06-13 21:51:01,157] [INFO] app.middleware: Response 0537f451-9a1f-4b07-8720-5de1fd660b40: 200 (0.000s)
+[2025-06-13 21:51:01,159] [INFO] app.middleware: Request 81a01b89-8ea6-4e35-a5d2-fcfba8fb06fa: OPTIONS /api/notifications/stats
+[2025-06-13 21:51:01,159] [INFO] app.middleware: Response 81a01b89-8ea6-4e35-a5d2-fcfba8fb06fa: 200 (0.000s)
+[2025-06-13 21:51:01,161] [INFO] app.middleware: Request a5c95bc2-fa9a-4a9a-b85c-2eea96bc2635: GET /api/notifications
+[2025-06-13 21:51:01,163] [INFO] app.middleware: Request 82f0f9d6-01d9-420d-ba6d-056633757806: GET /api/notifications/stats
+[2025-06-13 21:51:01,204] [INFO] app.database: Connected to DB postgresql://postgres:CodeSD.com@localhost (connection open: True)
+[2025-06-13 21:51:01,204] [INFO] app.database: Connected to DB postgresql://postgres:CodeSD.com@localhost (connection open: True)
+[2025-06-13 21:51:01,212] [INFO] app.middleware: Response a5c95bc2-fa9a-4a9a-b85c-2eea96bc2635: 200 (0.050s)
+[2025-06-13 21:51:01,212] [INFO] app.middleware: Response 82f0f9d6-01d9-420d-ba6d-056633757806: 200 (0.049s)
+[2025-06-13 21:51:02,561] [INFO] app.middleware: Request b2c4acaa-7788-46c7-a116-19d8a4445b7d: OPTIONS /api/workflows
+[2025-06-13 21:51:02,561] [INFO] app.middleware: Response b2c4acaa-7788-46c7-a116-19d8a4445b7d: 200 (0.000s)
+[2025-06-13 21:51:02,561] [INFO] app.middleware: Request aed5d6f9-ab38-420f-9666-6c0c21786212: GET /api/workflows
+[2025-06-13 21:51:02,607] [INFO] app.database: Connected to DB postgresql://postgres:CodeSD.com@localhost (connection open: True)
+[2025-06-13 21:51:02,612] [INFO] app.middleware: Response aed5d6f9-ab38-420f-9666-6c0c21786212: 200 (0.050s)
+[2025-06-13 21:51:31,232] [INFO] app.middleware: Request 93046135-46ea-4b29-bcae-80f0e47e198c: OPTIONS /api/notifications
+[2025-06-13 21:51:31,232] [INFO] app.middleware: Request 436099b5-95f6-4294-a6a2-3231c6c3b5ed: OPTIONS /api/notifications/stats
+[2025-06-13 21:51:31,232] [INFO] app.middleware: Response 93046135-46ea-4b29-bcae-80f0e47e198c: 200 (0.000s)
+[2025-06-13 21:51:31,232] [INFO] app.middleware: Response 436099b5-95f6-4294-a6a2-3231c6c3b5ed: 200 (0.000s)
+[2025-06-13 21:51:31,241] [INFO] app.middleware: Request 3c4d1964-79de-4d35-bc37-849ea5f6e6a8: GET /api/notifications
+[2025-06-13 21:51:31,245] [INFO] app.middleware: Request 05c40bd6-573d-455f-909a-88bab6cb266a: GET /api/notifications/stats
+[2025-06-13 21:51:31,314] [INFO] app.database: Connected to DB postgresql://postgres:CodeSD.com@localhost (connection open: True)
+[2025-06-13 21:51:31,318] [INFO] app.database: Connected to DB postgresql://postgres:CodeSD.com@localhost (connection open: True)
+[2025-06-13 21:51:31,318] [INFO] app.middleware: Response 3c4d1964-79de-4d35-bc37-849ea5f6e6a8: 200 (0.077s)
+[2025-06-13 21:51:31,324] [INFO] app.middleware: Response 05c40bd6-573d-455f-909a-88bab6cb266a: 200 (0.079s)
+[2025-06-13 21:51:42,389] [INFO] app.middleware: Request 18c234b9-3025-4de3-aa35-0aa9d137ada2: OPTIONS /api/workflows/91253eac-ff58-4342-b5dc-de013919f675/execute
+[2025-06-13 21:51:42,389] [INFO] app.middleware: Response 18c234b9-3025-4de3-aa35-0aa9d137ada2: 200 (0.000s)
+[2025-06-13 21:51:42,389] [INFO] app.middleware: Request a5d4e5d6-6309-4a2d-8e1e-74e0e1bb2682: POST /api/workflows/91253eac-ff58-4342-b5dc-de013919f675/execute
+[2025-06-13 21:51:42,433] [INFO] app.database: Connected to DB postgresql://postgres:CodeSD.com@localhost (connection open: True)
+[2025-06-13 21:51:42,463] [INFO] app.services.workflow_engine: Executing step submit_request of type task for instance 0e1ed6e3-8187-493a-9320-d3e19266067b
+[2025-06-13 21:51:42,463] [ERROR] app.services.workflow_engine: Step submit_request execution failed (attempt 1): No executor for step type task
+[2025-06-13 21:51:42,468] [ERROR] app.services.workflow_engine: Failed to execute first step: relation "workflow_step_executions" does not exist
+LINE 2:             INSERT INTO workflow_step_executions 
+                                ^
+
+[2025-06-13 21:51:42,471] [ERROR] app.services.workflow_engine: Failed to execute workflow 91253eac-ff58-4342-b5dc-de013919f675: column "error_details" of relation "workflow_instances" does not exist
+LINE 3:             SET error_details = '{"step_id": "submit_request...
+                        ^
+Traceback (most recent call last):
+  File "D:\Dynamic Workflow\workflow-management-system\backend\app\services\workflow_engine.py", line 331, in _execute_step
+    raise StepExecutionError(f"No executor for step type {step_type.value}")
+app.services.workflow_engine.StepExecutionError: No executor for step type task
+
+During handling of the above exception, another exception occurred:
+
+Traceback (most recent call last):
+  File "D:\Dynamic Workflow\workflow-management-system\backend\app\services\workflow_engine.py", line 781, in _start_workflow_execution
+    cls._execute_step(context, first_step, definition)
+  File "D:\Dynamic Workflow\workflow-management-system\backend\app\services\workflow_engine.py", line 350, in _execute_step
+    cls._save_step_execution(context.instance_id, step['id'], False,
+  File "D:\Dynamic Workflow\workflow-management-system\backend\app\services\workflow_engine.py", line 762, in _save_step_execution
+    Database.execute_insert(query, (
+  File "D:\Dynamic Workflow\workflow-management-system\backend\app\database.py", line 81, in execute_insert
+    cursor.execute(query + " RETURNING id", params)
+  File "D:\Dynamic Workflow\workflow-management-system\backend\.venv\Lib\site-packages\psycopg2\extras.py", line 236, in execute
+    return super().execute(query, vars)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+psycopg2.errors.UndefinedTable: relation "workflow_step_executions" does not exist
+LINE 2:             INSERT INTO workflow_step_executions 
+                                ^
+
+
+During handling of the above exception, another exception occurred:
+
+Traceback (most recent call last):
+  File "D:\Dynamic Workflow\workflow-management-system\backend\app\services\workflow_engine.py", line 157, in execute_workflow
+    cls._start_workflow_execution(context, definition)
+  File "D:\Dynamic Workflow\workflow-management-system\backend\app\services\workflow_engine.py", line 784, in _start_workflow_execution
+    cls._handle_workflow_failure(context.instance_id, first_step['id'], str(e))
+  File "D:\Dynamic Workflow\workflow-management-system\backend\app\services\workflow_engine.py", line 686, in _handle_workflow_failure
+    Database.execute_query(query, (
+  File "D:\Dynamic Workflow\workflow-management-system\backend\app\database.py", line 63, in execute_query
+    cursor.execute(query, params)
+  File "D:\Dynamic Workflow\workflow-management-system\backend\.venv\Lib\site-packages\psycopg2\extras.py", line 236, in execute
+    return super().execute(query, vars)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+psycopg2.errors.UndefinedColumn: column "error_details" of relation "workflow_instances" does not exist
+LINE 3:             SET error_details = '{"step_id": "submit_request...
+                        ^
+
+[2025-06-13 21:51:42,473] [ERROR] app.blueprints.workflows: Error executing workflow 91253eac-ff58-4342-b5dc-de013919f675: column "error_details" of relation "workflow_instances" does not exist
+LINE 3:             (workflow_id, title, status, error_details, init...
+                                                 ^
+
+[2025-06-13 21:51:42,474] [INFO] app.middleware: Response a5d4e5d6-6309-4a2d-8e1e-74e0e1bb2682: 500 (0.085s)
+[2025-06-13 21:51:48,773] [INFO] app.middleware: Request 77af28ba-a4fa-4129-ab27-9070ffeef1a2: OPTIONS /api/workflows/91253eac-ff58-4342-b5dc-de013919f675
+[2025-06-13 21:51:48,773] [INFO] app.middleware: Response 77af28ba-a4fa-4129-ab27-9070ffeef1a2: 200 (0.000s)
+[2025-06-13 21:51:48,778] [INFO] app.middleware: Request bc4507a0-20ca-424f-aa62-cd308867aba1: GET /api/workflows/91253eac-ff58-4342-b5dc-de013919f675
+[2025-06-13 21:51:48,856] [INFO] app.database: Connected to DB postgresql://postgres:CodeSD.com@localhost (connection open: True)
+[2025-06-13 21:51:48,869] [INFO] app.middleware: Response bc4507a0-20ca-424f-aa62-cd308867aba1: 200 (0.091s)
+[2025-06-13 21:52:10,538] [INFO] app.middleware: Request 9d35aac9-7e2d-451e-8d8b-694a24dcc9e8: OPTIONS /api/notifications
+[2025-06-13 21:52:10,538] [INFO] app.middleware: Request ffe234ec-bfef-4198-9fe4-cfca787174a7: OPTIONS /api/notifications/stats
+[2025-06-13 21:52:10,538] [INFO] app.middleware: Response 9d35aac9-7e2d-451e-8d8b-694a24dcc9e8: 200 (0.000s)
+[2025-06-13 21:52:10,538] [INFO] app.middleware: Response ffe234ec-bfef-4198-9fe4-cfca787174a7: 200 (0.000s)
+[2025-06-13 21:52:10,544] [INFO] app.middleware: Request c1128773-0442-4028-9364-566704073a90: GET /api/notifications
+[2025-06-13 21:52:10,548] [INFO] app.middleware: Request 630e5834-3bb6-46ff-b3b0-5b9e47a34b31: GET /api/notifications/stats
+[2025-06-13 21:52:10,615] [INFO] app.database: Connected to DB postgresql://postgres:CodeSD.com@localhost (connection open: True)
+[2025-06-13 21:52:10,615] [INFO] app.database: Connected to DB postgresql://postgres:CodeSD.com@localhost (connection open: True)
+[2025-06-13 21:52:10,621] [INFO] app.middleware: Response 630e5834-3bb6-46ff-b3b0-5b9e47a34b31: 200 (0.073s)
+[2025-06-13 21:52:10,623] [INFO] app.middleware: Response c1128773-0442-4028-9364-566704073a90: 200 (0.079s)
+[2025-06-13 21:52:24,103] [INFO] app.middleware: Request 94ac5799-f59b-4e85-9334-3394846af6cf: OPTIONS /api/reports/performance
+[2025-06-13 21:52:24,105] [INFO] app.middleware: Response 94ac5799-f59b-4e85-9334-3394846af6cf: 200 (0.002s)
+[2025-06-13 21:52:24,105] [INFO] app.middleware: Request ad1b919f-6f8a-4567-a9b2-90aab5da13fa: GET /api/reports/performance
+[2025-06-13 21:52:24,232] [INFO] app.database: Connected to DB postgresql://postgres:CodeSD.com@localhost (connection open: True)
+[2025-06-13 21:52:24,256] [INFO] app.middleware: Response ad1b919f-6f8a-4567-a9b2-90aab5da13fa: 200 (0.152s)
+[2025-06-13 21:52:41,687] [INFO] app.middleware: Request 6704cacb-655d-4a7b-960a-ec548afd3c8e: OPTIONS /api/notifications/stats
+[2025-06-13 21:52:41,690] [INFO] app.middleware: Response 6704cacb-655d-4a7b-960a-ec548afd3c8e: 200 (0.004s)
+[2025-06-13 21:52:41,693] [INFO] app.middleware: Request 4e528cee-b862-48cf-a189-59b71a191d86: OPTIONS /api/notifications
+[2025-06-13 21:52:41,695] [INFO] app.middleware: Response 4e528cee-b862-48cf-a189-59b71a191d86: 200 (0.002s)
+[2025-06-13 21:52:41,695] [INFO] app.middleware: Request 84c47f08-342d-4233-a0dc-ca24a8d1abcd: GET /api/notifications/stats
+[2025-06-13 21:52:41,705] [INFO] app.middleware: Request cbb2fad7-9ff7-4ec8-80e1-3b44350f1916: GET /api/notifications
+[2025-06-13 21:52:41,790] [INFO] app.database: Connected to DB postgresql://postgres:CodeSD.com@localhost (connection open: True)
+[2025-06-13 21:52:41,798] [INFO] app.middleware: Response 84c47f08-342d-4233-a0dc-ca24a8d1abcd: 200 (0.104s)
+[2025-06-13 21:52:41,800] [INFO] app.database: Connected to DB postgresql://postgres:CodeSD.com@localhost (connection open: True)
+[2025-06-13 21:52:41,806] [INFO] app.middleware: Response cbb2fad7-9ff7-4ec8-80e1-3b44350f1916: 200 (0.101s)
+[2025-06-13 22:01:14,065] [INFO] app.middleware: Request 0b2a405f-aefd-40af-ad07-ac825dd7cb58: OPTIONS /api/notifications/stats
+[2025-06-13 22:01:14,067] [INFO] app.middleware: Response 0b2a405f-aefd-40af-ad07-ac825dd7cb58: 200 (0.002s)
+[2025-06-13 22:01:14,067] [INFO] app.middleware: Request 70768396-eb99-498a-a188-4b062a77e3b5: OPTIONS /api/notifications
+[2025-06-13 22:01:14,069] [INFO] app.middleware: Response 70768396-eb99-498a-a188-4b062a77e3b5: 200 (0.002s)
+[2025-06-13 22:01:14,069] [INFO] app.middleware: Request 33c90f50-4a89-48b7-aa3a-ae5933d21c24: OPTIONS /api/tasks/dashboard-stats
+[2025-06-13 22:01:14,072] [INFO] app.middleware: Response 33c90f50-4a89-48b7-aa3a-ae5933d21c24: 200 (0.004s)
+[2025-06-13 22:01:14,072] [INFO] app.middleware: Request 920aaec3-e997-4b29-9cfa-e77ecdfb894f: OPTIONS /api/reports/dashboard-stats
+[2025-06-13 22:01:14,072] [INFO] app.middleware: Request 00ae643a-948a-4d9c-9d64-3e4ed1b989dc: GET /api/notifications/stats
+[2025-06-13 22:01:14,080] [INFO] app.middleware: Response 920aaec3-e997-4b29-9cfa-e77ecdfb894f: 200 (0.007s)
+[2025-06-13 22:01:14,082] [INFO] app.middleware: Request 37af257f-8b9e-4186-af81-40d35ae14a36: GET /api/notifications
+[2025-06-13 22:01:14,082] [INFO] app.middleware: Request c1e882e3-ea3a-4420-bd7b-553edfd05ac8: GET /api/tasks/dashboard-stats
+[2025-06-13 22:01:14,088] [INFO] app.middleware: Request 1b60b96e-9e45-48be-bf46-4b7ae437b54a: GET /api/reports/dashboard-stats
+[2025-06-13 22:01:14,153] [INFO] app.database: Connected to DB postgresql://postgres:CodeSD.com@localhost (connection open: True)
+[2025-06-13 22:01:14,153] [INFO] app.database: Connected to DB postgresql://postgres:CodeSD.com@localhost (connection open: True)
+[2025-06-13 22:01:14,159] [INFO] app.middleware: Response 37af257f-8b9e-4186-af81-40d35ae14a36: 200 (0.077s)
+[2025-06-13 22:01:14,160] [INFO] app.database: Connected to DB postgresql://postgres:CodeSD.com@localhost (connection open: True)
+[2025-06-13 22:01:14,160] [INFO] app.middleware: Response 00ae643a-948a-4d9c-9d64-3e4ed1b989dc: 200 (0.088s)
+[2025-06-13 22:01:14,167] [INFO] app.database: Connected to DB postgresql://postgres:CodeSD.com@localhost (connection open: True)
+[2025-06-13 22:01:14,174] [INFO] app.middleware: Response c1e882e3-ea3a-4420-bd7b-553edfd05ac8: 200 (0.092s)
+[2025-06-13 22:01:14,185] [INFO] app.middleware: Response 1b60b96e-9e45-48be-bf46-4b7ae437b54a: 200 (0.097s)
+[2025-06-13 22:01:24,629] [INFO] app.middleware: Request 2686313b-346f-48b9-b279-d14a03433d32: OPTIONS /api/workflows
+[2025-06-13 22:01:24,629] [INFO] app.middleware: Response 2686313b-346f-48b9-b279-d14a03433d32: 200 (0.000s)
+[2025-06-13 22:01:24,629] [INFO] app.middleware: Request a6d7fa96-dec7-4fa8-b9b7-fe6ed3ede617: GET /api/workflows
+[2025-06-13 22:01:24,669] [INFO] app.database: Connected to DB postgresql://postgres:CodeSD.com@localhost (connection open: True)
+[2025-06-13 22:01:24,673] [INFO] app.middleware: Response a6d7fa96-dec7-4fa8-b9b7-fe6ed3ede617: 200 (0.044s)
+[2025-06-13 22:01:44,176] [INFO] app.middleware: Request 6d23d8cc-8da4-4aa7-b675-30360e581dd2: OPTIONS /api/notifications
+[2025-06-13 22:01:44,176] [INFO] app.middleware: Request d918e83d-4ea3-496a-83f3-b5cbe0094ad0: OPTIONS /api/notifications/stats
+[2025-06-13 22:01:44,176] [INFO] app.middleware: Response 6d23d8cc-8da4-4aa7-b675-30360e581dd2: 200 (0.000s)
+[2025-06-13 22:01:44,176] [INFO] app.middleware: Response d918e83d-4ea3-496a-83f3-b5cbe0094ad0: 200 (0.000s)
+[2025-06-13 22:01:44,184] [INFO] app.middleware: Request 9d5a02ff-e773-4436-a73b-b1a5cb9965b8: GET /api/notifications/stats
+[2025-06-13 22:01:44,184] [INFO] app.middleware: Request 68b5ba09-0124-4d78-8b85-6377a6e1eb6a: GET /api/notifications
+[2025-06-13 22:01:44,225] [INFO] app.database: Connected to DB postgresql://postgres:CodeSD.com@localhost (connection open: True)
+[2025-06-13 22:01:44,225] [INFO] app.database: Connected to DB postgresql://postgres:CodeSD.com@localhost (connection open: True)
+[2025-06-13 22:01:44,228] [INFO] app.middleware: Response 9d5a02ff-e773-4436-a73b-b1a5cb9965b8: 200 (0.044s)
+[2025-06-13 22:01:44,228] [INFO] app.middleware: Response 68b5ba09-0124-4d78-8b85-6377a6e1eb6a: 200 (0.044s)
+[2025-06-13 22:02:14,243] [INFO] app.middleware: Request c481a8b0-a954-4f1a-9c8b-6a4026573303: OPTIONS /api/notifications/stats
+[2025-06-13 22:02:14,243] [INFO] app.middleware: Response c481a8b0-a954-4f1a-9c8b-6a4026573303: 200 (0.000s)
+[2025-06-13 22:02:14,243] [INFO] app.middleware: Request 62390688-9b34-4d9e-9a37-40e7369778c5: OPTIONS /api/notifications
+[2025-06-13 22:02:14,243] [INFO] app.middleware: Response 62390688-9b34-4d9e-9a37-40e7369778c5: 200 (0.000s)
+[2025-06-13 22:02:14,249] [INFO] app.middleware: Request 326615b8-a0ed-4710-8600-9a470d746a7d: GET /api/notifications/stats
+[2025-06-13 22:02:14,251] [INFO] app.middleware: Request 00662c4e-80eb-46d3-97e4-32b4ab168152: GET /api/notifications
+[2025-06-13 22:02:14,303] [INFO] app.database: Connected to DB postgresql://postgres:CodeSD.com@localhost (connection open: True)
+[2025-06-13 22:02:14,309] [INFO] app.database: Connected to DB postgresql://postgres:CodeSD.com@localhost (connection open: True)
+[2025-06-13 22:02:14,313] [INFO] app.middleware: Response 326615b8-a0ed-4710-8600-9a470d746a7d: 200 (0.064s)
+[2025-06-13 22:02:14,313] [INFO] app.middleware: Response 00662c4e-80eb-46d3-97e4-32b4ab168152: 200 (0.061s)
+[2025-06-13 22:02:44,813] [INFO] app.middleware: Request ab1aebf4-19b4-44bb-948c-ead0a8d9d3b2: OPTIONS /api/notifications/stats
+[2025-06-13 22:02:44,816] [INFO] app.middleware: Response ab1aebf4-19b4-44bb-948c-ead0a8d9d3b2: 200 (0.002s)
+[2025-06-13 22:02:44,818] [INFO] app.middleware: Request cb16e6b8-feb0-4181-9e07-5731c69559a0: OPTIONS /api/notifications
+[2025-06-13 22:02:44,818] [INFO] app.middleware: Response cb16e6b8-feb0-4181-9e07-5731c69559a0: 200 (0.000s)
+[2025-06-13 22:02:44,818] [INFO] app.middleware: Request 321c0d81-c4ea-46ce-aff3-b86c37ac488f: GET /api/notifications/stats
+[2025-06-13 22:02:44,821] [INFO] app.middleware: Request ace08e4e-5111-4e69-9622-99a87804f86c: GET /api/notifications
+[2025-06-13 22:02:44,859] [INFO] app.database: Connected to DB postgresql://postgres:CodeSD.com@localhost (connection open: True)
+[2025-06-13 22:02:44,859] [INFO] app.database: Connected to DB postgresql://postgres:CodeSD.com@localhost (connection open: True)
+[2025-06-13 22:02:44,859] [INFO] app.middleware: Response 321c0d81-c4ea-46ce-aff3-b86c37ac488f: 200 (0.041s)
+[2025-06-13 22:02:44,859] [INFO] app.middleware: Response ace08e4e-5111-4e69-9622-99a87804f86c: 200 (0.038s)
+[2025-06-13 22:03:14,964] [INFO] app.middleware: Request 0d0357a7-a505-4729-898f-7e4c71091bb0: OPTIONS /api/notifications/stats
+[2025-06-13 22:03:14,964] [INFO] app.middleware: Response 0d0357a7-a505-4729-898f-7e4c71091bb0: 200 (0.000s)
+[2025-06-13 22:03:14,970] [INFO] app.middleware: Request f59dc252-68bf-4e45-af9c-a75f441cdc2c: GET /api/notifications/stats
+[2025-06-13 22:03:14,970] [INFO] app.middleware: Request 9b27cc11-4074-4dcf-ae24-6d7ed5c71331: OPTIONS /api/notifications
+[2025-06-13 22:03:14,970] [INFO] app.middleware: Response 9b27cc11-4074-4dcf-ae24-6d7ed5c71331: 200 (0.000s)
+[2025-06-13 22:03:14,978] [INFO] app.middleware: Request b61f1df8-7d97-4ac6-b9fd-d58c8a3be2fb: GET /api/notifications
+[2025-06-13 22:03:15,002] [INFO] app.database: Connected to DB postgresql://postgres:CodeSD.com@localhost (connection open: True)
+[2025-06-13 22:03:15,010] [INFO] app.middleware: Response f59dc252-68bf-4e45-af9c-a75f441cdc2c: 200 (0.041s)
+[2025-06-13 22:03:15,118] [INFO] app.database: Connected to DB postgresql://postgres:CodeSD.com@localhost (connection open: True)
+[2025-06-13 22:03:15,118] [INFO] app.middleware: Response b61f1df8-7d97-4ac6-b9fd-d58c8a3be2fb: 200 (0.140s)
+[2025-06-13 22:03:45,112] [INFO] app.middleware: Request 2efcc3d6-58d7-430f-abce-1cd8199576b9: OPTIONS /api/notifications/stats
+[2025-06-13 22:03:45,115] [INFO] app.middleware: Response 2efcc3d6-58d7-430f-abce-1cd8199576b9: 200 (0.003s)
+[2025-06-13 22:03:45,119] [INFO] app.middleware: Request c1fa2ea8-287c-41eb-912f-4d3c58699c35: GET /api/notifications/stats
+[2025-06-13 22:03:45,138] [INFO] app.middleware: Request 7f626751-98da-45b8-8180-f9da77f551f2: OPTIONS /api/notifications
+[2025-06-13 22:03:45,138] [INFO] app.middleware: Response 7f626751-98da-45b8-8180-f9da77f551f2: 200 (0.000s)
+[2025-06-13 22:03:45,142] [INFO] app.middleware: Request 3e59af54-8377-48d4-9844-b3a8a3604e24: GET /api/notifications
+[2025-06-13 22:03:45,169] [INFO] app.database: Connected to DB postgresql://postgres:CodeSD.com@localhost (connection open: True)
+[2025-06-13 22:03:45,177] [INFO] app.middleware: Response c1fa2ea8-287c-41eb-912f-4d3c58699c35: 200 (0.057s)
+[2025-06-13 22:03:45,198] [INFO] app.database: Connected to DB postgresql://postgres:CodeSD.com@localhost (connection open: True)
+[2025-06-13 22:03:45,202] [INFO] app.middleware: Response 3e59af54-8377-48d4-9844-b3a8a3604e24: 200 (0.060s)
+[2025-06-13 22:04:15,242] [INFO] app.middleware: Request 374e901e-30a0-4c01-92b9-f72991412a94: OPTIONS /api/notifications/stats
+[2025-06-13 22:04:15,242] [INFO] app.middleware: Response 374e901e-30a0-4c01-92b9-f72991412a94: 200 (0.000s)
+[2025-06-13 22:04:15,244] [INFO] app.middleware: Request decdd1e6-abc8-48c5-9a1b-bbc9271ec60a: OPTIONS /api/notifications
+[2025-06-13 22:04:15,244] [INFO] app.middleware: Response decdd1e6-abc8-48c5-9a1b-bbc9271ec60a: 200 (0.000s)
+[2025-06-13 22:04:15,246] [INFO] app.middleware: Request 50e402eb-f026-4cdf-b561-d6eda42df2d2: GET /api/notifications/stats
+[2025-06-13 22:04:15,250] [INFO] app.middleware: Request 11b94125-7163-4fd0-b183-38e53ceb09fe: GET /api/notifications
+[2025-06-13 22:04:15,304] [INFO] app.database: Connected to DB postgresql://postgres:CodeSD.com@localhost (connection open: True)
+[2025-06-13 22:04:15,308] [INFO] app.middleware: Response 50e402eb-f026-4cdf-b561-d6eda42df2d2: 200 (0.062s)
+[2025-06-13 22:04:15,308] [INFO] app.database: Connected to DB postgresql://postgres:CodeSD.com@localhost (connection open: True)
+[2025-06-13 22:04:15,312] [INFO] app.middleware: Response 11b94125-7163-4fd0-b183-38e53ceb09fe: 200 (0.062s)

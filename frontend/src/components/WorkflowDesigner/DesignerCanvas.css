@@ -1,4 +1,455 @@
-/* DesignerCanvas.css */ /* Main container for the workflow designer */
+/* DesignerCanvas.css - Enhanced styling */
+
+/* Main container for the workflow designer */
 .designer-canvas {
-  @apply relative w-full h-full bg-gray-50 overflow-hidden cursor-grab border border-gray-200 rounded-lg;
+  @apply relative w-full h-full bg-gradient-to-br from-gray-50 to-gray-100 overflow-hidden border border-gray-200 rounded-lg shadow-inner;
+  position: relative;
+}
+
+/* Grid background pattern */
+.canvas-grid {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  opacity: 0.6;
+  background-image: radial-gradient(
+    circle at 1px 1px,
+    rgba(99, 102, 241, 0.3) 1px,
+    transparent 0
+  );
+  background-repeat: repeat;
+  pointer-events: none;
+  transition: opacity 0.3s ease;
+}
+
+/* Canvas content container */
+.canvas-content {
+  position: relative;
+  width: 100%;
+  height: 100%;
+  transition: transform 0.1s ease-out;
+}
+
+/* Connection lines layer */
+.connections-layer {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  pointer-events: none;
+  z-index: 1;
+}
+
+/* Drop target styling */
+.designer-canvas.drop-target {
+  @apply bg-gradient-to-br from-blue-50 to-indigo-50;
+  box-shadow: inset 0 0 0 2px rgba(59, 130, 246, 0.3);
+}
+
+.designer-canvas.drop-target .canvas-grid {
+  background-image: radial-gradient(
+    circle at 1px 1px,
+    rgba(59, 130, 246, 0.5) 1px,
+    transparent 0
+  );
+}
+
+/* Connection mode styling */
+.designer-canvas.connection-mode {
+  @apply bg-gradient-to-br from-green-50 to-emerald-50;
+}
+
+.designer-canvas.connection-mode .canvas-grid {
+  background-image: radial-gradient(
+    circle at 1px 1px,
+    rgba(34, 197, 94, 0.4) 1px,
+    transparent 0
+  );
+}
+
+/* UI Indicators */
+.connection-indicator {
+  position: absolute;
+  top: 20px;
+  left: 50%;
+  transform: translateX(-50%);
+  z-index: 1000;
+  animation: slideDown 0.3s ease-out;
+}
+
+.drop-indicator {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  z-index: 1000;
+  animation: pulseScale 0.5s ease-in-out infinite alternate;
+}
+
+/* Empty state */
+.empty-state {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  z-index: 10;
+  opacity: 0.8;
+}
+
+/* Enhanced node styles */
+.workflow-node {
+  position: absolute;
+  transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+  z-index: 10;
+}
+
+.workflow-node:hover {
+  transform: translateY(-2px);
+  filter: drop-shadow(0 4px 8px rgba(0, 0, 0, 0.12));
+}
+
+.workflow-node.selected {
+  z-index: 20;
+  filter: drop-shadow(0 8px 16px rgba(0, 0, 0, 0.15));
+}
+
+.workflow-node.dragging {
+  z-index: 30;
+  filter: drop-shadow(0 12px 24px rgba(0, 0, 0, 0.2));
+}
+
+/* Connection points */
+.connection-point {
+  position: absolute;
+  width: 12px;
+  height: 12px;
+  border-radius: 50%;
+  border: 2px solid #e5e7eb;
+  background: white;
+  transition: all 0.2s ease;
+  cursor: pointer;
+}
+
+.connection-point:hover {
+  border-color: #6366f1;
+  background: #f0f9ff;
+  transform: scale(1.2);
+}
+
+.connection-point.output {
+  right: -6px;
+  top: 50%;
+  transform: translateY(-50%);
+}
+
+.connection-point.input {
+  left: -6px;
+  top: 50%;
+  transform: translateY(-50%);
+}
+
+/* Connection lines */
+.connection-line {
+  stroke-width: 2;
+  fill: none;
+  transition: all 0.2s ease;
+  cursor: pointer;
+}
+
+.connection-line:hover {
+  stroke-width: 3;
+  filter: drop-shadow(0 2px 4px rgba(0, 0, 0, 0.1));
+}
+
+.connection-line.selected {
+  stroke: #3b82f6;
+  stroke-width: 3;
+}
+
+/* Animations */
+@keyframes slideDown {
+  from {
+    opacity: 0;
+    transform: translateX(-50%) translateY(-10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateX(-50%) translateY(0);
+  }
+}
+
+@keyframes pulseScale {
+  from {
+    transform: translate(-50%, -50%) scale(1);
+  }
+  to {
+    transform: translate(-50%, -50%) scale(1.05);
+  }
+}
+
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
+@keyframes nodeAppear {
+  from {
+    opacity: 0;
+    transform: scale(0.8);
+  }
+  to {
+    opacity: 1;
+    transform: scale(1);
+  }
+}
+
+/* Node appearance animation */
+.workflow-node.new {
+  animation: nodeAppear 0.3s ease-out;
+}
+
+/* Zoom-specific adjustments */
+.designer-canvas[data-zoom="small"] .canvas-grid {
+  opacity: 0.3;
+}
+
+.designer-canvas[data-zoom="large"] .canvas-grid {
+  opacity: 0.8;
+}
+
+/* Selection styles */
+.selection-box {
+  position: absolute;
+  border: 2px solid #3b82f6;
+  background: rgba(59, 130, 246, 0.1);
+  border-radius: 4px;
+  pointer-events: none;
+  z-index: 100;
+}
+
+/* Minimap (if implemented) */
+.minimap {
+  position: absolute;
+  bottom: 20px;
+  right: 20px;
+  width: 200px;
+  height: 150px;
+  background: rgba(255, 255, 255, 0.9);
+  border: 1px solid #e5e7eb;
+  border-radius: 8px;
+  backdrop-filter: blur(4px);
+  overflow: hidden;
+  z-index: 1000;
+}
+
+/* Canvas controls */
+.canvas-controls {
+  position: absolute;
+  bottom: 20px;
+  left: 20px;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  z-index: 1000;
+}
+
+.canvas-control-button {
+  @apply w-10 h-10 bg-white border border-gray-300 rounded-lg shadow-sm hover:shadow-md transition-all duration-200 flex items-center justify-center text-gray-600 hover:text-gray-900;
+}
+
+.canvas-control-button:hover {
+  @apply bg-gray-50;
+}
+
+/* Responsive design */
+@media (max-width: 768px) {
+  .connection-indicator,
+  .drop-indicator {
+    @apply px-3 py-2 text-xs;
+  }
+
+  .empty-state {
+    @apply px-4;
+  }
+
+  .minimap {
+    @apply w-32 h-24;
+  }
+
+  .canvas-controls {
+    @apply bottom-4 left-4;
+  }
+
+  .canvas-control-button {
+    @apply w-8 h-8;
+  }
+}
+
+/* High contrast mode */
+@media (prefers-contrast: high) {
+  .canvas-grid {
+    background-image: radial-gradient(
+      circle at 1px 1px,
+      rgba(0, 0, 0, 0.5) 1px,
+      transparent 0
+    );
+  }
+
+  .connection-line {
+    stroke-width: 3;
+  }
+
+  .workflow-node {
+    border-width: 3px;
+  }
+
+  .connection-point {
+    border-width: 3px;
+  }
+}
+
+/* Reduced motion */
+@media (prefers-reduced-motion: reduce) {
+  .workflow-node,
+  .connection-line,
+  .connection-point,
+  .canvas-content {
+    transition: none;
+  }
+
+  .connection-indicator,
+  .drop-indicator,
+  .workflow-node.new {
+    animation: none;
+  }
+}
+
+/* Dark mode support */
+@media (prefers-color-scheme: dark) {
+  .designer-canvas {
+    @apply bg-gradient-to-br from-gray-800 to-gray-900;
+  }
+
+  .canvas-grid {
+    background-image: radial-gradient(
+      circle at 1px 1px,
+      rgba(156, 163, 175, 0.3) 1px,
+      transparent 0
+    );
+  }
+
+  .designer-canvas.drop-target {
+    @apply bg-gradient-to-br from-blue-900 to-indigo-900;
+  }
+
+  .designer-canvas.connection-mode {
+    @apply bg-gradient-to-br from-green-900 to-emerald-900;
+  }
+
+  .empty-state {
+    @apply text-gray-300;
+  }
+
+  .canvas-control-button {
+    @apply bg-gray-700 border-gray-600 text-gray-300 hover:bg-gray-600 hover:text-white;
+  }
+
+  .minimap {
+    background: rgba(31, 41, 55, 0.9);
+    @apply border-gray-600;
+  }
+}
+
+/* Print styles */
+@media print {
+  .designer-canvas {
+    @apply bg-white;
+  }
+
+  .canvas-grid {
+    background-image: radial-gradient(
+      circle at 1px 1px,
+      rgba(0, 0, 0, 0.1) 1px,
+      transparent 0
+    );
+  }
+
+  .connection-indicator,
+  .drop-indicator,
+  .canvas-controls,
+  .minimap {
+    display: none;
+  }
+
+  .workflow-node {
+    @apply shadow-sm;
+  }
+}
+
+/* Accessibility improvements */
+.workflow-node:focus-visible {
+  outline: 2px solid #3b82f6;
+  outline-offset: 2px;
+}
+
+.connection-point:focus-visible {
+  outline: 2px solid #3b82f6;
+  outline-offset: 2px;
+}
+
+/* Touch device optimizations */
+@media (pointer: coarse) {
+  .connection-point {
+    width: 16px;
+    height: 16px;
+  }
+
+  .connection-point.output {
+    right: -8px;
+  }
+
+  .connection-point.input {
+    left: -8px;
+  }
+
+  .workflow-node {
+    min-width: 180px;
+    padding: 16px;
+  }
+}
+
+/* Performance optimizations */
+.designer-canvas * {
+  will-change: transform;
+}
+
+.connections-layer {
+  will-change: contents;
+}
+
+/* Custom scrollbar for overflow areas */
+.designer-canvas::-webkit-scrollbar {
+  width: 8px;
+  height: 8px;
+}
+
+.designer-canvas::-webkit-scrollbar-track {
+  background: rgba(0, 0, 0, 0.1);
+  border-radius: 4px;
+}
+
+.designer-canvas::-webkit-scrollbar-thumb {
+  background: rgba(0, 0, 0, 0.3);
+  border-radius: 4px;
+}
+
+.designer-canvas::-webkit-scrollbar-thumb:hover {
+  background: rgba(0, 0, 0, 0.5);
 }
