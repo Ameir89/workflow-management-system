@@ -1731,3 +1731,8 @@ NameError: name 'datetime' is not defined. Did you forget to import 'datetime'
 [2025-06-14 23:50:52,412] [INFO] app.middleware: Request a55920db-56ad-4556-abd4-2fe5cfd0d5ed: GET /api/tasks
 [2025-06-14 23:50:52,447] [INFO] app.database: Connected to DB postgresql://postgres:CodeSD.com@localhost (connection open: True)
 [2025-06-14 23:50:52,456] [INFO] app.middleware: Response a55920db-56ad-4556-abd4-2fe5cfd0d5ed: 200 (0.044s)
+[2025-06-15 00:42:58,337] [INFO] app: Application startup
+[2025-06-15 00:43:42,508] [INFO] app: Application startup
+[2025-06-15 00:46:30,214] [INFO] app: Application startup
+[2025-06-15 00:47:24,348] [INFO] app: Application startup
+[2025-06-15 00:47:49,552] [INFO] app: Application startup

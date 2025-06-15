@@ -49,6 +49,7 @@ def create_app(config_class=Config):
     from app.blueprints.admin import admin_bp
     from app.blueprints.webhooks import webhooks_bp
     from app.blueprints.notifications import notifications_bp
+    from app.blueprints.lookups import lookups_bp
 
     app.register_blueprint(auth_bp, url_prefix='/api/auth')
     app.register_blueprint(workflows_bp, url_prefix='/api/workflows')
@@ -59,6 +60,7 @@ def create_app(config_class=Config):
     app.register_blueprint(admin_bp, url_prefix='/api/admin')
     app.register_blueprint(webhooks_bp, url_prefix='/api/webhooks')
     app.register_blueprint(notifications_bp, url_prefix='/api/notifications')
+    app.register_blueprint(lookups_bp, url_prefix='/api/lookups')
 
     # ---------------------------
     # Health Check Endpoint

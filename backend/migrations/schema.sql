@@ -331,3 +331,175 @@ INSERT INTO roles (tenant_id, name, description, permissions) VALUES
 ('00000000-0000-0000-0000-000000000001', 'manager', 'Department Manager', '["approve_requests"]'),
 ('00000000-0000-0000-0000-000000000001', 'supervisor', 'Team Supervisor', '["review_tasks"]'),
 ('00000000-0000-0000-0000-000000000001', 'director', 'Department Director', '["approve_budget"]');
+
+
+-- Enhanced Lookup Tables Schema with multi-tenancy support
+-- This extends your existing schema to match your application patterns
+
+-- Lookup Tables (main table definition)
+CREATE TABLE lookup_tables (
+    id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
+    tenant_id UUID REFERENCES tenants(id) ON DELETE CASCADE,
+    name VARCHAR(100) NOT NULL,
+    display_name VARCHAR(200) NOT NULL,
+    description TEXT,
+    value_field VARCHAR(100) NOT NULL DEFAULT 'value',
+    display_field VARCHAR(100) NOT NULL DEFAULT 'label',
+    additional_fields JSONB DEFAULT '[]', -- Array of additional field names
+    settings JSONB DEFAULT '{}', -- Table-specific settings
+    is_active BOOLEAN DEFAULT true,
+    is_system BOOLEAN DEFAULT false, -- System tables cannot be deleted
+    created_by UUID REFERENCES users(id),
+    created_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP,
+    updated_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP,
+    UNIQUE(tenant_id, name)
+);
+
+-- Lookup Data (stores actual lookup records)
+CREATE TABLE lookup_data (
+    id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
+    lookup_table_id UUID REFERENCES lookup_tables(id) ON DELETE CASCADE,
+    data JSONB NOT NULL, -- Contains all field values
+    sort_order INTEGER DEFAULT 0,
+    is_active BOOLEAN DEFAULT true,
+    created_by UUID REFERENCES users(id),
+    created_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP,
+    updated_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP
+);
+
+-- Lookup Usage Tracking (optional - for analytics)
+CREATE TABLE lookup_usage_log (
+    id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
+    lookup_table_id UUID REFERENCES lookup_tables(id) ON DELETE CASCADE,
+    lookup_data_id UUID REFERENCES lookup_data(id) ON DELETE CASCADE,
+    used_by_table VARCHAR(100), -- Table where lookup was used
+    used_by_id UUID, -- Record ID where lookup was used
+    used_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP
+);
+
+-- Indexes for performance
+CREATE INDEX idx_lookup_tables_tenant_id ON lookup_tables(tenant_id);
+CREATE INDEX idx_lookup_tables_name ON lookup_tables(tenant_id, name);
+CREATE INDEX idx_lookup_tables_active ON lookup_tables(is_active);
+
+CREATE INDEX idx_lookup_data_table_id ON lookup_data(lookup_table_id);
+CREATE INDEX idx_lookup_data_active ON lookup_data(lookup_table_id, is_active);
+CREATE INDEX idx_lookup_data_sort ON lookup_data(lookup_table_id, sort_order);
+CREATE INDEX idx_lookup_data_search ON lookup_data USING gin(data);
+
+-- Create trigger for updated_at
+CREATE OR REPLACE FUNCTION update_updated_at_column()
+RETURNS TRIGGER AS $$
+BEGIN
+    NEW.updated_at = NOW();
+    RETURN NEW;
+END;
+$$ language 'plpgsql';
+
+CREATE TRIGGER update_lookup_tables_updated_at
+    BEFORE UPDATE ON lookup_tables
+    FOR EACH ROW
+    EXECUTE FUNCTION update_updated_at_column();
+
+CREATE TRIGGER update_lookup_data_updated_at
+    BEFORE UPDATE ON lookup_data
+    FOR EACH ROW
+    EXECUTE FUNCTION update_updated_at_column();
+
+-- Insert some sample system lookup tables
+INSERT INTO lookup_tables (
+    id, tenant_id, name, display_name, description, value_field, display_field,
+    additional_fields, is_system, created_by
+) VALUES
+(
+    '10000000-0000-0000-0000-000000000001',
+    '00000000-0000-0000-0000-000000000001',
+    'priorities',
+    'Priority Levels',
+    'Standard priority levels for tasks and workflows',
+    'value',
+    'label',
+    '["color", "sort_order"]',
+    true,
+    '00000000-0000-0000-0000-000000000001'
+),
+(
+    '10000000-0000-0000-0000-000000000002',
+    '00000000-0000-0000-0000-000000000001',
+    'departments',
+    'Departments',
+    'Organization departments',
+    'code',
+    'name',
+    '["manager", "budget_code"]',
+    true,
+    '00000000-0000-0000-0000-000000000001'
+),
+(
+    '10000000-0000-0000-0000-000000000003',
+    '00000000-0000-0000-0000-000000000001',
+    'countries',
+    'Countries',
+    'Country list for address forms',
+    'iso_code',
+    'name',
+    '["region", "currency"]',
+    true,
+    '00000000-0000-0000-0000-000000000001'
+);
+
+-- Insert sample data for priorities
+INSERT INTO lookup_data (lookup_table_id, data, sort_order) VALUES
+('10000000-0000-0000-0000-000000000001', '{"value": "low", "label": "Low", "color": "#28a745", "sort_order": 1}', 1),
+('10000000-0000-0000-0000-000000000001', '{"value": "medium", "label": "Medium", "color": "#ffc107", "sort_order": 2}', 2),
+('10000000-0000-0000-0000-000000000001', '{"value": "high", "label": "High", "color": "#fd7e14", "sort_order": 3}', 3),
+('10000000-0000-0000-0000-000000000001', '{"value": "urgent", "label": "Urgent", "color": "#dc3545", "sort_order": 4}', 4);
+
+-- Insert sample data for departments
+INSERT INTO lookup_data (lookup_table_id, data, sort_order) VALUES
+('10000000-0000-0000-0000-000000000002', '{"code": "ENG", "name": "Engineering", "manager": "John Smith", "budget_code": "ENG-2024"}', 1),
+('10000000-0000-0000-0000-000000000002', '{"code": "HR", "name": "Human Resources", "manager": "Jane Doe", "budget_code": "HR-2024"}', 2),
+('10000000-0000-0000-0000-000000000002', '{"code": "FIN", "name": "Finance", "manager": "Bob Johnson", "budget_code": "FIN-2024"}', 3),
+('10000000-0000-0000-0000-000000000002', '{"code": "MKT", "name": "Marketing", "manager": "Alice Brown", "budget_code": "MKT-2024"}', 4);
+
+-- Insert sample data for countries (few examples)
+INSERT INTO lookup_data (lookup_table_id, data, sort_order) VALUES
+('10000000-0000-0000-0000-000000000003', '{"iso_code": "SD", "name": "Sudan", "region": "Africa", "currency": "SD"}', 1);
+--('10000000-0000-0000-0000-000000000003', '{"iso_code": "CA", "name": "Canada", "region": "North America", "currency": "CAD"}', 2),
+--('10000000-0000-0000-0000-000000000003', '{"iso_code": "UK", "name": "United Kingdom", "region": "Europe", "currency": "GBP"}', 3),
+--('10000000-0000-0000-0000-000000000003', '{"iso_code": "DE", "name": "Germany", "region": "Europe", "currency": "EUR"}', 4),
+--('10000000-0000-0000-0000-000000000003', '{"iso_code": "UG", "name": "Uganda", "region": "Africa", "currency": "UGX"}', 5);
+
+-- Updated role permissions to include lookup table management
+-- Add this to your existing schema migration or run separately
+
+-- Update Admin role permissions to include lookup management
+UPDATE roles
+SET permissions = '["manage_workflows", "manage_users", "view_reports", "manage_sla", "manage_lookups", "view_all_lookups"]'
+WHERE name = 'Admin' AND tenant_id = '00000000-0000-0000-0000-000000000001';
+
+-- Update User role permissions to include basic lookup access
+UPDATE roles
+SET permissions = '["create_workflows", "execute_tasks", "view_reports", "view_lookups"]'
+WHERE name = 'User' AND tenant_id = '00000000-0000-0000-0000-000000000001';
+
+-- Create new role for Lookup Administrator
+INSERT INTO roles (tenant_id, name, description, permissions) VALUES
+('00000000-0000-0000-0000-000000000001', 'Lookup Admin', 'Lookup Table Administrator',
+ '["manage_lookups", "view_all_lookups", "import_lookups", "export_lookups", "manage_system_lookups"]');
+
+-- Create new role for Data Manager
+INSERT INTO roles (tenant_id, name, description, permissions) VALUES
+('00000000-0000-0000-0000-000000000001', 'Data Manager', 'Data and Configuration Manager',
+ '["manage_lookups", "view_all_lookups", "manage_forms", "view_reports", "export_data"]');
+
+-- Add lookup-specific permissions reference
+--/*
+--Available Lookup Permissions:
+--- view_lookups: Can view and use lookup tables in forms
+--- manage_lookups: Can create, edit, and delete custom lookup tables and data
+--- view_all_lookups: Can view all lookup tables including system tables
+--- manage_system_lookups: Can modify system lookup tables (admin only)
+--- import_lookups: Can bulk import lookup data
+--- export_lookups: Can export lookup data
+--*/
