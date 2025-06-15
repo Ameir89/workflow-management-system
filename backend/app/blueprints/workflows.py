@@ -719,3 +719,379 @@ def get_detailed_workflow_status(instance_id):
     except Exception as e:
         logger.error(f"Error getting detailed workflow status {instance_id}: {e}")
         return jsonify({'error': 'Failed to retrieve workflow status'}), 500
+
+
+# Add these endpoints to your app/blueprints/workflows.py file
+
+@workflows_bp.route('/<workflow_id>/execution-templates', methods=['GET'])
+@require_auth
+def get_execution_templates(workflow_id):
+    """Get execution templates for a workflow"""
+    try:
+        if not validate_uuid(workflow_id):
+            return jsonify({'error': 'Invalid workflow ID'}), 400
+
+        tenant_id = g.current_user['tenant_id']
+
+        # Get workflow details
+        workflow = Database.execute_one("""
+            SELECT id, name, definition, category
+            FROM workflows 
+            WHERE id = %s AND tenant_id = %s AND is_active = true
+        """, (workflow_id, tenant_id))
+
+        if not workflow:
+            return jsonify({'error': 'Workflow not found'}), 404
+
+        # Parse workflow definition to extract template information
+        if isinstance(workflow['definition'], str):
+            definition = json.loads(workflow['definition'])
+        else:
+            definition = workflow['definition']
+
+        # Build execution templates based on workflow steps
+        templates = []
+
+        # Default template
+        default_template = {
+            'id': 'default',
+            'name': 'Default Execution',
+            'description': 'Standard workflow execution with default settings',
+            'priority_options': [
+                {'value': 'low', 'label': 'Low - Standard processing'},
+                {'value': 'medium', 'label': 'Medium - Normal priority'},
+                {'value': 'high', 'label': 'High - Expedited processing'},
+                {'value': 'urgent', 'label': 'Urgent - Immediate attention'}
+            ],
+            'default_values': {
+                'priority': 'medium',
+                'notify_stakeholders': True,
+                'auto_assign': True,
+                'parallel_execution': False
+            },
+            'required_fields': ['title'],
+            'optional_fields': ['description', 'due_date', 'tags']
+        }
+        templates.append(default_template)
+
+        # Category-specific templates
+        if workflow['category'] == 'Finance':
+            finance_template = {
+                'id': 'finance_expedited',
+                'name': 'Finance Expedited',
+                'description': 'Fast-track for urgent financial approvals',
+                'default_values': {
+                    'priority': 'high',
+                    'notify_stakeholders': True,
+                    'auto_assign': True,
+                    'parallel_execution': True,
+                    'escalation_enabled': True
+                },
+                'required_fields': ['title', 'amount', 'department'],
+                'validation_rules': {
+                    'amount': {'type': 'number', 'min': 0},
+                    'department': {'type': 'string', 'required': True}
+                }
+            }
+            templates.append(finance_template)
+
+        elif workflow['category'] == 'HR':
+            hr_template = {
+                'id': 'hr_standard',
+                'name': 'HR Standard Process',
+                'description': 'Standard HR workflow execution',
+                'default_values': {
+                    'priority': 'medium',
+                    'notify_stakeholders': True,
+                    'auto_assign': True,
+                    'include_manager': True
+                },
+                'required_fields': ['title', 'employee_id'],
+                'optional_fields': ['start_date', 'manager_override']
+            }
+            templates.append(hr_template)
+
+        # Extract data fields from workflow steps that have forms
+        data_fields = []
+        steps = definition.get('steps', [])
+
+        for step in steps:
+            properties = step.get('properties', {})
+            if 'formId' in properties:
+                # This step has a form, we should include its fields in the template
+                form_id = properties['formId']
+                if form_id:
+                    # Get form definition
+                    form = Database.execute_one("""
+                        SELECT schema FROM form_definitions 
+                        WHERE id = %s OR name = %s
+                    """, (form_id, form_id))
+
+                    if form and form['schema']:
+                        try:
+                            form_schema = json.loads(form['schema']) if isinstance(form['schema'], str) else form[
+                                'schema']
+                            form_fields = form_schema.get('fields', [])
+
+                            for field in form_fields:
+                                if field.get('required'):
+                                    field_info = {
+                                        'name': field['name'],
+                                        'label': field['label'],
+                                        'type': field['type'],
+                                        'required': field.get('required', False),
+                                        'step': step['name']
+                                    }
+                                    if field_info not in data_fields:
+                                        data_fields.append(field_info)
+                        except:
+                            pass
+
+        return jsonify({
+            'workflow_id': workflow_id,
+            'workflow_name': workflow['name'],
+            'templates': templates,
+            'data_fields': data_fields,
+            'execution_options': {
+                'supports_parallel': True,
+                'supports_scheduling': True,
+                'supports_bulk_execution': False,
+                'max_concurrent_instances': 10
+            }
+        }), 200
+
+    except Exception as e:
+        logger.error(f"Error getting execution templates for workflow {workflow_id}: {e}")
+        return jsonify({'error': 'Failed to retrieve execution templates'}), 500
+
+
+@workflows_bp.route('/<workflow_id>/validate-execution', methods=['POST'])
+@require_auth
+def validate_execution(workflow_id):
+    """Validate workflow execution parameters"""
+    try:
+        if not validate_uuid(workflow_id):
+            return jsonify({'error': 'Invalid workflow ID'}), 400
+
+        data = sanitize_input(request.get_json())
+        tenant_id = g.current_user['tenant_id']
+        user_id = g.current_user['user_id']
+
+        # Get workflow
+        workflow = Database.execute_one("""
+            SELECT id, name, definition, is_active
+            FROM workflows 
+            WHERE id = %s AND tenant_id = %s
+        """, (workflow_id, tenant_id))
+
+        if not workflow:
+            return jsonify({'error': 'Workflow not found'}), 404
+
+        if not workflow['is_active']:
+            return jsonify({'error': 'Workflow is not active'}), 400
+
+        # Parse workflow definition
+        if isinstance(workflow['definition'], str):
+            definition = json.loads(workflow['definition'])
+        else:
+            definition = workflow['definition']
+
+        # Validation results
+        validation_result = {
+            'valid': True,
+            'errors': [],
+            'warnings': [],
+            'suggestions': [],
+            'estimated_duration': None,
+            'required_approvers': [],
+            'resource_requirements': []
+        }
+
+        # Validate required fields
+        required_fields = ['title']
+        for field in required_fields:
+            if field not in data or not data[field]:
+                validation_result['valid'] = False
+                validation_result['errors'].append(f"Required field '{field}' is missing")
+
+        # Validate priority
+        valid_priorities = ['low', 'medium', 'high', 'urgent']
+        priority = data.get('priority', {})
+        if isinstance(priority, dict):
+            priority_value = priority.get('value')
+        else:
+            priority_value = priority
+
+        if priority_value and priority_value not in valid_priorities:
+            validation_result['valid'] = False
+            validation_result['errors'].append(f"Invalid priority: {priority_value}")
+
+        # Validate workflow-specific data
+        workflow_data = data.get('data', {})
+
+        # Check if user has permission to execute this workflow
+        user_permissions = g.current_user.get('permissions', [])
+        if 'execute_workflows' not in user_permissions and '*' not in user_permissions:
+            validation_result['valid'] = False
+            validation_result['errors'].append("User does not have permission to execute workflows")
+
+        # Analyze workflow definition for validation
+        steps = definition.get('steps', [])
+
+        # Find steps that require approval and identify approvers
+        approvers_needed = []
+        estimated_hours = 0
+
+        for step in steps:
+            step_type = step.get('type')
+            properties = step.get('properties', {})
+
+            if step_type == 'approval':
+                approvers = properties.get('approvers', [])
+                for approver in approvers:
+                    if approver not in approvers_needed:
+                        approvers_needed.append(approver)
+
+            # Estimate duration based on due hours
+            due_hours = properties.get('dueHours', 24)
+            estimated_hours += due_hours
+
+        validation_result['required_approvers'] = approvers_needed
+        validation_result['estimated_duration'] = f"{estimated_hours} hours"
+
+        # Check for potential issues
+        if estimated_hours > 168:  # More than a week
+            validation_result['warnings'].append(
+                f"This workflow may take up to {estimated_hours} hours to complete"
+            )
+
+        # Validate specific fields based on workflow category
+        category = workflow.get('category')
+        if category == 'Finance':
+            # Financial workflows should have amount
+            if 'amount' in workflow_data:
+                try:
+                    amount = float(workflow_data['amount'])
+                    if amount < 0:
+                        validation_result['errors'].append("Amount cannot be negative")
+                    elif amount > 1000000:
+                        validation_result['warnings'].append(
+                            "Large amount detected - additional approvals may be required"
+                        )
+                except (ValueError, TypeError):
+                    validation_result['errors'].append("Amount must be a valid number")
+
+        # Check for conflicting execution options
+        if data.get('parallel_execution') and data.get('sequential_only'):
+            validation_result['errors'].append(
+                "Cannot enable both parallel execution and sequential-only mode"
+            )
+
+        # Validate form data if provided
+        if 'form_data' in data:
+            form_validation = validate_workflow_form_data(workflow_id, data['form_data'])
+            if not form_validation['valid']:
+                validation_result['valid'] = False
+                validation_result['errors'].extend(form_validation['errors'])
+
+        # Add suggestions
+        if not data.get('notify_stakeholders'):
+            validation_result['suggestions'].append(
+                "Consider enabling stakeholder notifications for better transparency"
+            )
+
+        if priority_value == 'urgent' and not data.get('justification'):
+            validation_result['suggestions'].append(
+                "Urgent priority workflows should include justification"
+            )
+
+        # Final validation
+        if validation_result['errors']:
+            validation_result['valid'] = False
+
+        return jsonify(validation_result), 200
+
+    except Exception as e:
+        logger.error(f"Error validating execution for workflow {workflow_id}: {e}")
+        return jsonify({'error': 'Failed to validate execution parameters'}), 500
+
+
+def validate_workflow_form_data(workflow_id, form_data):
+    """Helper function to validate form data against workflow requirements"""
+    try:
+        # This is a simplified validation - you can expand based on your form schemas
+        validation_result = {
+            'valid': True,
+            'errors': []
+        }
+
+        # Basic validation
+        if not isinstance(form_data, dict):
+            validation_result['valid'] = False
+            validation_result['errors'].append("Form data must be an object")
+            return validation_result
+
+        # Add more specific validation based on your form schemas
+        # This would typically involve checking required fields, data types, etc.
+
+        return validation_result
+
+    except Exception as e:
+        logger.error(f"Error validating form data: {e}")
+        return {
+            'valid': False,
+            'errors': ['Form data validation error']
+        }
+
+
+# Additional helper endpoint for getting workflow execution history
+@workflows_bp.route('/<workflow_id>/execution-history', methods=['GET'])
+@require_auth
+def get_execution_history(workflow_id):
+    """Get execution history for a workflow"""
+    try:
+        if not validate_uuid(workflow_id):
+            return jsonify({'error': 'Invalid workflow ID'}), 400
+
+        tenant_id = g.current_user['tenant_id']
+        page = int(request.args.get('page', 1))
+        limit = min(int(request.args.get('limit', 20)), 100)
+        offset = (page - 1) * limit
+
+        # Get recent executions
+        executions = Database.execute_query("""
+            SELECT wi.id, wi.title, wi.status, wi.priority, 
+                   wi.created_at, wi.completed_at,
+                   u.first_name || ' ' || u.last_name as initiated_by_name,
+                   EXTRACT(EPOCH FROM (COALESCE(wi.completed_at, NOW()) - wi.created_at))/3600 as duration_hours
+            FROM workflow_instances wi
+            LEFT JOIN users u ON wi.initiated_by = u.id
+            WHERE wi.workflow_id = %s AND wi.tenant_id = %s
+            ORDER BY wi.created_at DESC
+            LIMIT %s OFFSET %s
+        """, (workflow_id, tenant_id, limit, offset))
+
+        # Get execution statistics
+        stats = Database.execute_one("""
+            SELECT 
+                COUNT(*) as total_executions,
+                COUNT(CASE WHEN status = 'completed' THEN 1 END) as completed,
+                COUNT(CASE WHEN status = 'failed' THEN 1 END) as failed,
+                AVG(EXTRACT(EPOCH FROM (completed_at - created_at))/3600) as avg_duration_hours
+            FROM workflow_instances
+            WHERE workflow_id = %s AND tenant_id = %s
+        """, (workflow_id, tenant_id))
+
+        return jsonify({
+            'executions': [dict(e) for e in executions],
+            'statistics': dict(stats),
+            'pagination': {
+                'page': page,
+                'limit': limit,
+                'has_more': len(executions) == limit
+            }
+        }), 200
+
+    except Exception as e:
+        logger.error(f"Error getting execution history: {e}")
+        return jsonify({'error': 'Failed to retrieve execution history'}), 500

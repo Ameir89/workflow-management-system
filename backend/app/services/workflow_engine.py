@@ -511,32 +511,72 @@ class WorkflowEngine:
 
         return None
 
+    # @staticmethod
+    # def _evaluate_condition_expression(condition, data):
+    #     """Evaluate a condition expression"""
+    #     field = condition.get('field')
+    #     operator = condition.get('operator')
+    #     value = condition.get('value')
+    #
+    #     if field not in data:
+    #         return False
+    #
+    #     field_value = data[field]
+    #
+    #     if operator == 'equals':
+    #         return field_value == value
+    #     elif operator == 'not_equals':
+    #         return field_value != value
+    #     elif operator == 'greater_than':
+    #         return float(field_value) > float(value)
+    #     elif operator == 'less_than':
+    #         return float(field_value) < float(value)
+    #     elif operator == 'contains':
+    #         return value in str(field_value)
+    #     elif operator == 'between':
+    #         return value[0] <= float(field_value) <= value[1]
+    #
+    #     return False
+
     @staticmethod
     def _evaluate_condition_expression(condition, data):
-        """Evaluate a condition expression"""
-        field = condition.get('field')
-        operator = condition.get('operator')
-        value = condition.get('value')
+        """Evaluate a condition expression (supports 'all', 'any', and simple condition objects)"""
 
-        if field not in data:
+        def evaluate_single(cond):
+            field = cond.get('field')
+            operator = cond.get('operator')
+            value = cond.get('value')
+
+            if field not in data:
+                return False
+
+            field_value = data[field]
+
+            try:
+                if operator == 'equals':
+                    return field_value == value
+                elif operator == 'not_equals':
+                    return field_value != value
+                elif operator == 'greater_than':
+                    return float(field_value) > float(value)
+                elif operator == 'less_than':
+                    return float(field_value) < float(value)
+                elif operator == 'contains':
+                    return value in str(field_value)
+                elif operator == 'between':
+                    return value[0] <= float(field_value) <= value[1]
+            except Exception as e:
+                logger.warning(f"Condition evaluation error: {e}")
             return False
 
-        field_value = data[field]
+        # Compound conditions
+        if 'all' in condition:
+            return all(WorkflowEngine._evaluate_condition_expression(c, data) for c in condition['all'])
+        elif 'any' in condition:
+            return any(WorkflowEngine._evaluate_condition_expression(c, data) for c in condition['any'])
 
-        if operator == 'equals':
-            return field_value == value
-        elif operator == 'not_equals':
-            return field_value != value
-        elif operator == 'greater_than':
-            return float(field_value) > float(value)
-        elif operator == 'less_than':
-            return float(field_value) < float(value)
-        elif operator == 'contains':
-            return value in str(field_value)
-        elif operator == 'between':
-            return value[0] <= float(field_value) <= value[1]
-
-        return False
+        # Single condition object
+        return evaluate_single(condition)
 
     @staticmethod
     def _find_step_by_id(steps, step_id):
