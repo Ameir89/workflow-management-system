@@ -1736,3 +1736,113 @@ NameError: name 'datetime' is not defined. Did you forget to import 'datetime'
 [2025-06-15 00:46:30,214] [INFO] app: Application startup
 [2025-06-15 00:47:24,348] [INFO] app: Application startup
 [2025-06-15 00:47:49,552] [INFO] app: Application startup
+[2025-06-15 21:32:34,113] [INFO] app: Application startup
+[2025-06-15 21:32:34,913] [INFO] app: Application startup
+[2025-06-15 21:32:56,532] [INFO] app.middleware: Request dff45c9a-c92b-4740-924d-4cd901583b91: POST /api/auth/login
+[2025-06-15 21:32:56,620] [INFO] app.database: Connected to DB postgresql://postgres:CodeSD.com@localhost (connection open: True)
+[2025-06-15 21:32:56,857] [INFO] app.middleware: Response dff45c9a-c92b-4740-924d-4cd901583b91: 200 (0.325s)
+[2025-06-15 21:33:24,961] [INFO] app.middleware: Request 1ce5289e-9d2e-49ff-8683-a3eea80ca51a: GET /api/tasks
+[2025-06-15 21:33:25,010] [INFO] app.database: Connected to DB postgresql://postgres:CodeSD.com@localhost (connection open: True)
+[2025-06-15 21:33:25,026] [INFO] app.middleware: Response 1ce5289e-9d2e-49ff-8683-a3eea80ca51a: 200 (0.066s)
+[2025-06-15 21:33:42,595] [INFO] app.middleware: Request cb938685-e4d2-4d83-9807-9e52054676f5: GET /api/tasks/2b81b72d-5559-4f25-bc56-312b6405dc55
+[2025-06-15 21:33:42,660] [INFO] app.database: Connected to DB postgresql://postgres:CodeSD.com@localhost (connection open: True)
+[2025-06-15 21:33:42,680] [INFO] app.middleware: Response cb938685-e4d2-4d83-9807-9e52054676f5: 200 (0.085s)
+[2025-06-15 21:35:25,423] [INFO] app.middleware: Request 29b9fcbb-cfbe-4011-972f-f838dd602077: GET /api/workflows/instances/45db90eb-cd5e-446c-a909-c23c0dea49f4
+[2025-06-15 21:35:25,472] [INFO] app.database: Connected to DB postgresql://postgres:CodeSD.com@localhost (connection open: True)
+[2025-06-15 21:35:25,480] [INFO] app.middleware: Response 29b9fcbb-cfbe-4011-972f-f838dd602077: 200 (0.056s)
+[2025-06-15 21:39:05,585] [INFO] app.middleware: Request ee0371f9-ec11-4023-ba44-7e64841cc9f0: POST /api/tasks/2b81b72d-5559-4f25-bc56-312b6405dc55/complete
+[2025-06-15 21:39:05,743] [INFO] app.database: Connected to DB postgresql://postgres:CodeSD.com@localhost (connection open: True)
+[2025-06-15 21:39:05,762] [INFO] app.middleware: Response ee0371f9-ec11-4023-ba44-7e64841cc9f0: 400 (0.177s)
+[2025-06-15 21:40:07,599] [INFO] app.middleware: Request 774be0e2-32e8-4583-b516-95bdf7f1d1b4: POST /api/tasks/2b81b72d-5559-4f25-bc56-312b6405dc55/complete
+[2025-06-15 21:40:07,690] [INFO] app.database: Connected to DB postgresql://postgres:CodeSD.com@localhost (connection open: True)
+[2025-06-15 21:40:07,707] [INFO] app.blueprints.tasks: Created form response e88770a2-eeac-46e0-8025-33f0b8aa8d3a for task 2b81b72d-5559-4f25-bc56-312b6405dc55
+[2025-06-15 21:40:07,708] [INFO] app.blueprints.tasks: Task 2b81b72d-5559-4f25-bc56-312b6405dc55 marked as completed by user 00000000-0000-0000-0000-000000000001
+[2025-06-15 21:40:07,709] [ERROR] app.services.workflow_engine: Failed to complete task 2b81b72d-5559-4f25-bc56-312b6405dc55: Task 2b81b72d-5559-4f25-bc56-312b6405dc55 is not in pending status
+[2025-06-15 21:40:07,709] [ERROR] app.blueprints.tasks: Error in workflow engine for task 2b81b72d-5559-4f25-bc56-312b6405dc55: Task 2b81b72d-5559-4f25-bc56-312b6405dc55 is not in pending status
+[2025-06-15 21:40:07,714] [INFO] app.middleware: Response 774be0e2-32e8-4583-b516-95bdf7f1d1b4: 200 (0.115s)
+[2025-06-15 21:42:14,514] [INFO] app.middleware: Request d176eb6f-a077-4b49-9e23-97ab0d2a8f12: GET /api/workflows/instances/45db90eb-cd5e-446c-a909-c23c0dea49f4
+[2025-06-15 21:42:14,582] [INFO] app.database: Connected to DB postgresql://postgres:CodeSD.com@localhost (connection open: True)
+[2025-06-15 21:42:14,594] [INFO] app.middleware: Response d176eb6f-a077-4b49-9e23-97ab0d2a8f12: 200 (0.080s)
+[2025-06-15 22:19:20,303] [INFO] app: Application startup
+[2025-06-15 22:53:41,707] [INFO] app.middleware: Request 2acb2bb0-4915-4c8e-9eed-ae3c3209d624: GET /api/reports/dashboard-stats
+[2025-06-15 22:53:41,835] [INFO] app.database: Connected to DB postgresql://postgres:CodeSD.com@localhost (connection open: True)
+[2025-06-15 22:53:41,860] [INFO] app.middleware: Response 2acb2bb0-4915-4c8e-9eed-ae3c3209d624: 200 (0.152s)
+[2025-06-15 22:54:57,452] [INFO] app.middleware: Request cffdbe94-d457-407f-997d-49035419cbe4: GET /api/workflows/deaf69fc-be5d-43f8-a817-340581b7e8aa/instances
+[2025-06-15 22:54:57,539] [INFO] app.database: Connected to DB postgresql://postgres:CodeSD.com@localhost (connection open: True)
+[2025-06-15 22:54:57,554] [INFO] app.middleware: Response cffdbe94-d457-407f-997d-49035419cbe4: 200 (0.102s)
+[2025-06-15 23:10:32,906] [INFO] app: Application startup
+[2025-06-15 23:10:59,053] [INFO] app: Application startup
+[2025-06-15 23:23:17,482] [INFO] app: Application startup
+[2025-06-16 00:26:13,817] [INFO] app: Application startup
+[2025-06-16 00:29:22,394] [INFO] app: Application startup
+[2025-06-16 00:31:40,762] [INFO] app: Application startup
+[2025-06-16 00:33:56,171] [INFO] app: Application startup
+[2025-06-16 00:34:36,333] [INFO] app: Application startup
+[2025-06-16 00:38:14,051] [INFO] app: Application startup
+[2025-06-16 00:43:19,851] [INFO] app: Application startup
+[2025-06-16 00:43:24,442] [INFO] app: Application startup
+[2025-06-16 00:44:26,803] [INFO] app: Application startup
+[2025-06-16 00:44:48,758] [INFO] app: Application startup
+[2025-06-16 00:46:45,306] [INFO] app: Application startup
+[2025-06-16 00:46:54,975] [INFO] app: Application startup
+[2025-06-16 01:07:43,714] [INFO] app: Application startup
+[2025-06-16 01:07:44,226] [INFO] app: Application startup
+[2025-06-16 01:54:53,087] [INFO] app.middleware: Request 931325cc-6c9b-4fcb-9c39-3522321da653: POST /api/workflows/deaf69fc-be5d-43f8-a817-340581b7e8aa/execute
+[2025-06-16 01:54:53,177] [INFO] app.database: Connected to DB postgresql://postgres:CodeSD.com@localhost (connection open: True)
+[2025-06-16 01:54:53,185] [INFO] app.middleware: Response 931325cc-6c9b-4fcb-9c39-3522321da653: 404 (0.098s)
+[2025-06-16 01:55:12,773] [INFO] app.middleware: Request 8aec9810-0a72-455f-84e5-c0292220ade6: GET /api/workflows
+[2025-06-16 01:55:12,808] [INFO] app.database: Connected to DB postgresql://postgres:CodeSD.com@localhost (connection open: True)
+[2025-06-16 01:55:12,808] [INFO] app.middleware: Response 8aec9810-0a72-455f-84e5-c0292220ade6: 200 (0.034s)
+[2025-06-16 01:55:36,138] [INFO] app.middleware: Request c108340a-9c4c-44cb-b8c3-5a29a9f68f1e: GET /api/workflows/f006f785-948f-4dd9-b271-d926c93df065
+[2025-06-16 01:55:36,188] [INFO] app.database: Connected to DB postgresql://postgres:CodeSD.com@localhost (connection open: True)
+[2025-06-16 01:55:36,196] [INFO] app.middleware: Response c108340a-9c4c-44cb-b8c3-5a29a9f68f1e: 200 (0.058s)
+[2025-06-16 01:56:06,571] [INFO] app.middleware: Request e0b9a4c7-b7b9-4752-8c8c-b910f6637256: POST /api/workflows/f006f785-948f-4dd9-b271-d926c93df065/execute
+[2025-06-16 01:56:06,612] [INFO] app.database: Connected to DB postgresql://postgres:CodeSD.com@localhost (connection open: True)
+[2025-06-16 01:56:06,628] [INFO] app.services.workflow_engine: Executing step submit_request of type task for instance b8c15aa7-00a3-4160-b16d-d22f6820cc1a
+[2025-06-16 01:56:06,637] [ERROR] app.services.notification_service: Error sending notification: the JSON object must be str, bytes or bytearray, not dict
+[2025-06-16 01:56:06,637] [INFO] app.services.workflow_engine: Created task 2d269623-976f-4dad-a213-b64ca59f42d4 assigned to 00000000-0000-0000-0000-000000000001 for step submit_request
+[2025-06-16 01:56:06,637] [INFO] app.middleware: Response e0b9a4c7-b7b9-4752-8c8c-b910f6637256: 201 (0.065s)
+[2025-06-16 01:56:21,712] [INFO] app.middleware: Request 17f120a2-8830-413d-9021-2ff126cf6685: GET /api/tasks
+[2025-06-16 01:56:21,756] [INFO] app.database: Connected to DB postgresql://postgres:CodeSD.com@localhost (connection open: True)
+[2025-06-16 01:56:21,773] [INFO] app.middleware: Response 17f120a2-8830-413d-9021-2ff126cf6685: 200 (0.061s)
+[2025-06-16 01:57:03,817] [INFO] app.middleware: Request 15322bf4-b83d-4ec2-aac7-190ffd7a1d86: POST /api/tasks/2d269623-976f-4dad-a213-b64ca59f42d4/complete
+[2025-06-16 01:57:03,857] [INFO] app.database: Connected to DB postgresql://postgres:CodeSD.com@localhost (connection open: True)
+[2025-06-16 01:57:03,874] [INFO] app.blueprints.tasks: Created form response 0540a087-194b-43ae-a879-aaaf02964f69 for task 2d269623-976f-4dad-a213-b64ca59f42d4
+[2025-06-16 01:57:03,874] [INFO] app.blueprints.tasks: Task 2d269623-976f-4dad-a213-b64ca59f42d4 marked as completed by user 00000000-0000-0000-0000-000000000001
+[2025-06-16 01:57:03,874] [ERROR] app.services.workflow_engine: Failed to complete task 2d269623-976f-4dad-a213-b64ca59f42d4: Task 2d269623-976f-4dad-a213-b64ca59f42d4 is not in pending status
+[2025-06-16 01:57:03,874] [ERROR] app.blueprints.tasks: Error in workflow engine for task 2d269623-976f-4dad-a213-b64ca59f42d4: Task 2d269623-976f-4dad-a213-b64ca59f42d4 is not in pending status
+[2025-06-16 01:57:03,882] [INFO] app.middleware: Response 15322bf4-b83d-4ec2-aac7-190ffd7a1d86: 200 (0.065s)
+[2025-06-16 01:57:33,732] [INFO] app.middleware: Request 91426e13-5cff-47f4-9e4c-63905c8c1676: GET /api/workflows/instances/b8c15aa7-00a3-4160-b16d-d22f6820cc1a
+[2025-06-16 01:57:33,773] [INFO] app.database: Connected to DB postgresql://postgres:CodeSD.com@localhost (connection open: True)
+[2025-06-16 01:57:33,781] [INFO] app.middleware: Response 91426e13-5cff-47f4-9e4c-63905c8c1676: 200 (0.048s)
+[2025-06-16 01:57:39,443] [INFO] app.middleware: Request d382bb10-a758-4573-ad3b-711bce2017a7: GET /api/workflows/instances/b8c15aa7-00a3-4160-b16d-d22f6820cc1a
+[2025-06-16 01:57:39,484] [INFO] app.database: Connected to DB postgresql://postgres:CodeSD.com@localhost (connection open: True)
+[2025-06-16 01:57:39,492] [INFO] app.middleware: Response d382bb10-a758-4573-ad3b-711bce2017a7: 200 (0.049s)
+[2025-06-16 02:10:18,963] [INFO] app: Application startup
+[2025-06-16 02:42:32,525] [INFO] app: Application startup
+[2025-06-16 02:42:33,100] [INFO] app: Application startup
+[2025-06-16 02:42:36,898] [INFO] app.middleware: Request 2904d7a9-b00f-4b14-bd42-d39292e6458b: POST /api/forms
+[2025-06-16 02:42:36,956] [INFO] app.database: Connected to DB postgresql://postgres:CodeSD.com@localhost (connection open: True)
+[2025-06-16 02:42:36,966] [INFO] app.middleware: Response 2904d7a9-b00f-4b14-bd42-d39292e6458b: 201 (0.068s)
+[2025-06-16 02:43:57,414] [INFO] app.middleware: Request d6a65dd4-eac1-4751-9c52-a25c5beaf4a8: POST /api/workflows/f006f785-948f-4dd9-b271-d926c93df065/execute
+[2025-06-16 02:43:57,447] [INFO] app.database: Connected to DB postgresql://postgres:CodeSD.com@localhost (connection open: True)
+[2025-06-16 02:43:57,464] [INFO] app.services.workflow_engine: Executing step submit_request of type task for instance d680f479-f248-46d6-89b7-3bdfb4035a75
+[2025-06-16 02:43:57,464] [ERROR] app.services.notification_service: Error sending notification: the JSON object must be str, bytes or bytearray, not dict
+[2025-06-16 02:43:57,464] [INFO] app.services.workflow_engine: Created task c4e35a78-9a37-4ab5-ba7e-f87aa22ba68c assigned to 00000000-0000-0000-0000-000000000001 for step submit_request
+[2025-06-16 02:43:57,472] [INFO] app.middleware: Response d6a65dd4-eac1-4751-9c52-a25c5beaf4a8: 201 (0.058s)
+[2025-06-16 02:44:03,907] [INFO] app.middleware: Request c7cd9b85-6ea9-4f3e-9dde-088ffc46c2dd: GET /api/tasks
+[2025-06-16 02:44:03,946] [INFO] app.database: Connected to DB postgresql://postgres:CodeSD.com@localhost (connection open: True)
+[2025-06-16 02:44:03,954] [INFO] app.middleware: Response c7cd9b85-6ea9-4f3e-9dde-088ffc46c2dd: 200 (0.047s)
+[2025-06-16 02:44:27,840] [INFO] app.middleware: Request 02926f02-1872-47b4-96cb-e111574d7af2: GET /api/tasks
+[2025-06-16 02:44:27,872] [INFO] app.database: Connected to DB postgresql://postgres:CodeSD.com@localhost (connection open: True)
+[2025-06-16 02:44:27,904] [INFO] app.middleware: Response 02926f02-1872-47b4-96cb-e111574d7af2: 200 (0.064s)
+[2025-06-16 02:46:38,845] [INFO] app.middleware: Request 239a5c0a-3d69-4bb5-b237-52448b51f35a: GET /api/tasks/c4e35a78-9a37-4ab5-ba7e-f87aa22ba68c
+[2025-06-16 02:46:38,911] [INFO] app.database: Connected to DB postgresql://postgres:CodeSD.com@localhost (connection open: True)
+[2025-06-16 02:46:38,926] [INFO] app.middleware: Response 239a5c0a-3d69-4bb5-b237-52448b51f35a: 200 (0.080s)
+[2025-06-16 02:47:19,424] [INFO] app.middleware: Request cbc1062d-8c9a-4295-b830-b797fa3306e1: POST /api/tasks/c4e35a78-9a37-4ab5-ba7e-f87aa22ba68c/complete
+[2025-06-16 02:47:19,456] [INFO] app.database: Connected to DB postgresql://postgres:CodeSD.com@localhost (connection open: True)
+[2025-06-16 02:47:19,473] [INFO] app.blueprints.tasks: Created form response ac223af5-a1d6-4162-9138-368e3a8dfe2e for task c4e35a78-9a37-4ab5-ba7e-f87aa22ba68c
+[2025-06-16 02:47:19,473] [INFO] app.blueprints.tasks: Task c4e35a78-9a37-4ab5-ba7e-f87aa22ba68c marked as completed by user 00000000-0000-0000-0000-000000000001
+[2025-06-16 02:47:19,473] [ERROR] app.services.workflow_engine: Failed to complete task c4e35a78-9a37-4ab5-ba7e-f87aa22ba68c: Task c4e35a78-9a37-4ab5-ba7e-f87aa22ba68c is not in pending status
+[2025-06-16 02:47:19,473] [ERROR] app.blueprints.tasks: Error in workflow engine for task c4e35a78-9a37-4ab5-ba7e-f87aa22ba68c: Task c4e35a78-9a37-4ab5-ba7e-f87aa22ba68c is not in pending status
+[2025-06-16 02:47:19,473] [INFO] app.middleware: Response cbc1062d-8c9a-4295-b830-b797fa3306e1: 200 (0.049s)

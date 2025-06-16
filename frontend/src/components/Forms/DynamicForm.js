@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useMemo, useRef } from "react";
 import { useForm, Controller } from "react-hook-form";
 import { useTranslation } from "react-i18next";
 import Select from "react-select";
@@ -18,6 +18,22 @@ const DynamicForm = ({
   const { t } = useTranslation();
   const [formSchema, setFormSchema] = useState(null);
 
+  // Use refs to track previous values and prevent unnecessary re-renders
+  const prevSchemaRef = useRef();
+  const prevDefaultValuesRef = useRef();
+  const hasInitializedRef = useRef(false);
+
+  // Memoize the parsed schema to prevent unnecessary re-parsing
+  const parsedSchema = useMemo(() => {
+    if (!schema) return null;
+    return typeof schema === "string" ? JSON.parse(schema) : schema;
+  }, [schema]);
+
+  // Memoize defaultValues to prevent object recreation issues
+  const memoizedDefaultValues = useMemo(() => {
+    return defaultValues || {};
+  }, [defaultValues]);
+
   const {
     register,
     handleSubmit,
@@ -27,17 +43,42 @@ const DynamicForm = ({
     watch,
     reset,
   } = useForm({
-    defaultValues: defaultValues || {},
+    defaultValues: memoizedDefaultValues,
   });
 
+  // Handle schema updates
   useEffect(() => {
-    if (schema) {
-      setFormSchema(typeof schema === "string" ? JSON.parse(schema) : schema);
-      if (defaultValues) {
-        reset(defaultValues);
-      }
+    if (parsedSchema && parsedSchema !== prevSchemaRef.current) {
+      setFormSchema(parsedSchema);
+      prevSchemaRef.current = parsedSchema;
     }
-  }, [schema, defaultValues, reset]);
+  }, [parsedSchema]);
+
+  // Handle defaultValues updates (separate effect to avoid conflicts)
+  useEffect(() => {
+    // Only reset if defaultValues actually changed and we have a schema
+    if (
+      formSchema &&
+      memoizedDefaultValues !== prevDefaultValuesRef.current &&
+      Object.keys(memoizedDefaultValues).length > 0
+    ) {
+      reset(memoizedDefaultValues);
+      prevDefaultValuesRef.current = memoizedDefaultValues;
+      hasInitializedRef.current = true;
+    }
+  }, [memoizedDefaultValues, formSchema, reset]);
+
+  // Initial setup effect (runs only once when component mounts)
+  useEffect(() => {
+    if (
+      parsedSchema &&
+      !hasInitializedRef.current &&
+      Object.keys(memoizedDefaultValues).length > 0
+    ) {
+      reset(memoizedDefaultValues);
+      hasInitializedRef.current = true;
+    }
+  }, [parsedSchema, memoizedDefaultValues, reset]);
 
   const renderField = (field) => {
     const {

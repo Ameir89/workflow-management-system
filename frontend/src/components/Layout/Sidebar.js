@@ -1,4 +1,4 @@
-// src/components/Layout/Sidebar.js
+// src/components/Layout/Sidebar.js - Updated with separated workflow navigation
 import React, { useState } from "react";
 import { Link, useLocation } from "react-router-dom";
 import { useTranslation } from "react-i18next";
@@ -22,6 +22,9 @@ import {
   TableCellsIcon,
   PencilSquareIcon,
   WrenchScrewdriverIcon,
+  RocketLaunchIcon,
+  PlayIcon,
+  EyeIcon,
 } from "@heroicons/react/24/outline";
 import {
   HomeIcon as HomeIconSolid,
@@ -32,12 +35,14 @@ import {
   UserGroupIcon as UserGroupIconSolid,
   LinkIcon as LinkIconSolid,
   FolderIcon as FolderIconSolid,
+  RocketLaunchIcon as RocketLaunchIconSolid,
 } from "@heroicons/react/24/solid";
 
 const Sidebar = ({ isOpen, onClose, userPermissions = [] }) => {
   const { t } = useTranslation();
   const location = useLocation();
   const [expandedSections, setExpandedSections] = useState({
+    workflows: false,
     admin: false,
   });
 
@@ -63,7 +68,12 @@ const Sidebar = ({ isOpen, onClose, userPermissions = [] }) => {
       iconSolid: HomeIconSolid,
       badge: null,
     },
-
+    {
+      name: "Start Workflows",
+      href: "/start-workflows",
+      icon: RocketLaunchIcon,
+      iconSolid: RocketLaunchIconSolid,
+    },
     {
       name: t("nav.tasks"),
       href: "/tasks",
@@ -77,6 +87,12 @@ const Sidebar = ({ isOpen, onClose, userPermissions = [] }) => {
             }
           : null,
     },
+    {
+      name: "workflows instances",
+      href: "/workflows/instances",
+      icon: RocketLaunchIcon,
+      iconSolid: RocketLaunchIconSolid,
+    },
 
     {
       name: t("nav.reports"),
@@ -88,6 +104,13 @@ const Sidebar = ({ isOpen, onClose, userPermissions = [] }) => {
   ];
 
   const configurationNavigation = [
+    {
+      name: t("nav.manageWorkflows"),
+      href: "/workflows/list",
+      icon: Cog8ToothIcon,
+      iconSolid: Cog8ToothIconSolid,
+      description: "Create and configure workflows",
+    },
     {
       name: t("nav.forms"),
       href: "/forms",
@@ -109,13 +132,6 @@ const Sidebar = ({ isOpen, onClose, userPermissions = [] }) => {
       iconSolid: LinkIconSolid,
       badge: null,
     },
-    {
-      name: t("nav.workflows"),
-      href: "/workflows",
-      icon: Cog8ToothIcon,
-      iconSolid: Cog8ToothIconSolid,
-      badge: null,
-    },
   ];
 
   const adminNavigation = [
@@ -124,6 +140,13 @@ const Sidebar = ({ isOpen, onClose, userPermissions = [] }) => {
       href: "/admin/users",
       icon: UserGroupIcon,
       iconSolid: UserGroupIconSolid,
+    },
+
+    {
+      name: "Roles & Permissions",
+      href: "/admin/roles",
+      icon: ShieldCheckIcon,
+      iconSolid: ShieldCheckIcon,
     },
     {
       name: t("nav.admin.health"),
@@ -158,7 +181,7 @@ const Sidebar = ({ isOpen, onClose, userPermissions = [] }) => {
     }));
   };
 
-  const NavLink = ({ item, isAdmin = false }) => {
+  const NavLink = ({ item, isAdmin = false, isSubItem = false }) => {
     const active = isActive(item.href);
     const IconComponent = active ? item.iconSolid : item.icon;
 
@@ -172,7 +195,7 @@ const Sidebar = ({ isOpen, onClose, userPermissions = [] }) => {
               ? "bg-gradient-to-r from-indigo-500 to-purple-600 text-white shadow-lg shadow-indigo-500/25"
               : "text-gray-700 hover:bg-gray-100 hover:text-gray-900"
           }
-          ${isAdmin ? "ml-4" : ""}
+          ${isAdmin || isSubItem ? "ml-4" : ""}
         `}
         onClick={() => isOpen && window.innerWidth < 768 && onClose()}
       >
@@ -190,7 +213,14 @@ const Sidebar = ({ isOpen, onClose, userPermissions = [] }) => {
         />
 
         {/* Label */}
-        <span className="flex-1 truncate">{item.name}</span>
+        <div className="flex-1">
+          <span className="truncate">{item.name}</span>
+          {item.description && (
+            <div className="text-xs opacity-75 truncate">
+              {item.description}
+            </div>
+          )}
+        </div>
 
         {/* Badge */}
         {item.badge && (
@@ -265,58 +295,60 @@ const Sidebar = ({ isOpen, onClose, userPermissions = [] }) => {
               ))}
             </div>
 
+            {/* Configuration Section */}
+            {hasAdminAccess && (
+              <div className="pt-2">
+                <button
+                  onClick={() => toggleSection("configuration")}
+                  className="flex w-full items-center justify-between px-3 py-2 text-sm font-semibold text-gray-900 hover:bg-gray-50 rounded-lg transition-colors duration-200"
+                >
+                  <span className="flex items-center">
+                    <WrenchScrewdriverIcon className="mr-2 h-5 w-5 text-gray-500" />
+                    {t("nav.configuration.title")}
+                  </span>
+                  {expandedSections.configuration ? (
+                    <ChevronDownIcon className="h-4 w-4 text-gray-500" />
+                  ) : (
+                    <ChevronRightIcon className="h-4 w-4 text-gray-500" />
+                  )}
+                </button>
+
+                {expandedSections.configuration && (
+                  <div className="mt-2 space-y-1">
+                    {configurationNavigation.map((item) => (
+                      <NavLink key={item.name} item={item} isAdmin />
+                    ))}
+                  </div>
+                )}
+              </div>
+            )}
+
             {/* Admin Section */}
             {hasAdminAccess && (
-              <>
-                <div className="pt-4">
-                  <button
-                    onClick={() => toggleSection("configuration")}
-                    className="flex w-full items-center justify-between px-3 py-2 text-sm font-semibold text-gray-900 hover:bg-gray-50 rounded-lg transition-colors duration-200"
-                  >
-                    <span className="flex items-center">
-                      <WrenchScrewdriverIcon className="mr-2 h-5 w-5 text-gray-500" />
-                      {t("nav.configuration.title")}
-                    </span>
-                    {expandedSections.configuration ? (
-                      <ChevronDownIcon className="h-4 w-4 text-gray-500" />
-                    ) : (
-                      <ChevronRightIcon className="h-4 w-4 text-gray-500" />
-                    )}
-                  </button>
-
-                  {expandedSections.configuration && (
-                    <div className="mt-2 space-y-1">
-                      {configurationNavigation.map((item) => (
-                        <NavLink key={item.name} item={item} isAdmin />
-                      ))}
-                    </div>
+              <div className="pt-2">
+                <button
+                  onClick={() => toggleSection("admin")}
+                  className="flex w-full items-center justify-between px-3 py-2 text-sm font-semibold text-gray-900 hover:bg-gray-50 rounded-lg transition-colors duration-200"
+                >
+                  <span className="flex items-center">
+                    <ShieldCheckIcon className="mr-2 h-5 w-5 text-gray-500" />
+                    {t("nav.admin.title")}
+                  </span>
+                  {expandedSections.admin ? (
+                    <ChevronDownIcon className="h-4 w-4 text-gray-500" />
+                  ) : (
+                    <ChevronRightIcon className="h-4 w-4 text-gray-500" />
                   )}
-                </div>
-                <div className="pt-2">
-                  <button
-                    onClick={() => toggleSection("admin")}
-                    className="flex w-full items-center justify-between px-3 py-2 text-sm font-semibold text-gray-900 hover:bg-gray-50 rounded-lg transition-colors duration-200"
-                  >
-                    <span className="flex items-center">
-                      <ShieldCheckIcon className="mr-2 h-5 w-5 text-gray-500" />
-                      {t("nav.admin.title")}
-                    </span>
-                    {expandedSections.admin ? (
-                      <ChevronDownIcon className="h-4 w-4 text-gray-500" />
-                    ) : (
-                      <ChevronRightIcon className="h-4 w-4 text-gray-500" />
-                    )}
-                  </button>
+                </button>
 
-                  {expandedSections.admin && (
-                    <div className="mt-2 space-y-1">
-                      {adminNavigation.map((item) => (
-                        <NavLink key={item.name} item={item} isAdmin />
-                      ))}
-                    </div>
-                  )}
-                </div>
-              </>
+                {expandedSections.admin && (
+                  <div className="mt-2 space-y-1">
+                    {adminNavigation.map((item) => (
+                      <NavLink key={item.name} item={item} isAdmin />
+                    ))}
+                  </div>
+                )}
+              </div>
             )}
 
             {/* Spacer */}
