@@ -3,6 +3,8 @@
 """
 Workflows blueprint - handles workflow management
 """
+from datetime import datetime, timedelta
+
 from flask import Blueprint, request, jsonify, g
 from app.middleware import require_auth, require_permissions, audit_log
 from app.database import Database
@@ -1095,3 +1097,328 @@ def get_execution_history(workflow_id):
     except Exception as e:
         logger.error(f"Error getting execution history: {e}")
         return jsonify({'error': 'Failed to retrieve execution history'}), 500
+
+
+@workflows_bp.route('/<workflow_id>/execution-recommendations', methods=['GET'])
+@require_auth
+def get_execution_recommendations(workflow_id):
+    """Get intelligent recommendations for workflow execution"""
+    try:
+        if not validate_uuid(workflow_id):
+            return jsonify({'error': 'Invalid workflow ID'}), 400
+
+        tenant_id = g.current_user['tenant_id']
+        user_id = g.current_user['user_id']
+
+        # Get workflow details
+        workflow = Database.execute_one("""
+            SELECT id, name, definition, category, created_at
+            FROM workflows 
+            WHERE id = %s AND tenant_id = %s AND is_active = true
+        """, (workflow_id, tenant_id))
+
+        if not workflow:
+            return jsonify({'error': 'Workflow not found'}), 404
+
+        # Parse workflow definition
+        if isinstance(workflow['definition'], str):
+            definition = json.loads(workflow['definition'])
+        else:
+            definition = workflow['definition']
+
+        # Initialize recommendations structure
+        recommendations = {
+            'priority_recommendation': {},
+            'timing_recommendation': {},
+            'assignment_recommendations': [],
+            'performance_insights': {},
+            'optimization_suggestions': [],
+            'risk_factors': [],
+            'best_practices': []
+        }
+
+        # Get historical execution data
+        historical_data = Database.execute_one("""
+            SELECT 
+                COUNT(*) as total_executions,
+                COUNT(CASE WHEN status = 'completed' THEN 1 END) as completed_executions,
+                COUNT(CASE WHEN status = 'failed' THEN 1 END) as failed_executions,
+                AVG(EXTRACT(EPOCH FROM (completed_at - created_at))/3600) as avg_completion_hours,
+                MIN(EXTRACT(EPOCH FROM (completed_at - created_at))/3600) as min_completion_hours,
+                MAX(EXTRACT(EPOCH FROM (completed_at - created_at))/3600) as max_completion_hours,
+                COUNT(CASE WHEN priority = 'high' OR priority = 'urgent' THEN 1 END) as high_priority_count,
+                COUNT(CASE WHEN created_at >= NOW() - INTERVAL '30 days' THEN 1 END) as recent_executions
+            FROM workflow_instances
+            WHERE workflow_id = %s AND tenant_id = %s
+        """, (workflow_id, tenant_id))
+
+        # Get current workload for the user
+        current_workload = Database.execute_one("""
+            SELECT 
+                COUNT(*) as active_tasks,
+                COUNT(CASE WHEN t.priority = 'high' OR t.priority = 'urgent' THEN 1 END) as high_priority_tasks,
+                COUNT(CASE WHEN t.due_date < NOW() + INTERVAL '24 hours' THEN 1 END) as due_soon_tasks
+            FROM tasks t
+            JOIN workflow_instances wi ON t.workflow_instance_id = wi.id
+            WHERE t.assigned_to = %s AND t.status = 'pending' AND wi.tenant_id = %s
+        """, (user_id, tenant_id))
+
+        # Get team workload
+        team_workload = Database.execute_one("""
+            SELECT 
+                COUNT(DISTINCT wi.id) as active_workflows,
+                COUNT(t.id) as pending_tasks,
+                AVG(EXTRACT(EPOCH FROM (t.due_date - NOW()))/3600) as avg_time_to_deadline
+            FROM workflow_instances wi
+            LEFT JOIN tasks t ON wi.id = t.workflow_instance_id AND t.status = 'pending'
+            WHERE wi.tenant_id = %s AND wi.status = 'in_progress'
+        """, (tenant_id,))
+
+        # Analyze recent performance trends
+        recent_performance = Database.execute_query("""
+            SELECT 
+                DATE(created_at) as execution_date,
+                COUNT(*) as executions,
+                AVG(EXTRACT(EPOCH FROM (completed_at - created_at))/3600) as avg_duration
+            FROM workflow_instances
+            WHERE workflow_id = %s AND tenant_id = %s 
+            AND created_at >= NOW() - INTERVAL '30 days'
+            GROUP BY DATE(created_at)
+            ORDER BY execution_date DESC
+            LIMIT 10
+        """, (workflow_id, tenant_id))
+
+        # Priority Recommendation
+        if historical_data['total_executions'] > 0:
+            success_rate = (historical_data['completed_executions'] / historical_data['total_executions']) * 100
+            high_priority_rate = (historical_data['high_priority_count'] / historical_data['total_executions']) * 100
+
+            if success_rate > 90:
+                priority_rec = {
+                    'recommended': 'medium',
+                    'confidence': 'high',
+                    'reason': f'This workflow has a {success_rate:.1f}% success rate with medium priority'
+                }
+            elif high_priority_rate > 50:
+                priority_rec = {
+                    'recommended': 'high',
+                    'confidence': 'medium',
+                    'reason': f'{high_priority_rate:.1f}% of executions use high priority'
+                }
+            else:
+                priority_rec = {
+                    'recommended': 'medium',
+                    'confidence': 'medium',
+                    'reason': 'Standard priority recommended for balanced execution'
+                }
+        else:
+            priority_rec = {
+                'recommended': 'medium',
+                'confidence': 'low',
+                'reason': 'No historical data available - using default priority'
+            }
+
+        recommendations['priority_recommendation'] = priority_rec
+
+        # Timing Recommendation
+        current_hour = datetime.now().hour
+        current_day = datetime.now().weekday()  # 0 = Monday
+
+        timing_factors = []
+        timing_score = 100
+
+        # Check current workload
+        if current_workload['active_tasks'] > 10:
+            timing_factors.append("High current workload detected")
+            timing_score -= 20
+
+        if current_workload['due_soon_tasks'] > 3:
+            timing_factors.append("Multiple tasks due soon")
+            timing_score -= 15
+
+        # Check time of day
+        if current_hour < 9 or current_hour > 17:
+            timing_factors.append("Outside business hours")
+            timing_score -= 10
+
+        # Check day of week
+        if current_day >= 5:  # Weekend
+            timing_factors.append("Weekend execution")
+            timing_score -= 15
+
+        timing_recommendation = {
+            'execute_now': timing_score >= 70,
+            'score': timing_score,
+            'factors': timing_factors,
+            'suggested_time': 'immediately' if timing_score >= 70 else 'during business hours'
+        }
+
+        if historical_data['avg_completion_hours']:
+            estimated_completion = datetime.now() + timedelta(hours=historical_data['avg_completion_hours'])
+            timing_recommendation['estimated_completion'] = estimated_completion.isoformat()
+
+        recommendations['timing_recommendation'] = timing_recommendation
+
+        # Assignment Recommendations
+        steps = definition.get('steps', [])
+        assignment_recs = []
+
+        for step in steps:
+            if step.get('type') in ['task', 'approval']:
+                properties = step.get('properties', {})
+                assignee = properties.get('assignee') or properties.get('assigned_to')
+
+                if assignee and '{{' not in str(assignee):  # Static assignment
+                    # Get assignee workload
+                    assignee_workload = Database.execute_one("""
+                        SELECT 
+                            COUNT(*) as pending_tasks,
+                            AVG(EXTRACT(EPOCH FROM (due_date - NOW()))/3600) as avg_time_to_deadline
+                        FROM tasks t
+                        JOIN workflow_instances wi ON t.workflow_instance_id = wi.id
+                        WHERE t.assigned_to = %s AND t.status = 'pending' AND wi.tenant_id = %s
+                    """, (assignee, tenant_id))
+
+                    workload_status = 'low'
+                    if assignee_workload['pending_tasks'] > 10:
+                        workload_status = 'high'
+                    elif assignee_workload['pending_tasks'] > 5:
+                        workload_status = 'medium'
+
+                    assignment_recs.append({
+                        'step_name': step['name'],
+                        'assignee': assignee,
+                        'workload_status': workload_status,
+                        'pending_tasks': assignee_workload['pending_tasks'],
+                        'recommendation': 'proceed' if workload_status != 'high' else 'consider_alternative'
+                    })
+
+        recommendations['assignment_recommendations'] = assignment_recs
+
+        # Performance Insights
+        insights = {
+            'historical_performance': {
+                'total_executions': historical_data['total_executions'],
+                'success_rate': f"{(historical_data['completed_executions'] / historical_data['total_executions']) * 100:.1f}%" if
+                historical_data['total_executions'] > 0 else 'N/A',
+                'avg_completion_time': f"{historical_data['avg_completion_hours']:.1f} hours" if historical_data[
+                    'avg_completion_hours'] else 'N/A'
+            },
+            'recent_trends': {
+                'executions_last_30_days': historical_data['recent_executions'],
+                'trend': 'increasing' if historical_data['recent_executions'] > historical_data[
+                    'total_executions'] * 0.5 else 'stable'
+            }
+        }
+
+        if historical_data['avg_completion_hours']:
+            if historical_data['avg_completion_hours'] < 24:
+                insights['performance_rating'] = 'excellent'
+            elif historical_data['avg_completion_hours'] < 72:
+                insights['performance_rating'] = 'good'
+            else:
+                insights['performance_rating'] = 'needs_improvement'
+
+        recommendations['performance_insights'] = insights
+
+        # Optimization Suggestions
+        optimizations = []
+
+        if historical_data['failed_executions'] > 0:
+            failure_rate = (historical_data['failed_executions'] / historical_data['total_executions']) * 100
+            if failure_rate > 10:
+                optimizations.append({
+                    'type': 'reliability',
+                    'suggestion': 'Consider adding error handling steps',
+                    'impact': 'high',
+                    'reason': f'{failure_rate:.1f}% failure rate detected'
+                })
+
+        if historical_data['avg_completion_hours'] and historical_data['avg_completion_hours'] > 168:
+            optimizations.append({
+                'type': 'performance',
+                'suggestion': 'Review step dependencies for parallel execution opportunities',
+                'impact': 'medium',
+                'reason': 'Long average completion time detected'
+            })
+
+        if team_workload['pending_tasks'] > 100:
+            optimizations.append({
+                'type': 'resource',
+                'suggestion': 'Consider load balancing across team members',
+                'impact': 'medium',
+                'reason': 'High team workload detected'
+            })
+
+        recommendations['optimization_suggestions'] = optimizations
+
+        # Risk Factors
+        risks = []
+
+        if current_workload['high_priority_tasks'] > 5:
+            risks.append({
+                'type': 'workload',
+                'level': 'medium',
+                'description': 'Multiple high-priority tasks already assigned',
+                'mitigation': 'Consider scheduling for later or delegating existing tasks'
+            })
+
+        if historical_data['total_executions'] == 0:
+            risks.append({
+                'type': 'inexperience',
+                'level': 'low',
+                'description': 'No historical data for this workflow',
+                'mitigation': 'Monitor closely and be prepared for longer execution times'
+            })
+
+        if workflow['category'] == 'Finance' and current_day >= 5:
+            risks.append({
+                'type': 'timing',
+                'level': 'low',
+                'description': 'Financial workflows on weekends may have delayed approvals',
+                'mitigation': 'Consider executing on weekdays for faster approvals'
+            })
+
+        recommendations['risk_factors'] = risks
+
+        # Best Practices
+        practices = [
+            {
+                'category': 'preparation',
+                'practice': 'Gather all required documents before starting',
+                'benefit': 'Reduces delays and back-and-forth'
+            },
+            {
+                'category': 'communication',
+                'practice': 'Notify stakeholders about workflow initiation',
+                'benefit': 'Improves response times and collaboration'
+            }
+        ]
+
+        if workflow['category'] == 'Finance':
+            practices.append({
+                'category': 'documentation',
+                'practice': 'Include detailed financial justification',
+                'benefit': 'Faster approval process'
+            })
+
+        recommendations['best_practices'] = practices
+
+        # Overall recommendation score
+        overall_score = timing_score
+        if success_rate and success_rate > 90:
+            overall_score += 10
+        if len(risks) == 0:
+            overall_score += 5
+
+        recommendations['overall_recommendation'] = {
+            'execute': overall_score >= 70,
+            'score': min(overall_score, 100),
+            'summary': f"{'Recommended' if overall_score >= 70 else 'Proceed with caution'} - Score: {overall_score}/100"
+        }
+
+        return jsonify(recommendations), 200
+
+    except Exception as e:
+        logger.error(f"Error getting execution recommendations for workflow {workflow_id}: {e}")
+        return jsonify({'error': 'Failed to retrieve execution recommendations'}), 500
