@@ -21,8 +21,8 @@ CREATE TABLE IF NOT EXISTS notification_templates (
 
 -- ===== ENHANCE USERS TABLE =====
 -- Add notification preferences to users if it doesn't exist
-DO $$ 
-BEGIN 
+DO $$
+BEGIN
     IF NOT EXISTS (SELECT 1 FROM information_schema.columns WHERE table_name='users' AND column_name='notification_preferences') THEN
         ALTER TABLE users ADD COLUMN notification_preferences JSONB DEFAULT '{"email_enabled": true, "sms_enabled": false, "in_app_enabled": true}';
     END IF;
@@ -30,8 +30,8 @@ END $$;
 
 -- ===== ENHANCE NOTIFICATIONS TABLE =====
 -- Add title column to notifications if it doesn't exist
-DO $$ 
-BEGIN 
+DO $$
+BEGIN
     IF NOT EXISTS (SELECT 1 FROM information_schema.columns WHERE table_name='notifications' AND column_name='title') THEN
         ALTER TABLE notifications ADD COLUMN title VARCHAR(500);
     END IF;
@@ -46,8 +46,8 @@ CREATE INDEX IF NOT EXISTS idx_users_notification_prefs ON users USING GIN(notif
 
 -- Insert default notification templates for each tenant
 INSERT INTO notification_templates (tenant_id, name, title_template, message_template, channels, description, created_by)
-SELECT 
-    t.id as tenant_id,
+VALUES (
+    '00000000-0000-0000-0000-000000000001',
     'task_assignment',
     'New Task Assigned: {{task_name}}',
     'Hello {{user_name}},
@@ -64,23 +64,13 @@ Best regards,
 Workflow Management System',
     '["in_app", "email"]',
     'Template for task assignment notifications',
-    u.id as created_by
-FROM tenants t
-CROSS JOIN LATERAL (
-    SELECT id FROM users 
-    WHERE tenant_id = t.id 
-    AND id IN (
-        SELECT user_id FROM user_roles ur 
-        JOIN roles r ON ur.role_id = r.id 
-        WHERE r.name = 'Admin'
-    )
-    LIMIT 1
-) u
-ON CONFLICT (tenant_id, name) DO NOTHING;
+    '00000000-0000-0000-0000-000000000001'
+    );
+
 
 INSERT INTO notification_templates (tenant_id, name, title_template, message_template, channels, description, created_by)
-SELECT 
-    t.id as tenant_id,
+VALUES  (
+    '00000000-0000-0000-0000-000000000001',
     'approval_request',
     '🔔 Approval Required: {{workflow_title}}',
     'Dear {{user_name}},
@@ -102,23 +92,13 @@ Best regards,
 Workflow Management System',
     '["in_app", "email", "sms"]',
     'Template for approval request notifications',
-    u.id as created_by
-FROM tenants t
-CROSS JOIN LATERAL (
-    SELECT id FROM users 
-    WHERE tenant_id = t.id 
-    AND id IN (
-        SELECT user_id FROM user_roles ur 
-        JOIN roles r ON ur.role_id = r.id 
-        WHERE r.name = 'Admin'
-    )
-    LIMIT 1
-) u
-ON CONFLICT (tenant_id, name) DO NOTHING;
+    '00000000-0000-0000-0000-000000000001'
+    );
+
 
 INSERT INTO notification_templates (tenant_id, name, title_template, message_template, channels, description, created_by)
-SELECT 
-    t.id as tenant_id,
+VALUES (
+    '00000000-0000-0000-0000-000000000001',
     'workflow_completion',
     '✅ Workflow Completed: {{workflow_title}}',
     'Hello {{user_name}},
@@ -137,23 +117,13 @@ Best regards,
 Workflow Management System',
     '["in_app", "email"]',
     'Template for workflow completion notifications',
-    u.id as created_by
-FROM tenants t
-CROSS JOIN LATERAL (
-    SELECT id FROM users 
-    WHERE tenant_id = t.id 
-    AND id IN (
-        SELECT user_id FROM user_roles ur 
-        JOIN roles r ON ur.role_id = r.id 
-        WHERE r.name = 'Admin'
-    )
-    LIMIT 1
-) u
-ON CONFLICT (tenant_id, name) DO NOTHING;
+    '00000000-0000-0000-0000-000000000001'
+    );
+
 
 INSERT INTO notification_templates (tenant_id, name, title_template, message_template, channels, description, created_by)
-SELECT 
-    t.id as tenant_id,
+VALUES (
+    '00000000-0000-0000-0000-000000000001',
     'workflow_failure',
     '❌ Workflow Failed: {{workflow_title}}',
     'Hello {{user_name}},
@@ -170,23 +140,13 @@ Best regards,
 Workflow Management System',
     '["in_app", "email"]',
     'Template for workflow failure notifications',
-    u.id as created_by
-FROM tenants t
-CROSS JOIN LATERAL (
-    SELECT id FROM users 
-    WHERE tenant_id = t.id 
-    AND id IN (
-        SELECT user_id FROM user_roles ur 
-        JOIN roles r ON ur.role_id = r.id 
-        WHERE r.name = 'Admin'
-    )
-    LIMIT 1
-) u
-ON CONFLICT (tenant_id, name) DO NOTHING;
+    '00000000-0000-0000-0000-000000000001'
+    );
+
 
 INSERT INTO notification_templates (tenant_id, name, title_template, message_template, channels, description, created_by)
-SELECT 
-    t.id as tenant_id,
+VALUES (
+    '00000000-0000-0000-0000-000000000001',
     'sla_breach',
     '⚠️ SLA Breach - {{level_text}}: {{task_name}}',
     'URGENT: SLA Breach Alert
@@ -204,23 +164,13 @@ Best regards,
 Workflow Management System',
     '["in_app", "email", "sms"]',
     'Template for SLA breach notifications',
-    u.id as created_by
-FROM tenants t
-CROSS JOIN LATERAL (
-    SELECT id FROM users 
-    WHERE tenant_id = t.id 
-    AND id IN (
-        SELECT user_id FROM user_roles ur 
-        JOIN roles r ON ur.role_id = r.id 
-        WHERE r.name = 'Admin'
-    )
-    LIMIT 1
-) u
-ON CONFLICT (tenant_id, name) DO NOTHING;
+    '00000000-0000-0000-0000-000000000001'
+    );
+
 
 INSERT INTO notification_templates (tenant_id, name, title_template, message_template, channels, description, created_by)
-SELECT 
-    t.id as tenant_id,
+VALUES (
+    '00000000-0000-0000-0000-000000000001',
     'automation_notification',
     '🤖 Automation {{automation_status}}: {{step_name}}',
     'Automation Update
@@ -242,19 +192,9 @@ Best regards,
 Workflow Management System',
     '["in_app"]',
     'Template for automation step notifications',
-    u.id as created_by
-FROM tenants t
-CROSS JOIN LATERAL (
-    SELECT id FROM users 
-    WHERE tenant_id = t.id 
-    AND id IN (
-        SELECT user_id FROM user_roles ur 
-        JOIN roles r ON ur.role_id = r.id 
-        WHERE r.name = 'Admin'
-    )
-    LIMIT 1
-) u
-ON CONFLICT (tenant_id, name) DO NOTHING;
+    '00000000-0000-0000-0000-000000000001'
+    );
+
 
 -- ===== TRIGGERS =====
 
@@ -276,8 +216,8 @@ CREATE TRIGGER trigger_notification_templates_updated_at
 -- ===== UPDATE EXISTING NOTIFICATIONS =====
 
 -- Update existing notifications to have titles if they don't
-UPDATE notifications 
-SET title = CASE 
+UPDATE notifications
+SET title = CASE
     WHEN type = 'task_assigned' THEN 'New Task Assignment'
     WHEN type = 'task_completed' THEN 'Task Completed'
     WHEN type = 'workflow_completed' THEN 'Workflow Completed'
@@ -290,13 +230,13 @@ WHERE title IS NULL;
 
 -- View for notification statistics
 CREATE OR REPLACE VIEW notification_stats AS
-SELECT 
+SELECT
     n.type,
     COUNT(*) as total_notifications,
     COUNT(CASE WHEN n.is_read = true THEN 1 END) as read_notifications,
     COUNT(CASE WHEN n.is_read = false THEN 1 END) as unread_notifications,
     ROUND(
-        COUNT(CASE WHEN n.is_read = true THEN 1 END) * 100.0 / COUNT(*), 
+        COUNT(CASE WHEN n.is_read = true THEN 1 END) * 100.0 / COUNT(*),
         2
     ) as read_percentage,
     MAX(n.created_at) as last_notification
@@ -306,7 +246,7 @@ GROUP BY n.type;
 
 -- View for user notification preferences
 CREATE OR REPLACE VIEW user_notification_preferences AS
-SELECT 
+SELECT
     u.id as user_id,
     u.email,
     u.phone,
@@ -321,7 +261,7 @@ GROUP BY u.id, u.email, u.phone, u.notification_preferences;
 
 -- View for template usage analytics
 CREATE OR REPLACE VIEW template_usage_stats AS
-SELECT 
+SELECT
     nt.tenant_id,
     nt.name as template_name,
     nt.title_template,
@@ -353,25 +293,25 @@ DECLARE
 BEGIN
     -- Get the template
     SELECT title_template, message_template, channels INTO template_record
-    FROM notification_templates 
+    FROM notification_templates
     WHERE name = template_name AND tenant_id = tenant_uuid AND is_active = true;
-    
+
     -- If template not found, return null
     IF NOT FOUND THEN
         RETURN;
     END IF;
-    
+
     -- Start with original templates
     rendered_title := template_record.title_template;
     rendered_message := template_record.message_template;
-    
+
     -- Replace variables in title and message
     FOR var_key, var_value IN SELECT * FROM jsonb_each_text(variables)
     LOOP
         rendered_title := REPLACE(rendered_title, '{{' || var_key || '}}', var_value);
         rendered_message := REPLACE(rendered_message, '{{' || var_key || '}}', var_value);
     END LOOP;
-    
+
     -- Return the rendered template
     title := rendered_title;
     message := rendered_message;
@@ -388,22 +328,22 @@ DECLARE
     enabled_channels JSONB := '[]'::jsonb;
 BEGIN
     SELECT notification_preferences INTO prefs
-    FROM users 
+    FROM users
     WHERE id = user_uuid;
-    
+
     -- Build array of enabled channels
     IF (prefs->>'email_enabled')::boolean = true THEN
         enabled_channels := enabled_channels || '"email"'::jsonb;
     END IF;
-    
+
     IF (prefs->>'sms_enabled')::boolean = true THEN
         enabled_channels := enabled_channels || '"sms"'::jsonb;
     END IF;
-    
+
     IF (prefs->>'in_app_enabled')::boolean = true THEN
         enabled_channels := enabled_channels || '"in_app"'::jsonb;
     END IF;
-    
+
     RETURN enabled_channels;
 END;
 $$ LANGUAGE plpgsql;

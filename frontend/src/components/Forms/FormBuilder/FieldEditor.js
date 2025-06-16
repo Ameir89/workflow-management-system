@@ -1,9 +1,9 @@
 import {
-  TrashIcon,
-  ArrowUpIcon,
   ArrowDownIcon,
+  ArrowUpIcon,
+  TrashIcon,
 } from "@heroicons/react/24/outline";
-import DataSourceConfiguration from "./ DataSourceConfiguration";
+import DataSourceConfiguration from "./DataSourceConfiguration";
 
 const FieldEditor = ({
   field,

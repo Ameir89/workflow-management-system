@@ -43,6 +43,7 @@ class WorkflowEngine:
             first_step = WorkflowEngine._get_first_step(definition)
 
             if first_step:
+                logger.info(f"Start first step is : {first_step} for instance {instance_id}")
                 # Create workflow context for assignee resolution
                 context = {
                     'initiator': initiated_by,
@@ -52,7 +53,7 @@ class WorkflowEngine:
                     'workflow_instance_id': instance_id
                 }
                 WorkflowEngine._execute_step(instance_id, first_step, definition, context)
-
+                logger.info(f"End of executed firs step is : {first_step} for instance {instance_id}")
             # Log audit
             AuditLogger.log_action(
                 user_id=initiated_by,
@@ -116,9 +117,13 @@ class WorkflowEngine:
                 definition, task['step_id'], result_data
             )
 
+            # logger.info(f"Determine next step is : {next_step} for instance {task['workflow_instance_id']}")
+
             if next_step:
+                logger.info(f"Determine next step is : {next_step} for instance {task['workflow_instance_id']}")
                 WorkflowEngine._execute_step(task['workflow_instance_id'], next_step, definition, context)
             else:
+                logger.info(f"Workflow complete for instance {task['workflow_instance_id']}")
                 # Workflow complete
                 WorkflowEngine._complete_workflow(task['workflow_instance_id'])
 

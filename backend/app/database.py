@@ -28,7 +28,7 @@ class Database:
                     cursor_factory=psycopg2.extras.RealDictCursor
                 )
                 g.db_conn.autocommit = False
-                logger.info(f"Connected to DB {current_app.config['DATABASE_URL'].rsplit(':', 1)[0]} (connection open: {g.db_conn.closed == 0})")
+                # logger.info(f"Connected to DB {current_app.config['DATABASE_URL'].rsplit(':', 1)[0]} (connection open: {g.db_conn.closed == 0})")
             except psycopg2.Error as e:
                 logger.error(f"Database connection error: {e}")
                 raise

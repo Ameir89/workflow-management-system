@@ -359,6 +359,11 @@ class NotificationService:
     def _send_in_app_notification(user_id, notification_type, title, message, data):
         """Send in-app notification"""
         try:
+            if isinstance(data, str):
+                data = json.loads(data)  # convert JSON string to dict
+            elif not isinstance(data, dict):
+                data = {}
+
             notification_id = Database.execute_insert("""
                 INSERT INTO notifications 
                 (user_id, type, title, message, data)

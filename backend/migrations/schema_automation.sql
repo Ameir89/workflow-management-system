@@ -178,69 +178,56 @@ CREATE INDEX IF NOT EXISTS idx_workflow_instances_failed_step ON workflow_instan
 
 -- Insert default automation templates
 INSERT INTO automation_templates (tenant_id, name, description, template_data, created_by)
-SELECT
-    t.id as tenant_id,
-    'API Call Template',
+VALUES  (
+'00000000-0000-0000-0000-000000000001',
+'API Call Template',
     'Template for making external API calls',
     '{"type": "api_call", "method": "POST", "headers": {"Content-Type": "application/json"}, "timeout": 30, "max_retries": 2}',
-    u.id as created_by
-FROM tenants t
-CROSS JOIN LATERAL (
-    SELECT id FROM users
-    WHERE tenant_id = t.id
-    AND id IN (
-        SELECT user_id FROM user_roles ur
-        JOIN roles r ON ur.role_id = r.id
-        WHERE r.name = 'Admin'
-    )
-    LIMIT 1
-) u
-ON CONFLICT (tenant_id, name) DO NOTHING;
+    '00000000-0000-0000-0000-000000000001'
+);
+--SELECT
+--    t.id as tenant_id,
+--    'API Call Template',
+--    'Template for making external API calls',
+--    '{"type": "api_call", "method": "POST", "headers": {"Content-Type": "application/json"}, "timeout": 30, "max_retries": 2}',
+--    u.id as created_by
+--FROM tenants t
+--CROSS JOIN LATERAL (
+--    SELECT id FROM users
+--    WHERE tenant_id = t.id
+--    AND id IN (
+--        SELECT user_id FROM user_roles ur
+--        JOIN roles r ON ur.role_id = r.id
+--        WHERE r.name = 'Admin'
+--    )
+--    LIMIT 1
+--) u
+--ON CONFLICT (tenant_id, name) DO NOTHING;
 
 INSERT INTO automation_templates (tenant_id, name, description, template_data, created_by)
-SELECT
-    t.id as tenant_id,
+VALUES (
+    '00000000-0000-0000-0000-000000000001',
     'Email Notification Template',
     'Template for sending email notifications',
     '{"type": "email_notification", "subject": "Workflow Notification: {{workflow_data.title}}", "body": "A workflow step has been completed.\n\nWorkflow: {{workflow_data.title}}\nStep: {{step_name}}\nTime: {{timestamp}}"}',
-    u.id as created_by
-FROM tenants t
-CROSS JOIN LATERAL (
-    SELECT id FROM users
-    WHERE tenant_id = t.id
-    AND id IN (
-        SELECT user_id FROM user_roles ur
-        JOIN roles r ON ur.role_id = r.id
-        WHERE r.name = 'Admin'
-    )
-    LIMIT 1
-) u
-ON CONFLICT (tenant_id, name) DO NOTHING;
+    '00000000-0000-0000-0000-000000000001'
+    );
+
 
 INSERT INTO automation_templates (tenant_id, name, description, template_data, created_by)
-SELECT
-    t.id as tenant_id,
+VALUES (
+    '00000000-0000-0000-0000-000000000001',
     'Database Update Template',
     'Template for updating database records',
     '{"type": "database_operation", "operation": "update", "table": "workflow_tracking", "data": {"status": "{{workflow_data.status}}", "updated_at": "NOW()"}, "conditions": {"workflow_id": "{{workflow_instance_id}}"}}',
-    u.id as created_by
-FROM tenants t
-CROSS JOIN LATERAL (
-    SELECT id FROM users
-    WHERE tenant_id = t.id
-    AND id IN (
-        SELECT user_id FROM user_roles ur
-        JOIN roles r ON ur.role_id = r.id
-        WHERE r.name = 'Admin'
-    )
-    LIMIT 1
-) u
-ON CONFLICT (tenant_id, name) DO NOTHING;
+    '00000000-0000-0000-0000-000000000001'
+    );
+
 
 -- Insert sample automation scripts
 INSERT INTO automation_scripts (tenant_id, name, script_type, script_content, description, created_by)
-SELECT
-    t.id as tenant_id,
+VALUES (
+    '00000000-0000-0000-0000-000000000001',
     'Approval Amount Calculator',
     'python',
     '# Calculate approval requirements based on amount
@@ -269,23 +256,12 @@ else:
 print(f"Approval calculated for amount: ${amount}")
 ',
     'Python script to calculate approval requirements based on amount and department',
-    u.id as created_by
-FROM tenants t
-CROSS JOIN LATERAL (
-    SELECT id FROM users
-    WHERE tenant_id = t.id
-    AND id IN (
-        SELECT user_id FROM user_roles ur
-        JOIN roles r ON ur.role_id = r.id
-        WHERE r.name = 'Admin'
-    )
-    LIMIT 1
-) u
-ON CONFLICT (tenant_id, name) DO NOTHING;
+   '00000000-0000-0000-0000-000000000001'
+   );
 
 INSERT INTO automation_scripts (tenant_id, name, script_type, script_content, description, created_by)
-SELECT
-    t.id as tenant_id,
+VALUES (
+    '00000000-0000-0000-0000-000000000001',
     'Data Validation Script',
     'python',
     '# Validate workflow data
@@ -328,24 +304,14 @@ result = {
 print(f"Validation complete. Valid: {result[\"valid\"]}, Errors: {len(errors)}, Warnings: {len(warnings)}")
 ',
     'Python script to validate workflow data',
-    u.id as created_by
-FROM tenants t
-CROSS JOIN LATERAL (
-    SELECT id FROM users
-    WHERE tenant_id = t.id
-    AND id IN (
-        SELECT user_id FROM user_roles ur
-        JOIN roles r ON ur.role_id = r.id
-        WHERE r.name = 'Admin'
-    )
-    LIMIT 1
-) u
-ON CONFLICT (tenant_id, name) DO NOTHING;
+    '00000000-0000-0000-0000-000000000001'
+    );
+
 
 -- Insert default email templates
 INSERT INTO email_templates (tenant_id, name, subject, body, is_html, created_by)
-SELECT
-    t.id as tenant_id,
+VALUES (
+    '00000000-0000-0000-0000-000000000001',
     'Workflow Started Notification',
     'Workflow Started: {{workflow_data.title}}',
     'Dear {{workflow_data.requestor_name}},
@@ -364,23 +330,13 @@ You will receive updates as the workflow progresses.
 Best regards,
 Workflow Management System',
     false,
-    u.id as created_by
-FROM tenants t
-CROSS JOIN LATERAL (
-    SELECT id FROM users
-    WHERE tenant_id = t.id
-    AND id IN (
-        SELECT user_id FROM user_roles ur
-        JOIN roles r ON ur.role_id = r.id
-        WHERE r.name = 'Admin'
-    )
-    LIMIT 1
-) u
-ON CONFLICT (tenant_id, name) DO NOTHING;
+    '00000000-0000-0000-0000-000000000001'
+    );
+
 
 INSERT INTO email_templates (tenant_id, name, subject, body, is_html, created_by)
-SELECT
-    t.id as tenant_id,
+VALUES (
+    '00000000-0000-0000-0000-000000000001',
     'Approval Required Notification',
     'Action Required: Approval for {{workflow_data.title}}',
     '<html>
@@ -417,71 +373,42 @@ SELECT
 </body>
 </html>',
     true,
-    u.id as created_by
-FROM tenants t
-CROSS JOIN LATERAL (
-    SELECT id FROM users
-    WHERE tenant_id = t.id
-    AND id IN (
-        SELECT user_id FROM user_roles ur
-        JOIN roles r ON ur.role_id = r.id
-        WHERE r.name = 'Admin'
-    )
-    LIMIT 1
-) u
-ON CONFLICT (tenant_id, name) DO NOTHING;
+    '00000000-0000-0000-0000-000000000001'
+    );
+
 
 -- Insert default SMS templates
 INSERT INTO sms_templates (tenant_id, name, message, created_by)
-SELECT
-    t.id as tenant_id,
+VALUES (
+    '00000000-0000-0000-0000-000000000001',
     'Task Assignment SMS',
     'New task assigned: {{task_name}}. Workflow: {{workflow_data.title}}. Due: {{due_date}}. Check your dashboard for details.',
-    u.id as created_by
-FROM tenants t
-CROSS JOIN LATERAL (
-    SELECT id FROM users
-    WHERE tenant_id = t.id
-    AND id IN (
-        SELECT user_id FROM user_roles ur
-        JOIN roles r ON ur.role_id = r.id
-        WHERE r.name = 'Admin'
-    )
-    LIMIT 1
-) u
-ON CONFLICT (tenant_id, name) DO NOTHING;
+    '00000000-0000-0000-0000-000000000001'
+    );
+
 
 INSERT INTO sms_templates (tenant_id, name, message, created_by)
-SELECT
-    t.id as tenant_id,
+VALUES (
+    '00000000-0000-0000-0000-000000000001',
     'Urgent Approval SMS',
     'URGENT: Approval required for {{workflow_data.title}} (${{workflow_data.amount}}). Please review immediately. Workflow ID: {{workflow_instance_id}}',
-    u.id as created_by
-FROM tenants t
-CROSS JOIN LATERAL (
-    SELECT id FROM users
-    WHERE tenant_id = t.id
-    AND id IN (
-        SELECT user_id FROM user_roles ur
-        JOIN roles r ON ur.role_id = r.id
-        WHERE r.name = 'Admin'
-    )
-    LIMIT 1
-) u
-ON CONFLICT (tenant_id, name) DO NOTHING;
+    '00000000-0000-0000-0000-000000000001'
+    );
+
+
 
 -- ===== PERMISSIONS FOR AUTOMATION =====
 
 -- Add automation permissions to roles if they don't exist
 INSERT INTO roles (tenant_id, name, permissions, description, is_system)
-SELECT
-    t.id as tenant_id,
+VALUES (
+    '00000000-0000-0000-0000-000000000001',
     'Automation Manager',
     '["view_automation", "manage_automation", "execute_automation", "test_automation", "manage_templates", "manage_scripts"]',
     'Can manage and execute automation workflows',
     false
-FROM tenants t
-ON CONFLICT (tenant_id, name) DO NOTHING;
+    );
+
 
 -- Update existing Admin role to include automation permissions
 UPDATE roles

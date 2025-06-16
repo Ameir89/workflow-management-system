@@ -45,6 +45,7 @@ CREATE TABLE roles (
     description TEXT,
     permissions JSONB DEFAULT '[]',
     is_system BOOLEAN DEFAULT false,
+    is_active BOOLEAN DEFAULT TRUE,
     created_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP,
     UNIQUE(tenant_id, name)
 );
