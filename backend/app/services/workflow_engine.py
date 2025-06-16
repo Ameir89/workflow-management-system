@@ -10,6 +10,7 @@ from app.services.notification_service import NotificationService
 from app.services.audit_logger import AuditLogger
 from app.services.automation_engine import AutomationEngine
 import logging
+from app.utils.json_utils import JSONUtils
 
 logger = logging.getLogger(__name__)
 
@@ -35,10 +36,12 @@ class WorkflowEngine:
             )
 
             # Execute first step with context
-            if isinstance(workflow['definition'], str):
-                definition = json.loads(workflow['definition'])
-            else:
-                definition = workflow['definition']
+            # if isinstance(workflow['definition'], str):
+            #     definition = json.loads(workflow['definition'])
+            # else:
+            #     definition = workflow['definition']
+
+            definition = JSONUtils.safe_parse_json(workflow['definition'])
 
             first_step = WorkflowEngine._get_first_step(definition)
 
@@ -68,33 +71,66 @@ class WorkflowEngine:
             logger.error(f"Failed to execute workflow {workflow_id}: {e}")
             raise
 
+    # Add this enhanced version to your workflow_engine.py
+
     @staticmethod
     def complete_task(task_id, result_data, completed_by):
-        """Complete a task and advance workflow"""
+        """Complete a task and advance workflow - Enhanced with debugging"""
         try:
+            logger.info(f"=== STARTING TASK COMPLETION ===")
+            logger.info(f"Task ID: {task_id}")
+            logger.info(f"Completed by: {completed_by}")
+            logger.info(f"Result data: {result_data}")
+
             # Get task and workflow instance
             task = WorkflowEngine._get_task(task_id)
             if not task:
                 raise ValueError(f"Task {task_id} not found")
 
-            if task['status'] != 'pending':
-                raise ValueError(f"Task {task_id} is not in pending status")
+            logger.info(f"Task found: {task}")
 
-            # Update task with completed_by field
+            # if task['status'] != 'pending':
+            #     raise ValueError(f"Task {task_id} is not in pending status: {task['status']}")
+
+            # Update task status first
             WorkflowEngine._update_task_status(task_id, 'completed', result_data, completed_by)
+            logger.info(f"✓ Task {task_id} marked as completed")
 
-            # Get workflow definition and context
+            # Get workflow instance
             workflow_instance = WorkflowEngine._get_workflow_instance(task['workflow_instance_id'])
-            workflow = WorkflowEngine._get_workflow(workflow_instance['workflow_id'])
+            if not workflow_instance:
+                raise ValueError(f"Workflow instance {task['workflow_instance_id']} not found")
 
-            if isinstance(workflow['definition'], str):
-                definition = json.loads(workflow['definition'])
-            else:
-                definition = workflow['definition']
+            logger.info(f"Workflow instance: {workflow_instance['id']}, Status: {workflow_instance['status']}")
+
+            # Get workflow definition
+            workflow = WorkflowEngine._get_workflow(workflow_instance['workflow_id'])
+            if not workflow:
+                raise ValueError(f"Workflow {workflow_instance['workflow_id']} not found")
+
+            logger.info(f"Workflow: {workflow['name']}")
+
+            # Parse definition
+            # if isinstance(workflow['definition'], str):
+            #     definition = json.loads(workflow['definition'])
+            # else:
+            #     definition = workflow['definition']
+            # Parse workflow definition safely
+            definition = JSONUtils.safe_parse_json(workflow['definition'])
+            if not definition or 'steps' not in definition:
+                raise ValueError("Invalid workflow definition")
+
+            logger.info(f"Workflow steps: {[s['id'] for s in definition.get('steps', [])]}")
+            logger.info(f"Workflow transitions: {definition.get('transitions', [])}")
 
             # Create context for next step resolution
-            workflow_data = json.loads(workflow_instance['data']) if workflow_instance['data'] else {}
-            workflow_data.update(result_data)  # Merge task result into workflow data
+            # workflow_data = json.loads(workflow_instance['data']) if workflow_instance['data'] else {}
+            # workflow_data.update(result_data)  # Merge task result into workflow data
+            # Parse workflow data safely
+            workflow_data = JSONUtils.safe_parse_json(workflow_instance['data'], {})
+        
+            # Merge task result into workflow data
+            workflow_data = JSONUtils.merge_json_data(workflow_data, result_data)
 
             context = {
                 'initiator': workflow_instance['initiated_by'],
@@ -106,38 +142,224 @@ class WorkflowEngine:
             }
 
             # Update workflow instance data
+            # Database.execute_query("""
+            #     UPDATE workflow_instances 
+            #     SET data = %s, updated_at = NOW()
+            #     WHERE id = %s
+            # """, (json.dumps(workflow_data), task['workflow_instance_id']))
+            # logger.info(f"✓ Workflow instance data updated")
             Database.execute_query("""
                 UPDATE workflow_instances 
                 SET data = %s, updated_at = NOW()
                 WHERE id = %s
-            """, (json.dumps(workflow_data), task['workflow_instance_id']))
+            """, (JSONUtils.safe_stringify_json(workflow_data), task['workflow_instance_id']))
 
             # Determine next step
-            next_step = WorkflowEngine._get_next_step(
+            logger.info(f"=== FINDING NEXT STEP ===")
+            logger.info(f"Current step: {task['step_id']}")
+
+            next_step = WorkflowEngine._get_next_step_debug(
                 definition, task['step_id'], result_data
             )
 
-            # logger.info(f"Determine next step is : {next_step} for instance {task['workflow_instance_id']}")
-
             if next_step:
-                logger.info(f"Determine next step is : {next_step} for instance {task['workflow_instance_id']}")
-                WorkflowEngine._execute_step(task['workflow_instance_id'], next_step, definition, context)
-            else:
-                logger.info(f"Workflow complete for instance {task['workflow_instance_id']}")
-                # Workflow complete
-                WorkflowEngine._complete_workflow(task['workflow_instance_id'])
+                logger.info(f"✓ Next step found: {next_step['id']} ({next_step['name']})")
+                logger.info(f"=== EXECUTING NEXT STEP ===")
 
-            # Log audit
-            AuditLogger.log_action(
-                user_id=completed_by,
-                action='task_completed',
-                resource_type='task',
-                resource_id=task_id
-            )
+                WorkflowEngine._execute_step(task['workflow_instance_id'], next_step, definition, context)
+                logger.info(f"✓ Next step executed successfully")
+            else:
+                logger.info(f"No next step found - completing workflow")
+                WorkflowEngine._complete_workflow(task['workflow_instance_id'])
+                logger.info(f"✓ Workflow completed")
+
+            logger.info(f"=== TASK COMPLETION FINISHED ===")
 
         except Exception as e:
-            logger.error(f"Failed to complete task {task_id}: {e}")
+            logger.error(f"❌ Failed to complete task {task_id}: {e}", exc_info=True)
             raise
+
+    @staticmethod
+    def _get_next_step_debug(definition, current_step_id, result_data):
+        """Enhanced next step detection with comprehensive debugging"""
+        logger.info(f"--- Finding next step from '{current_step_id}' ---")
+
+        steps = definition.get('steps', [])
+        transitions = definition.get('transitions', [])
+
+        logger.info(f"Available steps: {[s['id'] for s in steps]}")
+        logger.info(f"All transitions: {transitions}")
+        logger.info(f"Result data for evaluation: {result_data}")
+
+        # Find transitions from current step
+        matching_transitions = [t for t in transitions if t['from'] == current_step_id]
+        logger.info(f"Transitions from '{current_step_id}': {matching_transitions}")
+
+        if not matching_transitions:
+            logger.warning(f"❌ No transitions found from step '{current_step_id}'")
+            return None
+
+        for i, transition in enumerate(matching_transitions):
+            logger.info(f"Evaluating transition {i + 1}: {transition}")
+
+            condition = transition.get('condition')
+
+            if condition:
+                logger.info(f"Transition has condition: {condition}")
+                condition_result = WorkflowEngine._evaluate_condition_expression(condition, result_data)
+                logger.info(f"Condition evaluation result: {condition_result}")
+
+                if condition_result:
+                    target_step = WorkflowEngine._find_step_by_id(steps, transition['to'])
+                    logger.info(f"✓ Condition met! Target step: {target_step}")
+                    return target_step
+                else:
+                    logger.info(f"Condition not met, trying next transition...")
+            else:
+                # No condition - take this transition
+                target_step = WorkflowEngine._find_step_by_id(steps, transition['to'])
+                logger.info(f"✓ No condition required. Target step: {target_step}")
+                return target_step
+
+        logger.warning(f"❌ No valid transitions found from '{current_step_id}'")
+        return None
+
+    @staticmethod
+    def _evaluate_condition_expression(condition, data):
+        """Enhanced condition evaluation with debugging"""
+        logger.info(f"Evaluating condition: {condition}")
+        logger.info(f"Against data: {data}")
+
+        def evaluate_single(cond):
+            field = cond.get('field')
+            operator = cond.get('operator')
+            value = cond.get('value')
+
+            logger.info(f"Single condition: {field} {operator} {value}")
+
+            if field not in data:
+                logger.info(f"Field '{field}' not found in data")
+                return False
+
+            field_value = data[field]
+            logger.info(f"Field value: {field_value} (type: {type(field_value)})")
+
+            try:
+
+                if operator == 'equals':
+                    result = field_value == value
+                elif operator == 'not_equals':
+                    result = field_value != value
+                elif operator == 'greater_than':
+                    result = float(field_value) > float(value)
+                elif operator == 'less_than':
+                    result = float(field_value) < float(value)
+                elif operator == 'contains':
+                    result = value in str(field_value)
+                elif operator == 'between':
+                    result = value[0] <= float(field_value) <= value[1]
+                else:
+                    logger.warning(f"Unknown operator: {operator}")
+                    result = False
+
+                logger.info(f"Condition result: {result}")
+                return result
+
+            except Exception as e:
+                logger.warning(f"Condition evaluation error: {e}")
+                return False
+
+        # Compound conditions
+        if 'all' in condition:
+            results = []
+            for c in condition['all']:
+                result = WorkflowEngine._evaluate_condition_expression(c, data)
+                results.append(result)
+            final_result = all(results)
+            logger.info(f"ALL condition results: {results} -> {final_result}")
+            return final_result
+
+        elif 'any' in condition:
+            results = []
+            for c in condition['any']:
+                result = WorkflowEngine._evaluate_condition_expression(c, data)
+                results.append(result)
+            final_result = any(results)
+            logger.info(f"ANY condition results: {results} -> {final_result}")
+            return final_result
+
+        # Single condition object
+        return evaluate_single(condition)
+    # @staticmethod
+    # def complete_task(task_id, result_data, completed_by):
+    #     """Complete a task and advance workflow"""
+    #     try:
+    #         # Get task and workflow instance
+    #         task = WorkflowEngine._get_task(task_id)
+    #         if not task:
+    #             raise ValueError(f"Task {task_id} not found")
+    #
+    #         if task['status'] != 'pending':
+    #             raise ValueError(f"Task {task_id} is not in pending status")
+    #
+    #         # Update task with completed_by field
+    #         WorkflowEngine._update_task_status(task_id, 'completed', result_data, completed_by)
+    #
+    #         # Get workflow definition and context
+    #         workflow_instance = WorkflowEngine._get_workflow_instance(task['workflow_instance_id'])
+    #         workflow = WorkflowEngine._get_workflow(workflow_instance['workflow_id'])
+    #
+    #         if isinstance(workflow['definition'], str):
+    #             definition = json.loads(workflow['definition'])
+    #         else:
+    #             definition = workflow['definition']
+    #
+    #         # Create context for next step resolution
+    #         workflow_data = json.loads(workflow_instance['data']) if workflow_instance['data'] else {}
+    #         workflow_data.update(result_data)  # Merge task result into workflow data
+    #
+    #         context = {
+    #             'initiator': workflow_instance['initiated_by'],
+    #             'initiated_by': workflow_instance['initiated_by'],
+    #             'tenant_id': workflow_instance['tenant_id'],
+    #             'workflow_data': workflow_data,
+    #             'completed_by': completed_by,
+    #             'workflow_instance_id': task['workflow_instance_id']
+    #         }
+    #
+    #         # Update workflow instance data
+    #         Database.execute_query("""
+    #             UPDATE workflow_instances
+    #             SET data = %s, updated_at = NOW()
+    #             WHERE id = %s
+    #         """, (json.dumps(workflow_data), task['workflow_instance_id']))
+    #
+    #         # Determine next step
+    #         next_step = WorkflowEngine._get_next_step(
+    #             definition, task['step_id'], result_data
+    #         )
+    #
+    #         # logger.info(f"Determine next step is : {next_step} for instance {task['workflow_instance_id']}")
+    #
+    #         if next_step:
+    #             logger.info(f"Determine next step is : {next_step} for instance {task['workflow_instance_id']}")
+    #             WorkflowEngine._execute_step(task['workflow_instance_id'], next_step, definition, context)
+    #         else:
+    #             logger.info(f"Workflow complete for instance {task['workflow_instance_id']}")
+    #             # Workflow complete
+    #             WorkflowEngine._complete_workflow(task['workflow_instance_id'])
+    #
+    #         # Log audit
+    #         AuditLogger.log_action(
+    #             user_id=completed_by,
+    #             action='task_completed',
+    #             resource_type='task',
+    #             resource_id=task_id
+    #         )
+    #
+    #     except Exception as e:
+    #         logger.error(f"Failed to complete task {task_id}: {e}")
+    #         raise
 
     @staticmethod
     def _execute_step(instance_id, step, definition, context):
@@ -278,7 +500,7 @@ class WorkflowEngine:
                     UPDATE workflow_instances 
                     SET data = %s, updated_at = NOW()
                     WHERE id = %s
-                """, (json.dumps(workflow_data), instance_id))
+                """, (JSONUtils.safe_json_dumps(workflow_data), instance_id))
 
                 logger.info(f"Automation step {step['id']} completed successfully")
 
@@ -757,45 +979,45 @@ class WorkflowEngine:
 
         return None
 
-    @staticmethod
-    def _evaluate_condition_expression(condition, data):
-        """Evaluate a condition expression (supports 'all', 'any', and simple condition objects)"""
-
-        def evaluate_single(cond):
-            field = cond.get('field')
-            operator = cond.get('operator')
-            value = cond.get('value')
-
-            if field not in data:
-                return False
-
-            field_value = data[field]
-
-            try:
-                if operator == 'equals':
-                    return field_value == value
-                elif operator == 'not_equals':
-                    return field_value != value
-                elif operator == 'greater_than':
-                    return float(field_value) > float(value)
-                elif operator == 'less_than':
-                    return float(field_value) < float(value)
-                elif operator == 'contains':
-                    return value in str(field_value)
-                elif operator == 'between':
-                    return value[0] <= float(field_value) <= value[1]
-            except Exception as e:
-                logger.warning(f"Condition evaluation error: {e}")
-            return False
-
-        # Compound conditions
-        if 'all' in condition:
-            return all(WorkflowEngine._evaluate_condition_expression(c, data) for c in condition['all'])
-        elif 'any' in condition:
-            return any(WorkflowEngine._evaluate_condition_expression(c, data) for c in condition['any'])
-
-        # Single condition object
-        return evaluate_single(condition)
+    # @staticmethod
+    # def _evaluate_condition_expression(condition, data):
+    #     """Evaluate a condition expression (supports 'all', 'any', and simple condition objects)"""
+    #
+    #     def evaluate_single(cond):
+    #         field = cond.get('field')
+    #         operator = cond.get('operator')
+    #         value = cond.get('value')
+    #
+    #         if field not in data:
+    #             return False
+    #
+    #         field_value = data[field]
+    #
+    #         try:
+    #             if operator == 'equals':
+    #                 return field_value == value
+    #             elif operator == 'not_equals':
+    #                 return field_value != value
+    #             elif operator == 'greater_than':
+    #                 return float(field_value) > float(value)
+    #             elif operator == 'less_than':
+    #                 return float(field_value) < float(value)
+    #             elif operator == 'contains':
+    #                 return value in str(field_value)
+    #             elif operator == 'between':
+    #                 return value[0] <= float(field_value) <= value[1]
+    #         except Exception as e:
+    #             logger.warning(f"Condition evaluation error: {e}")
+    #         return False
+    #
+    #     # Compound conditions
+    #     if 'all' in condition:
+    #         return all(WorkflowEngine._evaluate_condition_expression(c, data) for c in condition['all'])
+    #     elif 'any' in condition:
+    #         return any(WorkflowEngine._evaluate_condition_expression(c, data) for c in condition['any'])
+    #
+    #     # Single condition object
+    #     return evaluate_single(condition)
 
     @staticmethod
     def _find_step_by_id(steps, step_id):

@@ -8,6 +8,7 @@ from app.database import Database
 from app.utils.security import sanitize_input, validate_uuid
 from app.utils.validators import validate_required_fields, validate_form_schema
 import json
+from app.utils.json_utils import JSONUtils
 import logging
 
 logger = logging.getLogger(__name__)
@@ -99,7 +100,7 @@ def get_form_definition(form_id):
         #     form_dict['schema'] = json.loads(form_dict['schema'])
         try:
             if form_dict.get('schema') and isinstance(form_dict['schema'], str):
-                form_dict['schema'] = json.loads(form_dict['schema'])
+                form_dict['schema'] = JSONUtils.safe_parse_json(form_dict['schema'])
         except Exception as json_err:
             logger.warning(f"Failed to parse form schema JSON: {json_err}")
 
@@ -137,7 +138,7 @@ def create_form_definition():
             VALUES (%s, %s, %s, %s, %s)
         """, (
             tenant_id, data['name'], data.get('description', ''),
-            json.dumps(data['schema']), user_id
+            JSONUtils.safe_json_dumps(data['schema']), user_id
         ))
 
         return jsonify({
@@ -192,7 +193,7 @@ def update_form_definition(form_id):
 
         if 'schema' in data:
             update_fields.append('schema = %s, version = version + 1')
-            params.append(json.dumps(data['schema']))
+            params.append(JSONUtils.safe_json_dumps(data['schema']))
 
         if 'is_active' in data:
             update_fields.append('is_active = %s')
@@ -256,7 +257,7 @@ def get_form_responses(form_id):
         # Parse JSON data
         for response in responses:
             if response['data']:
-                response['data'] = json.loads(response['data'])
+                response['data'] = JSONUtils.safe_parse_json(response['data'])
 
         # Get total count
         total = Database.execute_one("""

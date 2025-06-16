@@ -10,6 +10,7 @@ from app.utils.security import sanitize_input, validate_uuid
 from app.utils.validators import validate_required_fields
 from app.services.workflow_engine import WorkflowEngine
 from app.services.sla_monitor import SLAMonitor
+from app.utils.json_utils import JSONUtils
 import json
 import logging
 
@@ -594,11 +595,12 @@ def get_task(task_id):
 #     except Exception as e:
 #         logger.error(f"Error completing task {task_id}: {e}")
 #         return jsonify({'error': str(e)}), 500
+
 @tasks_bp.route('/<task_id>/complete', methods=['POST'])
 @require_auth
 @audit_log('complete', 'task')
 def complete_task(task_id):
-    """Complete a task with defensive programming and better error handling"""
+    """Complete a task with better error handling and transaction management"""
     try:
         if not validate_uuid(task_id):
             return jsonify({'error': 'Invalid task ID'}), 400
@@ -607,22 +609,22 @@ def complete_task(task_id):
         user_id = g.current_user['user_id']
         tenant_id = g.current_user['tenant_id']
 
-        # First, get basic task info
+        logger.info(f"=== COMPLETING TASK {task_id} ===")
+        logger.info(f"User: {user_id}, Data: {data}")
+
+        # Get and validate task
         task_basic = Database.execute_one("""
-            SELECT id, status, assigned_to, form_id, workflow_instance_id
-            FROM tasks 
-            WHERE id = %s
+            SELECT t.id, t.status, t.assigned_to, t.form_id, t.workflow_instance_id, t.step_id
+            FROM tasks t 
+            WHERE t.id = %s
         """, (task_id,))
 
         if not task_basic:
             return jsonify({'error': 'Task not found'}), 404
 
-        # Check if workflow_instance_id exists
-        if not task_basic.get('workflow_instance_id'):
-            logger.error(f"Task {task_id} has no workflow_instance_id")
-            return jsonify({'error': 'Task is not associated with a workflow instance'}), 400
+        logger.info(f"Task found: {dict(task_basic)}")
 
-        # Get workflow instance info
+        # Validate workflow instance exists
         workflow_instance = Database.execute_one("""
             SELECT id, tenant_id, workflow_id, status
             FROM workflow_instances 
@@ -630,7 +632,7 @@ def complete_task(task_id):
         """, (task_basic['workflow_instance_id'],))
 
         if not workflow_instance:
-            logger.error(f"Workflow instance {task_basic['workflow_instance_id']} not found for task {task_id}")
+            logger.error(f"Workflow instance {task_basic['workflow_instance_id']} not found")
             return jsonify({'error': 'Associated workflow instance not found'}), 404
 
         # Security checks
@@ -638,105 +640,67 @@ def complete_task(task_id):
             return jsonify({'error': 'Unauthorized'}), 403
 
         if task_basic['status'] != 'pending':
-            return jsonify({'error': 'Task is not in pending status'}), 400
+            return jsonify({'error': f'Task is not in pending status: {task_basic["status"]}'}), 400
 
-        # Check if user is assigned to task or has admin permissions
+        # Check permissions
         user_permissions = g.current_user.get('permissions', [])
         if (task_basic['assigned_to'] != user_id and
                 'manage_tasks' not in user_permissions and
                 '*' not in user_permissions):
             return jsonify({'error': 'Not authorized to complete this task'}), 403
 
-        # Handle form data if task has a form
+        # Handle form data if present
         form_response_id = None
-        if task_basic.get('form_id'):
-            # Get form schema
-            form_def = Database.execute_one("""
-                SELECT schema FROM form_definitions 
-                WHERE id = %s
-            """, (task_basic['form_id'],))
-
-            if form_def and 'form_data' in data:
-                form_data = data['form_data']
-
-                # Parse form schema safely
-                try:
-                    if isinstance(form_def['schema'], str):
-                        form_schema = json.loads(form_def['schema'])
-                    else:
-                        form_schema = form_def['schema']
-
-                    # Validate form data
-                    validation_errors = validate_form_data(form_data, form_schema)
-                    if validation_errors:
-                        return jsonify({
-                            'error': 'Form validation failed',
-                            'validation_errors': validation_errors
-                        }), 400
-
-                except (json.JSONDecodeError, TypeError) as e:
-                    logger.warning(f"Could not parse form schema for task {task_id}: {e}")
-
-                # Save form response with defensive error handling
-                try:
-                    form_response_id = Database.execute_insert("""
-                        INSERT INTO form_responses 
-                        (form_definition_id, task_id, workflow_instance_id, data, submitted_by)
-                        VALUES (%s, %s, %s, %s, %s)
-                    """, (
-                        task_basic['form_id'],
-                        task_id,
-                        task_basic['workflow_instance_id'],
-                        json.dumps(form_data),
-                        user_id
-                    ))
-                    logger.info(f"Created form response {form_response_id} for task {task_id}")
-
-                except Exception as form_error:
-                    logger.error(f"Error saving form response for task {task_id}: {form_error}")
-                    return jsonify({
-                        'error': 'Failed to save form response',
-                        'details': str(form_error)
-                    }), 500
+        if task_basic.get('form_id') and 'form_data' in data:
+            try:
+                form_response_id = Database.execute_insert("""
+                    INSERT INTO form_responses 
+                    (form_definition_id, task_id, workflow_instance_id, data, submitted_by)
+                    VALUES (%s, %s, %s, %s, %s)
+                """, (
+                    task_basic['form_id'],
+                    task_id,
+                    task_basic['workflow_instance_id'],
+                    JSONUtils.safe_json_dumps(data['form_data']),
+                    user_id
+                ))
+                logger.info(f"Created form response {form_response_id}")
+            except Exception as form_error:
+                logger.error(f"Error saving form response: {form_error}")
+                return jsonify({'error': 'Failed to save form response'}), 500
 
         # Prepare result data
         result_data = data.get('result', {})
         if 'form_data' in data:
             result_data['form_data'] = data['form_data']
 
-        # Update task status first (before workflow engine)
+        # Update task status FIRST (critical step)
         try:
             Database.execute_query("""
                 UPDATE tasks 
                 SET status = %s, completed_by = %s, completed_at = NOW(), 
                     result = %s, updated_at = NOW()
                 WHERE id = %s
-            """, ('completed', user_id, json.dumps(result_data), task_id))
+            """, ('completed', user_id, JSONUtils.safe_json_dumps(result_data), task_id))
 
-            logger.info(f"Task {task_id} marked as completed by user {user_id}")
+            logger.info(f"✓ Task {task_id} marked as completed")
 
         except Exception as update_error:
-            logger.error(f"Error updating task status: {update_error}")
+            logger.error(f"Failed to update task status: {update_error}")
             return jsonify({'error': 'Failed to update task status'}), 500
 
-        # Try to advance workflow
+        # Try to advance workflow (non-critical - don't fail if this breaks)
         try:
+            logger.info(f"Attempting to advance workflow...")
             WorkflowEngine.complete_task(task_id, result_data, user_id)
-            logger.info(f"Workflow advanced successfully for task {task_id}")
+            logger.info(f"✓ Workflow advanced successfully")
 
         except Exception as workflow_error:
-            logger.error(f"Error in workflow engine for task {task_id}: {workflow_error}")
-            # Don't fail the request - task is already completed
-            # Just log the error and continue
-            pass
+            # Log error but don't fail the request since task is completed
+            logger.error(f"Workflow advancement failed: {workflow_error}", exc_info=True)
+            # You might want to queue this for retry later
 
-        # Try to resolve SLA breaches (non-critical)
-        try:
-            SLAMonitor.resolve_sla_breach(task_id)
-        except Exception as sla_error:
-            logger.warning(f"Error resolving SLA breach for task {task_id}: {sla_error}")
-
-        # Build response
+        # Build successful response
         response_data = {
             'message': 'Task completed successfully',
             'task_id': task_id,
@@ -751,12 +715,175 @@ def complete_task(task_id):
         return jsonify(response_data), 200
 
     except Exception as e:
-        logger.error(f"Unexpected error completing task {task_id}: {e}", exc_info=True)
+        logger.error(f"Task completion failed: {e}", exc_info=True)
         return jsonify({
-            'error': 'An unexpected error occurred',
+            'error': 'Task completion failed',
             'message': str(e),
             'task_id': task_id
         }), 500
+# @tasks_bp.route('/<task_id>/complete', methods=['POST'])
+# @require_auth
+# @audit_log('complete', 'task')
+# def complete_task(task_id):
+#     """Complete a task with defensive programming and better error handling"""
+#     try:
+#         if not validate_uuid(task_id):
+#             return jsonify({'error': 'Invalid task ID'}), 400
+#
+#         data = sanitize_input(request.get_json())
+#         user_id = g.current_user['user_id']
+#         tenant_id = g.current_user['tenant_id']
+#
+#         # First, get basic task info
+#         task_basic = Database.execute_one("""
+#             SELECT id, status, assigned_to, form_id, workflow_instance_id
+#             FROM tasks
+#             WHERE id = %s
+#         """, (task_id,))
+#
+#         if not task_basic:
+#             return jsonify({'error': 'Task not found'}), 404
+#
+#         # Check if workflow_instance_id exists
+#         if not task_basic.get('workflow_instance_id'):
+#             logger.error(f"Task {task_id} has no workflow_instance_id")
+#             return jsonify({'error': 'Task is not associated with a workflow instance'}), 400
+#
+#         # Get workflow instance info
+#         workflow_instance = Database.execute_one("""
+#             SELECT id, tenant_id, workflow_id, status
+#             FROM workflow_instances
+#             WHERE id = %s
+#         """, (task_basic['workflow_instance_id'],))
+#
+#         if not workflow_instance:
+#             logger.error(f"Workflow instance {task_basic['workflow_instance_id']} not found for task {task_id}")
+#             return jsonify({'error': 'Associated workflow instance not found'}), 404
+#
+#         # Security checks
+#         if workflow_instance['tenant_id'] != tenant_id:
+#             return jsonify({'error': 'Unauthorized'}), 403
+#
+#         if task_basic['status'] != 'pending':
+#             return jsonify({'error': 'Task is not in pending status'}), 400
+#
+#         # Check if user is assigned to task or has admin permissions
+#         user_permissions = g.current_user.get('permissions', [])
+#         if (task_basic['assigned_to'] != user_id and
+#                 'manage_tasks' not in user_permissions and
+#                 '*' not in user_permissions):
+#             return jsonify({'error': 'Not authorized to complete this task'}), 403
+#
+#         # Handle form data if task has a form
+#         form_response_id = None
+#         if task_basic.get('form_id'):
+#             # Get form schema
+#             form_def = Database.execute_one("""
+#                 SELECT schema FROM form_definitions
+#                 WHERE id = %s
+#             """, (task_basic['form_id'],))
+#
+#             if form_def and 'form_data' in data:
+#                 form_data = data['form_data']
+#
+#                 # Parse form schema safely
+#                 try:
+#                     if isinstance(form_def['schema'], str):
+#                         form_schema = json.loads(form_def['schema'])
+#                     else:
+#                         form_schema = form_def['schema']
+#
+#                     # Validate form data
+#                     validation_errors = validate_form_data(form_data, form_schema)
+#                     if validation_errors:
+#                         return jsonify({
+#                             'error': 'Form validation failed',
+#                             'validation_errors': validation_errors
+#                         }), 400
+#
+#                 except (json.JSONDecodeError, TypeError) as e:
+#                     logger.warning(f"Could not parse form schema for task {task_id}: {e}")
+#
+#                 # Save form response with defensive error handling
+#                 try:
+#                     form_response_id = Database.execute_insert("""
+#                         INSERT INTO form_responses
+#                         (form_definition_id, task_id, workflow_instance_id, data, submitted_by)
+#                         VALUES (%s, %s, %s, %s, %s)
+#                     """, (
+#                         task_basic['form_id'],
+#                         task_id,
+#                         task_basic['workflow_instance_id'],
+#                         json.dumps(form_data),
+#                         user_id
+#                     ))
+#                     logger.info(f"Created form response {form_response_id} for task {task_id}")
+#
+#                 except Exception as form_error:
+#                     logger.error(f"Error saving form response for task {task_id}: {form_error}")
+#                     return jsonify({
+#                         'error': 'Failed to save form response',
+#                         'details': str(form_error)
+#                     }), 500
+#
+#         # Prepare result data
+#         result_data = data.get('result', {})
+#         if 'form_data' in data:
+#             result_data['form_data'] = data['form_data']
+#
+#         # Update task status first (before workflow engine)
+#         try:
+#             Database.execute_query("""
+#                 UPDATE tasks
+#                 SET status = %s, completed_by = %s, completed_at = NOW(),
+#                     result = %s, updated_at = NOW()
+#                 WHERE id = %s
+#             """, ('completed', user_id, json.dumps(result_data), task_id))
+#
+#             logger.info(f"Task {task_id} marked as completed by user {user_id}")
+#
+#         except Exception as update_error:
+#             logger.error(f"Error updating task status: {update_error}")
+#             return jsonify({'error': 'Failed to update task status'}), 500
+#
+#         # Try to advance workflow
+#         try:
+#             WorkflowEngine.complete_task(task_id, result_data, user_id)
+#             logger.info(f"Workflow advanced successfully for task {task_id}")
+#
+#         except Exception as workflow_error:
+#             logger.error(f"Error in workflow engine for task {task_id}: {workflow_error}")
+#             # Don't fail the request - task is already completed
+#             # Just log the error and continue
+#             pass
+#
+#         # Try to resolve SLA breaches (non-critical)
+#         try:
+#             SLAMonitor.resolve_sla_breach(task_id)
+#         except Exception as sla_error:
+#             logger.warning(f"Error resolving SLA breach for task {task_id}: {sla_error}")
+#
+#         # Build response
+#         response_data = {
+#             'message': 'Task completed successfully',
+#             'task_id': task_id,
+#             'status': 'completed',
+#             'completed_at': datetime.now().isoformat(),
+#             'workflow_instance_id': task_basic['workflow_instance_id']
+#         }
+#
+#         if form_response_id:
+#             response_data['form_response_id'] = form_response_id
+#
+#         return jsonify(response_data), 200
+#
+#     except Exception as e:
+#         logger.error(f"Unexpected error completing task {task_id}: {e}", exc_info=True)
+#         return jsonify({
+#             'error': 'An unexpected error occurred',
+#             'message': str(e),
+#             'task_id': task_id
+#         }), 500
 
 
 
@@ -872,7 +999,7 @@ def submit_form_response(task_id):
             VALUES (%s, %s, %s, %s, %s)
         """, (
             task['form_id'], task_id,
-            task['workflow_instance_id'], json.dumps(form_data), user_id
+            task['workflow_instance_id'], JSONUtils.safe_json_dumps(form_data), user_id
         ))
 
         return jsonify({

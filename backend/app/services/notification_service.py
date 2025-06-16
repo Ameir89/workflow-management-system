@@ -8,7 +8,7 @@ from datetime import datetime
 from app.database import Database
 from app.utils.security import validate_email
 import logging
-
+from app.utils.json_utils import JSONUtils
 logger = logging.getLogger(__name__)
 
 
@@ -214,7 +214,7 @@ class NotificationService:
             preferences = {}
             if user['notification_preferences']:
                 try:
-                    preferences = json.loads(user['notification_preferences'])
+                    preferences = JSONUtils.safe_parse_json(user['notification_preferences'])
                 except json.JSONDecodeError:
                     preferences = {}
 
@@ -287,7 +287,7 @@ class NotificationService:
                 return {
                     'title': template['title_template'],
                     'message': template['message_template'],
-                    'channels': json.loads(template['channels']) if template['channels'] else ['in_app']
+                    'channels': JSONUtils.safe_parse_json(template['channels']) if template['channels'] else ['in_app']
                 }
 
             return None
@@ -360,7 +360,7 @@ class NotificationService:
         """Send in-app notification"""
         try:
             if isinstance(data, str):
-                data = json.loads(data)  # convert JSON string to dict
+                data = JSONUtils.safe_parse_json(data)  # convert JSON string to dict
             elif not isinstance(data, dict):
                 data = {}
 
@@ -368,7 +368,7 @@ class NotificationService:
                 INSERT INTO notifications 
                 (user_id, type, title, message, data)
                 VALUES (%s, %s, %s, %s, %s)
-            """, (user_id, notification_type, title, message, json.dumps(data)))
+            """, (user_id, notification_type, title, message, JSONUtils.safe_json_dumps(data)))
 
             return notification_id is not None
 
@@ -472,7 +472,7 @@ class NotificationService:
             for notification in notifications:
                 if notification['data']:
                     try:
-                        notification['data'] = json.loads(notification['data'])
+                        notification['data'] = JSONUtils.safe_parse_json(notification['data'])
                     except json.JSONDecodeError:
                         notification['data'] = {}
 
