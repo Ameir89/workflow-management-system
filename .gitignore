@@ -1,2 +1,66 @@
-/.env
-/workflow_management_system(3).txt
+# Python bytecode and cache
+__pycache__/
+*.py[cod]
+*$py.class
+
+# Virtual environments
+venv/
+.venv/
+env/
+ENV/
+env.bak/
+venv.bak/
+
+# Environment variables
+.env
+.env.*
+
+# Build artifacts
+build/
+dist/
+*.egg-info/
+.eggs/
+
+# Packaging
+*.egg
+*.whl
+
+# PyInstaller
+*.spec
+
+# Test and coverage
+.coverage
+.coverage.*
+.cache
+nosetests.xml
+coverage.xml
+*.cover
+.tox/
+nox/
+htmlcov/
+
+# Mypy and Pyre
+.mypy_cache/
+.pyre/
+
+# IDEs and editors
+.vscode/
+.idea/
+*.sublime-project
+*.sublime-workspace
+
+# Logs
+*.log
+logs/
+
+# Databases
+*.sqlite3
+*.db
+
+# Jupyter
+.ipynb_checkpoints/
+
+# Django-specific (optional)
+staticfiles/
+media/
+local_settings.py
