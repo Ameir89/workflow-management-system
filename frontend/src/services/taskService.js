@@ -40,6 +40,18 @@ export const taskService = {
     }
   },
 
+  // New method for approval decisions
+  async submitApprovalDecision(id, approvalData) {
+    try {
+      const response = await api.post(`/tasks/${id}/approval`, approvalData);
+      return response.data;
+    } catch (error) {
+      throw new Error(
+        error.response?.data?.error || "Failed to submit approval decision"
+      );
+    }
+  },
+
   async assignTask(id, assignedTo) {
     try {
       const response = await api.post(`/tasks/${id}/assign`, {
@@ -237,6 +249,43 @@ export const taskService = {
     } catch (error) {
       throw new Error(
         error.response?.data?.error || "Failed to remove attachment"
+      );
+    }
+  },
+
+  // Additional approval-related methods
+  async getApprovalHistory(taskId) {
+    try {
+      const response = await api.get(`/tasks/${taskId}/approval-history`);
+      return response.data;
+    } catch (error) {
+      throw new Error(
+        error.response?.data?.error || "Failed to fetch approval history"
+      );
+    }
+  },
+
+  async delegateApproval(taskId, delegateTo, reason = "") {
+    try {
+      const response = await api.post(`/tasks/${taskId}/delegate`, {
+        delegate_to: delegateTo,
+        reason: reason,
+      });
+      return response.data;
+    } catch (error) {
+      throw new Error(
+        error.response?.data?.error || "Failed to delegate approval"
+      );
+    }
+  },
+
+  async requestApprovalExtension(taskId, extensionData) {
+    try {
+      const response = await api.post(`/tasks/${taskId}/extend`, extensionData);
+      return response.data;
+    } catch (error) {
+      throw new Error(
+        error.response?.data?.error || "Failed to request extension"
       );
     }
   },

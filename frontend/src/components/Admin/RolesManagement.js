@@ -124,67 +124,86 @@ const RolesManagement = () => {
     const groups = {
       workflow: {
         name: "Workflow Management",
-        permissions:
-          permissions?.filter((p) => p.startsWith("workflow_")) || [],
+        permissions: permissions?.workflow_management?.permissions || [],
       },
       task: {
         name: "Task Management",
-        permissions: permissions?.filter((p) => p.startsWith("task_")) || [],
+        permissions: permissions?.task_management?.permissions || [],
       },
       form: {
         name: "Forms Management",
-        permissions: permissions?.filter((p) => p.startsWith("form_")) || [],
+        permissions: permissions?.form_management?.permissions || [],
       },
       user: {
         name: "User Management",
+        permissions: permissions?.user_management?.permissions || [],
+      },
+      admin: {
+        name: "System Administration",
+        permissions: permissions?.system_administration?.permissions || [],
+      },
+      webhook: {
+        name: "Webhooks",
         permissions:
-          permissions?.filter(
-            (p) => p.startsWith("user_") || p.startsWith("manage_users")
-          ) || [],
+          permissions && permissions.length > 0
+            ? permissions?.filter((p) => p.startsWith("webhook_")) || []
+            : [],
       },
       admin: {
         name: "Administration",
         permissions:
-          permissions?.filter(
-            (p) =>
-              p.startsWith("admin_") ||
-              p.startsWith("view_audit") ||
-              p.startsWith("manage_system")
-          ) || [],
+          permissions && permissions.length > 0
+            ? permissions?.filter(
+                (p) =>
+                  p.startsWith("admin_") ||
+                  p.startsWith("view_audit") ||
+                  p.startsWith("manage_system")
+              ) || []
+            : [],
       },
       webhook: {
         name: "Webhooks",
-        permissions: permissions?.filter((p) => p.startsWith("webhook_")) || [],
-      },
-      file: {
-        name: "File Management",
-        permissions: permissions?.filter((p) => p.startsWith("file_")) || [],
-      },
-      report: {
-        name: "Reports & Analytics",
         permissions:
-          permissions?.filter(
-            (p) => p.startsWith("report_") || p.startsWith("view_reports")
-          ) || [],
-      },
-      system: {
-        name: "System Permissions",
-        permissions:
-          permissions?.filter(
-            (p) =>
-              !p.startsWith("workflow_") &&
-              !p.startsWith("task_") &&
-              !p.startsWith("form_") &&
-              !p.startsWith("user_") &&
-              !p.startsWith("admin_") &&
-              !p.startsWith("webhook_") &&
-              !p.startsWith("file_") &&
-              !p.startsWith("report_") &&
-              !p.startsWith("manage_users") &&
-              !p.startsWith("view_audit") &&
-              !p.startsWith("manage_system") &&
-              !p.startsWith("view_reports")
-          ) || [],
+          permissions && permissions.length > 0
+            ? permissions?.filter((p) => p.startsWith("webhook_")) || []
+            : [],
+        file: {
+          name: "File Management",
+          permissions:
+            permissions && permissions.length > 0
+              ? permissions?.filter((p) => p.startsWith("file_")) || []
+              : [],
+        },
+        report: {
+          name: "Reports & Analytics",
+          permissions:
+            permissions && permissions.length > 0
+              ? permissions?.filter(
+                  (p) => p.startsWith("report_") || p.startsWith("view_reports")
+                ) || []
+              : [],
+        },
+        system: {
+          name: "System Permissions",
+          permissions:
+            permissions && permissions.length > 0
+              ? permissions?.filter(
+                  (p) =>
+                    !p.startsWith("workflow_") &&
+                    !p.startsWith("task_") &&
+                    !p.startsWith("form_") &&
+                    !p.startsWith("user_") &&
+                    !p.startsWith("admin_") &&
+                    !p.startsWith("webhook_") &&
+                    !p.startsWith("file_") &&
+                    !p.startsWith("report_") &&
+                    !p.startsWith("manage_users") &&
+                    !p.startsWith("view_audit") &&
+                    !p.startsWith("manage_system") &&
+                    !p.startsWith("view_reports")
+                )
+              : [],
+        },
       },
     };
 
@@ -208,6 +227,7 @@ const RolesManagement = () => {
       });
     };
 
+    console.log("permissionsData ", permissionsData.permissions);
     const permissionGroups = groupPermissions(permissionsData?.permissions);
 
     return (

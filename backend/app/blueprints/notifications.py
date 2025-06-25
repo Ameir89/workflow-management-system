@@ -34,8 +34,17 @@ def get_notifications():
 
         # Parse JSON data
         for notification in notifications:
-            if notification['data']:
-                notification['data'] = json.loads(notification['data'])
+            if notification.get('data'):
+                # Check if data is already a dict or needs parsing
+                if isinstance(notification['data'], str):
+                    try:
+                        notification['data'] = json.loads(notification['data'])
+                    except (json.JSONDecodeError, TypeError) as e:
+                        logger.warning(f"Failed to parse notification data: {e}")
+                        notification['data'] = {}
+                elif not isinstance(notification['data'], dict):
+                    # If it's neither string nor dict, set to empty dict
+                    notification['data'] = {}
 
         return jsonify({
             'notifications': notifications,

@@ -5,12 +5,14 @@ import {
   CheckCircleIcon,
   DocumentTextIcon,
 } from "@heroicons/react/24/outline";
+import TaskApprovalActions from "./TaskApprovalActions";
 
 const TaskActions = ({
   task,
   form,
   onStatusChange,
   onShowForm,
+  onApprovalAction,
   submitting,
 }) => {
   const { t } = useTranslation();
@@ -19,6 +21,23 @@ const TaskActions = ({
     return null;
   }
 
+  // Check if this is an approval task
+  const isApprovalTask =
+    task.type === "approval" || task.step_type === "approval";
+
+  // If it's an approval task, show approval actions
+  if (isApprovalTask) {
+    return (
+      <TaskApprovalActions
+        task={task}
+        form={form}
+        onApprovalAction={onApprovalAction}
+        submitting={submitting}
+      />
+    );
+  }
+
+  // Regular task actions for non-approval tasks
   return (
     <div className="flex flex-col space-y-2">
       {task.status === "pending" && (

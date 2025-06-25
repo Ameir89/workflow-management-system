@@ -80,6 +80,31 @@ const TaskDetail = () => {
     }
   );
 
+  // Approval action mutation
+  const approvalActionMutation = useMutation(
+    ({ action, data }) =>
+      taskService.submitApprovalDecision(id, { decision: action, ...data }),
+    {
+      onSuccess: (response, variables) => {
+        const actionMessages = {
+          approve: t("tasks.approvalSubmitted"),
+          reject: t("tasks.rejectionSubmitted"),
+          return: t("tasks.returnedForChanges"),
+        };
+        toast.success(
+          actionMessages[variables.action] || t("tasks.approvalSubmitted")
+        );
+        queryClient.invalidateQueries(["task", id]);
+        queryClient.invalidateQueries(["tasks"]);
+        setSubmitting(false);
+      },
+      onError: (error) => {
+        toast.error(error.message || t("tasks.approvalFailed"));
+        setSubmitting(false);
+      },
+    }
+  );
+
   const handleStatusChange = (newStatus) => {
     setSubmitting(true);
     updateTaskStatusMutation.mutate({
@@ -96,6 +121,34 @@ const TaskDetail = () => {
   const handleFormSubmit = (formData) => {
     setSubmitting(true);
     completeTaskMutation.mutate(formData);
+  };
+
+  const handleApprovalAction = (action, data = {}) => {
+    setSubmitting(true);
+
+    const approvalData = {
+      action,
+      comment: data.comment || "",
+      form_data: data.form_data || null,
+      timestamp: new Date().toISOString(),
+    };
+
+    // If using the taskService.submitApprovalDecision method
+    if (typeof taskService.submitApprovalDecision === "function") {
+      approvalActionMutation.mutate({ action, data: approvalData });
+    } else {
+      // Fallback to updateTaskStatus with approval data
+      updateTaskStatusMutation.mutate({
+        status: action === "approve" ? "completed" : "pending",
+        data: {
+          approval_decision: action,
+          approval_comment: data.comment,
+          approval_form_data: data.form_data,
+          completed_at: action === "approve" ? new Date().toISOString() : null,
+          updated_at: new Date().toISOString(),
+        },
+      });
+    }
   };
 
   if (taskLoading || formLoading) {
@@ -121,6 +174,7 @@ const TaskDetail = () => {
         form={form}
         onStatusChange={handleStatusChange}
         onShowForm={setShowForm}
+        onApprovalAction={handleApprovalAction}
         submitting={submitting}
       />
 

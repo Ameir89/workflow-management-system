@@ -228,7 +228,7 @@ const InstanceCard = ({ instance, onAction }) => {
       {instance.current_step && (
         <div className="mt-4 p-3 bg-blue-50 rounded-lg">
           <div className="text-sm font-medium text-blue-900">
-            Current Step: {instance.current_step.name}
+            Current Step: {instance.current_step}
           </div>
           {instance.current_step.assignee && (
             <div className="text-xs text-blue-700 mt-1">

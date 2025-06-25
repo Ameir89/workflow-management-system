@@ -368,3 +368,43 @@ CREATE INDEX IF NOT EXISTS idx_notifications_created_at ON notifications(created
 --    NOW(),
 --    'Added notification templates system with user preferences and analytics views'
 --) ON CONFLICT (migration_name) DO NOTHING;
+
+-- Insert default approval notification templates
+INSERT INTO notification_templates (tenant_id, name, title_template, message_template, channels)
+SELECT 
+    t.id as tenant_id,
+    'task_approved' as name,
+    'Task Approved: {{task_name}}' as title_template,
+    'Your task "{{task_name}}" in workflow "{{workflow_title}}" has been approved by {{approved_by_name}}. {{#comments}}Comments: {{comments}}{{/comments}}' as message_template,
+    '["in_app", "email"]'::jsonb as channels
+FROM tenants t
+WHERE NOT EXISTS (
+    SELECT 1 FROM notification_templates nt 
+    WHERE nt.tenant_id = t.id AND nt.name = 'task_approved'
+);
+
+INSERT INTO notification_templates (tenant_id, name, title_template, message_template, channels)
+SELECT 
+    t.id as tenant_id,
+    'task_rejected' as name,
+    'Task Rejected: {{task_name}}' as title_template,
+    'Your task "{{task_name}}" in workflow "{{workflow_title}}" has been rejected by {{rejected_by_name}}. {{#rejection_reason}}Reason: {{rejection_reason}}{{/rejection_reason}}' as message_template,
+    '["in_app", "email"]'::jsonb as channels
+FROM tenants t
+WHERE NOT EXISTS (
+    SELECT 1 FROM notification_templates nt 
+    WHERE nt.tenant_id = t.id AND nt.name = 'task_rejected'
+);
+
+INSERT INTO notification_templates (tenant_id, name, title_template, message_template, channels)
+SELECT 
+    t.id as tenant_id,
+    'task_returned_for_edit' as name,
+    'Task Returned for Edit: {{task_name}}' as title_template,
+    'Your task "{{task_name}}" in workflow "{{workflow_title}}" has been returned for editing by {{returned_by_name}}. {{#return_reason}}Reason: {{return_reason}}{{/return_reason}} Please make the necessary changes and resubmit.' as message_template,
+    '["in_app", "email"]'::jsonb as channels
+FROM tenants t
+WHERE NOT EXISTS (
+    SELECT 1 FROM notification_templates nt 
+    WHERE nt.tenant_id = t.id AND nt.name = 'task_returned_for_edit'
+);

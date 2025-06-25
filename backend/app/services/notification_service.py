@@ -331,6 +331,18 @@ class NotificationService:
             'generic': {
                 'title': 'Workflow Notification',
                 'message': 'You have a new workflow notification'
+            },
+            'task_approved': {
+                'title': 'Task Approved: {{task_name}}',
+                'message': 'Your task "{{task_name}}" in workflow "{{workflow_title}}" has been approved by {{approved_by_name}}. {{#comments}}Comments: {{comments}}{{/comments}}'
+            },
+            'task_rejected': {
+                'title': 'Task Rejected: {{task_name}}',
+                'message': 'Your task "{{task_name}}" in workflow "{{workflow_title}}" has been rejected by {{rejected_by_name}}. {{#rejection_reason}}Reason: {{rejection_reason}}{{/rejection_reason}}'
+            },
+            'task_returned_for_edit': {
+                'title': 'Task Returned for Edit: {{task_name}}',
+                'message': 'Your task "{{task_name}}" in workflow "{{workflow_title}}" has been returned for editing by {{returned_by_name}}. {{#return_reason}}Reason: {{return_reason}}{{/return_reason}} Please make the necessary changes and resubmit.'
             }
         }
 
@@ -547,3 +559,93 @@ class NotificationService:
         except Exception as e:
             logger.error(f"Error sending role notifications: {e}")
             return []
+        
+        
+    # Add these notification methods to app/services/notification_service.py
+
+    @staticmethod
+    def send_task_approved(user_id, task_id, approved_by_name, comments=""):
+        """Send task approved notification"""
+        try:
+            task = Database.execute_one("""
+                SELECT t.name, wi.title as workflow_title
+                FROM tasks t
+                JOIN workflow_instances wi ON t.workflow_instance_id = wi.id
+                WHERE t.id = %s
+            """, (task_id,))
+
+            if not task:
+                return
+
+            notification_data = {
+                'task_id': str(task_id),
+                'task_name': task['name'],
+                'workflow_title': task['workflow_title'],
+                'approved_by_name': approved_by_name,
+                'comments': comments
+            }
+
+            NotificationService.send_notification(
+                user_id, 'task_approved', notification_data
+            )
+
+        except Exception as e:
+            logger.error(f"Error sending task approved notification: {e}")
+
+    @staticmethod
+    def send_task_rejected(user_id, task_id, rejected_by_name, rejection_reason=""):
+        """Send task rejected notification"""
+        try:
+            task = Database.execute_one("""
+                SELECT t.name, wi.title as workflow_title
+                FROM tasks t
+                JOIN workflow_instances wi ON t.workflow_instance_id = wi.id
+                WHERE t.id = %s
+            """, (task_id,))
+
+            if not task:
+                return
+
+            notification_data = {
+                'task_id': str(task_id),
+                'task_name': task['name'],
+                'workflow_title': task['workflow_title'],
+                'rejected_by_name': rejected_by_name,
+                'rejection_reason': rejection_reason
+            }
+
+            NotificationService.send_notification(
+                user_id, 'task_rejected', notification_data
+            )
+
+        except Exception as e:
+            logger.error(f"Error sending task rejected notification: {e}")
+
+    @staticmethod
+    def send_task_returned_for_edit(user_id, task_id, returned_by_name, return_reason=""):
+        """Send task returned for edit notification"""
+        try:
+            task = Database.execute_one("""
+                SELECT t.name, wi.title as workflow_title
+                FROM tasks t
+                JOIN workflow_instances wi ON t.workflow_instance_id = wi.id
+                WHERE t.id = %s
+            """, (task_id,))
+
+            if not task:
+                return
+
+            notification_data = {
+                'task_id': str(task_id),
+                'task_name': task['name'],
+                'workflow_title': task['workflow_title'],
+                'returned_by_name': returned_by_name,
+                'return_reason': return_reason
+            }
+
+            NotificationService.send_notification(
+                user_id, 'task_returned_for_edit', notification_data
+            )
+
+        except Exception as e:
+            logger.error(f"Error sending task returned for edit notification: {e}")

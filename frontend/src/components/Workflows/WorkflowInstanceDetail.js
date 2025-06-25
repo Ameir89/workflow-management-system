@@ -725,7 +725,7 @@ const WorkflowInstanceDetail = () => {
                 {instanceData.current_step ? (
                   <div className="bg-blue-50 border border-blue-200 rounded-lg p-4">
                     <h4 className="font-medium text-blue-900">
-                      Current Step: {instanceData.current_step.name}
+                      Current Step: {instanceData.current_step}
                     </h4>
                     {instanceData.current_step.description && (
                       <p className="text-sm text-blue-700 mt-1">
@@ -1002,59 +1002,6 @@ const WorkflowInstanceDetail = () => {
               </div>
             </div>
           </div>
-        </div>
-      </div>
-
-      {/* Related Actions */}
-      <div className="bg-white border border-gray-200 rounded-lg p-6">
-        <h3 className="text-lg font-medium text-gray-900 mb-4">
-          Related Actions
-        </h3>
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-          <Link
-            to={`/workflows/${instanceData.workflow_id}/instances`}
-            className="flex items-center p-3 border border-gray-200 rounded-lg hover:border-indigo-300 hover:bg-indigo-50 transition-colors"
-          >
-            <ClipboardDocumentListIcon className="h-5 w-5 text-gray-400 mr-3" />
-            <div>
-              <h4 className="text-sm font-medium text-gray-900">
-                View All Instances
-              </h4>
-              <p className="text-xs text-gray-500">
-                See other instances of this workflow
-              </p>
-            </div>
-          </Link>
-
-          <Link
-            to={`/workflows/designer/${instanceData.workflow_id}`}
-            className="flex items-center p-3 border border-gray-200 rounded-lg hover:border-indigo-300 hover:bg-indigo-50 transition-colors"
-          >
-            <CogIcon className="h-5 w-5 text-gray-400 mr-3" />
-            <div>
-              <h4 className="text-sm font-medium text-gray-900">
-                Edit Workflow
-              </h4>
-              <p className="text-xs text-gray-500">
-                Modify the workflow definition
-              </p>
-            </div>
-          </Link>
-
-          <Link
-            to={`/workflows/${instanceData.workflow_id}/start`}
-            className="flex items-center p-3 border border-gray-200 rounded-lg hover:border-indigo-300 hover:bg-indigo-50 transition-colors"
-          >
-            <PlayIcon className="h-5 w-5 text-gray-400 mr-3" />
-            <div>
-              <h4 className="text-sm font-medium text-gray-900">
-                Start New Instance
-              </h4>
-              <p className="text-xs text-gray-500">
-                Create another instance of this workflow
-              </p>
-            </div>
-          </Link>
         </div>
       </div>
     </div>

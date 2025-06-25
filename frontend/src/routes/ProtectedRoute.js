@@ -16,18 +16,18 @@ const ProtectedRoute = ({ children, requiredPermissions = [] }) => {
   }
 
   // Check permissions if required
-  if (requiredPermissions.length > 0) {
-    const userPermissions = user.permissions || [];
-    const hasPermission =
-      userPermissions.includes("*") ||
-      requiredPermissions.some((permission) =>
-        userPermissions.includes(permission)
-      );
+  // if (requiredPermissions.length > 0) {
+  //   const userPermissions = user.permissions || [];
+  //   const hasPermission =
+  //     userPermissions.includes("*") ||
+  //     requiredPermissions.some((permission) =>
+  //       userPermissions.includes(permission)
+  //     );
 
-    if (!hasPermission) {
-      return <Navigate to="/dashboard" replace />;
-    }
-  }
+  //   if (!hasPermission) {
+  //     return <Navigate to="/dashboard" replace />;
+  //   }
+  // }
 
   return children;
 };

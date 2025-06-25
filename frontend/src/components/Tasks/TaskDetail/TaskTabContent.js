@@ -2,6 +2,7 @@ import React from "react";
 import { useTranslation } from "react-i18next";
 import { Link } from "react-router-dom";
 import DynamicForm from "../../Forms/DynamicForm";
+import SubmittedDataViewer from "./SubmittedDataViewer";
 import {
   ClockIcon,
   ChatBubbleLeftRightIcon,
@@ -19,6 +20,21 @@ const TaskTabContent = ({
 
   const renderDetailsTab = () => (
     <div className="space-y-6">
+      {/* Submitted Data Section - Show prominently if this is an approval task */}
+      {(task.workflow_data?.form_data ||
+        task.form_data ||
+        task.submitted_data ||
+        task.result ||
+        task.workflow_data) &&
+        (task.type === "approval" || task.step_type === "approval") && (
+          <div>
+            <h3 className="text-lg font-medium text-gray-900 mb-4">
+              {t("tasks.submittedDataForReview")}
+            </h3>
+            <SubmittedDataViewer task={task} form={form} />
+          </div>
+        )}
+
       <div>
         <h3 className="text-lg font-medium text-gray-900 mb-4">Task Details</h3>
 
@@ -26,6 +42,13 @@ const TaskTabContent = ({
           <div>
             <dt className="text-sm font-medium text-gray-500">Task ID</dt>
             <dd className="mt-1 text-sm text-gray-900 font-mono">{task.id}</dd>
+          </div>
+
+          <div>
+            <dt className="text-sm font-medium text-gray-500">Task Type</dt>
+            <dd className="mt-1 text-sm text-gray-900 capitalize">
+              {task.type || task.step_type || "Task"}
+            </dd>
           </div>
 
           <div>
@@ -62,6 +85,89 @@ const TaskTabContent = ({
             </div>
           )}
 
+          {(task.submitted_at || task.workflow_data?.submitted_at) && (
+            <div>
+              <dt className="text-sm font-medium text-gray-500">
+                Submitted At
+              </dt>
+              <dd className="mt-1 text-sm text-gray-900">
+                {new Date(
+                  task.submitted_at || task.workflow_data?.submitted_at
+                ).toLocaleString()}
+              </dd>
+            </div>
+          )}
+
+          {(task.submitted_by_name || task.workflow_data?.submitted_by) && (
+            <div>
+              <dt className="text-sm font-medium text-gray-500">
+                Submitted By
+              </dt>
+              <dd className="mt-1 text-sm text-gray-900">
+                {task.submitted_by_name || task.workflow_data?.submitted_by}
+              </dd>
+            </div>
+          )}
+
+          {/* Approval-specific fields */}
+          {(task.type === "approval" || task.step_type === "approval") && (
+            <>
+              {task.approval_type && (
+                <div>
+                  <dt className="text-sm font-medium text-gray-500">
+                    Approval Type
+                  </dt>
+                  <dd className="mt-1 text-sm text-gray-900">
+                    {task.approval_type}
+                  </dd>
+                </div>
+              )}
+
+              {task.approvers && task.approvers.length > 0 && (
+                <div className="sm:col-span-2">
+                  <dt className="text-sm font-medium text-gray-500">
+                    Required Approvers
+                  </dt>
+                  <dd className="mt-1 text-sm text-gray-900">
+                    {task.approvers.join(", ")}
+                  </dd>
+                </div>
+              )}
+
+              {task.approval_decision && (
+                <div>
+                  <dt className="text-sm font-medium text-gray-500">
+                    Approval Decision
+                  </dt>
+                  <dd className="mt-1">
+                    <span
+                      className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium ${
+                        task.approval_decision === "approve"
+                          ? "bg-green-100 text-green-800"
+                          : task.approval_decision === "reject"
+                          ? "bg-red-100 text-red-800"
+                          : "bg-yellow-100 text-yellow-800"
+                      }`}
+                    >
+                      {task.approval_decision}
+                    </span>
+                  </dd>
+                </div>
+              )}
+
+              {task.approval_comment && (
+                <div className="sm:col-span-2">
+                  <dt className="text-sm font-medium text-gray-500">
+                    Approval Comment
+                  </dt>
+                  <dd className="mt-1 text-sm text-gray-900">
+                    {task.approval_comment}
+                  </dd>
+                </div>
+              )}
+            </>
+          )}
+
           {task.tags && task.tags.length > 0 && (
             <div className="sm:col-span-2">
               <dt className="text-sm font-medium text-gray-500">Tags</dt>
@@ -83,20 +189,38 @@ const TaskTabContent = ({
         </dl>
       </div>
 
-      {task.result && (
-        <div>
-          <h4 className="text-md font-medium text-gray-900 mb-3">
-            Task Result
-          </h4>
-          <div className="bg-gray-50 border border-gray-200 rounded-lg p-4">
-            <pre className="text-sm text-gray-800 whitespace-pre-wrap">
-              {typeof task.result === "object"
-                ? JSON.stringify(task.result, null, 2)
-                : task.result}
-            </pre>
+      {/* Show general submitted data for non-approval tasks */}
+      {(task.workflow_data?.form_data ||
+        task.form_data ||
+        task.submitted_data ||
+        task.result) &&
+        !(task.type === "approval" || task.step_type === "approval") && (
+          <div>
+            <h4 className="text-md font-medium text-gray-900 mb-3">
+              Task Result
+            </h4>
+            <SubmittedDataViewer task={task} form={form} />
           </div>
-        </div>
-      )}
+        )}
+
+      {/* Legacy result display for backward compatibility */}
+      {task.result &&
+        !task.workflow_data?.form_data &&
+        !task.form_data &&
+        !task.submitted_data && (
+          <div>
+            <h4 className="text-md font-medium text-gray-900 mb-3">
+              Task Result
+            </h4>
+            <div className="bg-gray-50 border border-gray-200 rounded-lg p-4">
+              <pre className="text-sm text-gray-800 whitespace-pre-wrap">
+                {typeof task.result === "object"
+                  ? JSON.stringify(task.result, null, 2)
+                  : task.result}
+              </pre>
+            </div>
+          </div>
+        )}
     </div>
   );
 
@@ -114,6 +238,38 @@ const TaskTabContent = ({
       );
     }
 
+    // For approval tasks, show the form in read-only mode with submitted data
+    if (task.type === "approval" || task.step_type === "approval") {
+      return (
+        <div className="space-y-4">
+          <div className="flex items-center justify-between">
+            <h3 className="text-lg font-medium text-gray-900">{form.name}</h3>
+            <span className="text-sm text-gray-500">
+              {t("tasks.readOnlyApprovalForm")}
+            </span>
+          </div>
+
+          {form.description && (
+            <p className="text-gray-600">{form.description}</p>
+          )}
+
+          <DynamicForm
+            schema={form.schema}
+            defaultValues={
+              task.workflow_data?.form_data ||
+              task.form_data ||
+              task.submitted_data ||
+              {}
+            }
+            readOnly={true}
+            showSubmitButton={false}
+            className="approval-form-review"
+          />
+        </div>
+      );
+    }
+
+    // Regular form for non-approval tasks
     return (
       <div className="space-y-4">
         <div className="flex items-center justify-between">
@@ -126,7 +282,7 @@ const TaskTabContent = ({
 
         <DynamicForm
           schema={form.schema}
-          defaultValues={task.form_data || {}}
+          defaultValues={task.workflow_data?.form_data || task.form_data || {}}
           readOnly={task.status === "completed"}
           onSubmit={task.status === "completed" ? undefined : onFormSubmit}
           isSubmitting={submitting}

@@ -145,7 +145,8 @@
       "overdue": "Overdue",
       "workflowsStarted": "Workflows Started",
       "workflowsCompleted": "Workflows Completed",
-      "recentTasks": "Recent Tasks"
+      "recentTasks": "Recent Tasks",
+      "duration": "Duration"
     },
     "tasks": {
       "title": "Tasks",
@@ -183,7 +184,39 @@
       "taskCompleted": "Task completed successfully",
       "completionFailed": "Failed to complete task",
       "statusUpdated": "Task status updated",
-      "statusUpdateFailed": "Failed to update task status"
+      "statusUpdateFailed": "Failed to update task status",
+      "approval": "Approval",
+      "approve": "Approve",
+      "reject": "Reject",
+      "returnForChanges": "Return for Changes",
+      "approveWithForm": "Approve with Form",
+      "approvalRequired": "Approval Required",
+      "approvalDescription": "This task requires your approval decision before the workflow can continue.",
+      "approvalDescriptionWithData": "Please review the submitted data below and make your approval decision.",
+      "approvalInstructions": "Approval Instructions",
+      "approvalDetails": "Approval Details",
+      "approvalType": "Approval Type",
+      "requiredApprovers": "Required Approvers",
+      "approvers": "Approvers",
+      "approvalDeadline": "Approval Deadline",
+      "approvalCompleted": "Approval completed successfully",
+      "decision": "Decision",
+      "comment": "Comment",
+      "commentPlaceholder": "Add a comment explaining your decision...",
+      "approvalComment": "Approval Comment",
+      "approvalCommentPlaceholder": "Optional comment about your approval...",
+      "approvalSubmitted": "Approval submitted successfully",
+      "rejectionSubmitted": "Rejection submitted successfully",
+      "returnedForChanges": "Task returned for changes",
+      "approvalFailed": "Failed to submit approval decision",
+      "submittedData": "Submitted Data",
+      "submittedDataForReview": "Submitted Data for Review",
+      "submittedAt": "Submitted At",
+      "submittedBy": "Submitted By",
+      "formView": "Form View",
+      "rawView": "Raw Data",
+      "readOnlyApprovalForm": "Read-only (For Review)",
+      "reviewAndApprove": "Review and Approve"
     },
     "workflows": {
       "title": "Workflows",
@@ -635,7 +668,9 @@
       "active": "Active",
       "inactive": "Inactive",
       "submit": "Submit",
-      "submitting": "Submitting..."
+      "submitting": "Submitting...",
+      "hide": "Hide",
+      "notProvided": "Not provided"
     },
     "profile": {
       "editProfile": "Edit Profile",
