@@ -1,11 +1,9 @@
-import React, { useState, useCallback, forwardRef } from "react";
-import { useDropzone } from "react-dropzone";
+import React, { useState, useRef, forwardRef } from "react";
 import {
   CloudArrowUpIcon,
   DocumentIcon,
-  PhotoIcon,
-  FilmIcon,
-  XMarkIcon,
+  TrashIcon,
+  PaperClipIcon,
 } from "@heroicons/react/24/outline";
 
 const FileUpload = forwardRef(
@@ -13,76 +11,111 @@ const FileUpload = forwardRef(
     {
       value = [],
       onChange,
-      accept = null,
+      accept = "*/*",
       multiple = false,
       maxSize = 10 * 1024 * 1024, // 10MB default
       disabled = false,
-      onError = () => {},
+      onError,
       className = "",
       ...props
     },
     ref
   ) => {
-    const [files, setFiles] = useState(value || []);
+    const [dragOver, setDragOver] = useState(false);
+    const [files, setFiles] = useState(Array.isArray(value) ? value : []);
+    const fileInputRef = useRef(null);
 
-    const onDrop = useCallback(
-      (acceptedFiles, rejectedFiles) => {
-        // Handle rejected files
-        if (rejectedFiles.length > 0) {
-          rejectedFiles.forEach(({ file, errors }) => {
-            errors.forEach((error) => {
-              if (error.code === "file-too-large") {
-                onError(
-                  `File ${
-                    file.name
-                  } is too large. Maximum size is ${formatFileSize(maxSize)}.`
-                );
-              } else if (error.code === "file-invalid-type") {
-                onError(`File ${file.name} has an invalid type.`);
-              } else {
-                onError(`Error uploading ${file.name}: ${error.message}`);
-              }
-            });
-          });
+    const validateFile = (file) => {
+      if (maxSize && file.size > maxSize) {
+        const sizeInMB = (maxSize / (1024 * 1024)).toFixed(1);
+        throw new Error(`File size must be less than ${sizeInMB}MB`);
+      }
+
+      if (accept && accept !== "*/*") {
+        const acceptedTypes = accept.split(",").map((type) => type.trim());
+        const fileType = file.type;
+        const fileExtension = "." + file.name.split(".").pop().toLowerCase();
+
+        const isValid = acceptedTypes.some((type) => {
+          if (type.startsWith(".")) {
+            return type === fileExtension;
+          }
+          if (type.includes("/*")) {
+            const category = type.split("/")[0];
+            return fileType.startsWith(category + "/");
+          }
+          return type === fileType;
+        });
+
+        if (!isValid) {
+          throw new Error(`File type not accepted. Allowed types: ${accept}`);
+        }
+      }
+    };
+
+    const handleFileSelection = (selectedFiles) => {
+      const fileList = Array.from(selectedFiles);
+
+      try {
+        // Validate all files first
+        fileList.forEach(validateFile);
+
+        let newFiles;
+        if (multiple) {
+          newFiles = [...files, ...fileList];
+        } else {
+          newFiles = fileList.slice(0, 1);
         }
 
-        // Handle accepted files
-        if (acceptedFiles.length > 0) {
-          const newFiles = acceptedFiles.map((file) => ({
-            file,
-            id: Math.random().toString(36).substr(2, 9),
-            name: file.name,
-            size: file.size,
-            type: file.type,
-            preview: file.type.startsWith("image/")
-              ? URL.createObjectURL(file)
-              : null,
-          }));
-
-          const updatedFiles = multiple ? [...files, ...newFiles] : newFiles;
-          setFiles(updatedFiles);
-          onChange(updatedFiles);
+        setFiles(newFiles);
+        if (onChange) {
+          onChange(newFiles);
         }
-      },
-      [files, multiple, maxSize, onChange, onError]
-    );
+      } catch (error) {
+        if (onError) {
+          onError(error.message);
+        }
+      }
+    };
 
-    const { getRootProps, getInputProps, isDragActive } = useDropzone({
-      onDrop,
-      accept: accept ? { [accept]: [] } : undefined,
-      multiple,
-      maxSize,
-      disabled,
-    });
+    const handleDrop = (e) => {
+      e.preventDefault();
+      setDragOver(false);
 
-    const removeFile = useCallback(
-      (fileId) => {
-        const updatedFiles = files.filter((f) => f.id !== fileId);
-        setFiles(updatedFiles);
-        onChange(updatedFiles);
-      },
-      [files, onChange]
-    );
+      if (disabled) return;
+
+      const droppedFiles = e.dataTransfer.files;
+      if (droppedFiles.length > 0) {
+        handleFileSelection(droppedFiles);
+      }
+    };
+
+    const handleDragOver = (e) => {
+      e.preventDefault();
+      if (!disabled) {
+        setDragOver(true);
+      }
+    };
+
+    const handleDragLeave = (e) => {
+      e.preventDefault();
+      setDragOver(false);
+    };
+
+    const handleInputChange = (e) => {
+      const selectedFiles = e.target.files;
+      if (selectedFiles && selectedFiles.length > 0) {
+        handleFileSelection(selectedFiles);
+      }
+    };
+
+    const removeFile = (index) => {
+      const newFiles = files.filter((_, i) => i !== index);
+      setFiles(newFiles);
+      if (onChange) {
+        onChange(newFiles);
+      }
+    };
 
     const formatFileSize = (bytes) => {
       if (bytes === 0) return "0 Bytes";
@@ -92,51 +125,66 @@ const FileUpload = forwardRef(
       return parseFloat((bytes / Math.pow(k, i)).toFixed(2)) + " " + sizes[i];
     };
 
-    const getFileIcon = (fileType) => {
-      if (fileType.startsWith("image/")) {
-        return <PhotoIcon className="h-5 w-5 text-green-500" />;
-      } else if (fileType.startsWith("video/")) {
-        return <FilmIcon className="h-5 w-5 text-purple-500" />;
-      } else {
-        return <DocumentIcon className="h-5 w-5 text-blue-500" />;
+    const openFileDialog = () => {
+      if (!disabled && fileInputRef.current) {
+        fileInputRef.current.click();
       }
     };
 
     return (
-      <div className={className}>
+      <div className={`file-upload-container ${className}`} ref={ref}>
+        {/* Hidden file input */}
+        <input
+          ref={fileInputRef}
+          type="file"
+          accept={accept}
+          multiple={multiple}
+          onChange={handleInputChange}
+          disabled={disabled}
+          className="hidden"
+          {...props}
+        />
+
+        {/* Drop zone */}
         <div
-          {...getRootProps()}
-          className={`
-          file-upload-area
-          ${isDragActive ? "dragover" : ""}
-          ${disabled ? "opacity-50 cursor-not-allowed" : "cursor-pointer"}
-        `}
+          className={`file-upload-area ${dragOver ? "dragover" : ""} ${
+            disabled ? "disabled" : ""
+          }`}
+          onDrop={handleDrop}
+          onDragOver={handleDragOver}
+          onDragLeave={handleDragLeave}
+          onClick={openFileDialog}
         >
-          <input {...getInputProps()} ref={ref} {...props} />
-          <CloudArrowUpIcon className="file-upload-icon" />
-          <div className="file-upload-text">
-            {isDragActive ? (
-              <p>Drop files here...</p>
-            ) : (
-              <p>
-                Drag and drop files here, or{" "}
-                <span className="text-indigo-600 font-medium">browse</span>
+          <div className="file-upload-content">
+            <CloudArrowUpIcon className="file-upload-icon" />
+            <div className="file-upload-text">
+              <p className="text-sm text-gray-600">
+                {dragOver ? (
+                  "Drop files here"
+                ) : (
+                  <>
+                    <span className="font-medium">Click to upload</span> or drag
+                    and drop
+                  </>
+                )}
               </p>
-            )}
+              <p className="file-upload-hint">
+                {accept && accept !== "*/*"
+                  ? `Accepted types: ${accept}`
+                  : "Any file type"}
+                {maxSize && ` (Max size: ${formatFileSize(maxSize)})`}
+              </p>
+            </div>
           </div>
-          <p className="file-upload-hint">
-            {accept && `Supported formats: ${accept}`}
-            {maxSize && ` • Max size: ${formatFileSize(maxSize)}`}
-            {multiple && " • Multiple files allowed"}
-          </p>
         </div>
 
+        {/* File list */}
         {files.length > 0 && (
           <div className="file-list">
-            {files.map((file) => (
-              <div key={file.id} className="file-item">
+            {files.map((file, index) => (
+              <div key={index} className="file-item">
                 <div className="file-item-info">
-                  {getFileIcon(file.type)}
+                  <DocumentIcon className="file-item-icon" />
                   <div className="flex-1 min-w-0">
                     <p className="file-item-name">{file.name}</p>
                     <p className="file-item-size">
@@ -144,16 +192,27 @@ const FileUpload = forwardRef(
                     </p>
                   </div>
                 </div>
-                <button
-                  type="button"
-                  onClick={() => removeFile(file.id)}
-                  className="file-item-remove"
-                  disabled={disabled}
-                >
-                  <XMarkIcon className="h-4 w-4" />
-                </button>
+                {!disabled && (
+                  <button
+                    type="button"
+                    onClick={(e) => {
+                      e.stopPropagation();
+                      removeFile(index);
+                    }}
+                    className="file-item-remove"
+                  >
+                    <TrashIcon className="h-4 w-4" />
+                  </button>
+                )}
               </div>
             ))}
+          </div>
+        )}
+
+        {/* File count info */}
+        {multiple && files.length > 0 && (
+          <div className="mt-2 text-xs text-gray-500">
+            {files.length} file{files.length !== 1 ? "s" : ""} selected
           </div>
         )}
       </div>

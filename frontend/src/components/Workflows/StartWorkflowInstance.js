@@ -53,9 +53,9 @@ const StartWorkflowInstance = () => {
     {
       onSuccess: (response) => {
         toast.success(
-          `Workflow instance started successfully! ID: ${response.instance.id}`
+          `Workflow instance started successfully! ID: ${response.instance_id}`
         );
-        navigate(`/workflows/instances/${response.instance.id}`);
+        navigate(`/workflows/instances/${response.instance_id}`);
       },
       onError: (error) => {
         toast.error(error.message);

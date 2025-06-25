@@ -1,3 +1,4 @@
+// Fixed DesignerCanvas.js with proper pointer events for transitions
 import { forwardRef, useCallback, useRef, useState, useEffect } from "react";
 import { useDrop } from "react-dnd";
 import { useTranslation } from "react-i18next";
@@ -10,12 +11,15 @@ const DesignerCanvas = forwardRef(
     {
       workflow,
       selectedNode,
+      selectedTransition,
       zoom,
       panOffset,
       onSelectNode,
+      onSelectTransition,
       onUpdateNode,
       onDeleteNode,
       onAddTransition,
+      onUpdateTransition,
       onDeleteTransition,
       onPan,
       onAddNode,
@@ -76,14 +80,18 @@ const DesignerCanvas = forwardRef(
         // Only pan when clicking on the canvas background
         if (
           e.target === canvasRef.current ||
-          e.target.classList.contains("canvas-grid")
+          e.target.classList.contains("canvas-grid") ||
+          e.target.classList.contains("canvas-content")
         ) {
           setIsPanning(true);
           setLastPanPoint({ x: e.clientX, y: e.clientY });
           onSelectNode(null);
+          if (onSelectTransition) {
+            onSelectTransition(null);
+          }
         }
       },
-      [onSelectNode]
+      [onSelectNode, onSelectTransition]
     );
 
     const handleMouseMove = useCallback(
@@ -147,19 +155,43 @@ const DesignerCanvas = forwardRef(
         if (e.key === "Escape") {
           handleCancelConnection();
           onSelectNode(null);
-        } else if (e.key === "Delete" && selectedNode) {
-          onDeleteNode(selectedNode.id);
+          if (onSelectTransition) {
+            onSelectTransition(null);
+          }
+        } else if (e.key === "Delete") {
+          if (selectedNode) {
+            onDeleteNode(selectedNode.id);
+          } else if (selectedTransition) {
+            onDeleteTransition(selectedTransition.id);
+          }
         }
       };
 
       document.addEventListener("keydown", handleKeyDown);
       return () => document.removeEventListener("keydown", handleKeyDown);
-    }, [selectedNode, onDeleteNode, onSelectNode, handleCancelConnection]);
+    }, [
+      selectedNode,
+      selectedTransition,
+      onDeleteNode,
+      onDeleteTransition,
+      onSelectNode,
+      onSelectTransition,
+      handleCancelConnection,
+    ]);
+
+    // Handle transition selection
+    const handleTransitionSelect = useCallback(
+      (transition) => {
+        onSelectNode(null); // Clear node selection
+        onSelectTransition(transition); // Set transition selection
+      },
+      [onSelectNode, onSelectTransition]
+    );
 
     // Render connection lines between nodes
     const renderConnections = () => {
-      const transitions = workflow.definition.transitions || [];
-      const steps = workflow.definition.steps || [];
+      const transitions = workflow.definition?.transitions || [];
+      const steps = workflow.definition?.steps || [];
 
       return transitions.map((transition) => {
         const fromStep = steps.find((s) => s.id === transition.from);
@@ -171,11 +203,12 @@ const DesignerCanvas = forwardRef(
           <ConnectionLine
             key={transition.id}
             id={transition.id}
+            transition={transition}
             from={fromStep.position}
             to={toStep.position}
-            condition={transition.condition}
-            selected={false}
+            selected={selectedTransition?.id === transition.id}
             onDelete={() => onDeleteTransition(transition.id)}
+            onSelect={handleTransitionSelect}
             zoom={zoom}
           />
         );
@@ -226,7 +259,7 @@ const DesignerCanvas = forwardRef(
 
         {/* Content layer */}
         <div className="canvas-content" style={canvasStyle}>
-          {/* Connection lines rendered as SVG */}
+          {/* Connection lines rendered as SVG - THIS IS THE KEY FIX */}
           <svg
             className="connections-layer"
             style={{
@@ -236,7 +269,8 @@ const DesignerCanvas = forwardRef(
               width: "100%",
               height: "100%",
               overflow: "visible",
-              pointerEvents: "none",
+              pointerEvents: "auto", // Changed from "none" to "auto"
+              zIndex: 1, // Ensure it's above the background but below nodes
             }}
           >
             <defs>
@@ -273,7 +307,7 @@ const DesignerCanvas = forwardRef(
           </svg>
 
           {/* Workflow nodes */}
-          {workflow.definition.steps?.map((step) => (
+          {workflow.definition?.steps?.map((step) => (
             <WorkflowNode
               key={step.id}
               step={step}
@@ -322,7 +356,8 @@ const DesignerCanvas = forwardRef(
         )}
 
         {/* Empty state */}
-        {workflow.definition.steps?.length === 0 && (
+        {(!workflow.definition?.steps ||
+          workflow.definition.steps.length === 0) && (
           <div className="empty-state">
             <div className="text-center">
               <div className="mx-auto h-16 w-16 text-gray-400 mb-4">

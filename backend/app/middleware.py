@@ -19,6 +19,16 @@ def setup_middleware(app):
     @app.before_request
     def before_request():
         """Execute before each request with enhanced security"""
+        # Temporarily disable CSRF protection
+        # app.config['WTF_CSRF_ENABLED'] = False
+        # app.config['CSRF_ENABLED'] = False
+
+        # Or if using Flask-WTF
+        # app.config['SECRET_KEY'] = 'your-secret-key'  # Still needed for sessions
+
+        # Log middleware status
+        # app.logger.info("CSRF protection disabled for testing")
+        #####################################
         # Generate request ID
         g.request_id = str(uuid.uuid4())
         g.start_time = time.time()
@@ -43,9 +53,9 @@ def setup_middleware(app):
             if request.headers.get('Content-Type', '').startswith('application/json'):
                 # For API requests, validate origin
                 origin = request.headers.get('Origin')
-                if origin and origin not in current_app.config.get('ALLOWED_ORIGINS', []):
-                    logger.warning(f"Invalid origin: {origin}")
-                    return jsonify({'error': 'Invalid origin'}), 403
+                # if origin and origin not in current_app.config.get('ALLOWED_ORIGINS', []):
+                #     logger.warning(f"Invalid origin: {origin}")
+                #     return jsonify({'error': 'Invalid origin'}), 403
 
     @app.after_request
     def after_request(response):

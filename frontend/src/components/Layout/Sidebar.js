@@ -23,8 +23,8 @@ import {
   PencilSquareIcon,
   WrenchScrewdriverIcon,
   RocketLaunchIcon,
-  PlayIcon,
-  EyeIcon,
+  KeyIcon,
+  BellAlertIcon,
 } from "@heroicons/react/24/outline";
 import {
   HomeIcon as HomeIconSolid,
@@ -36,6 +36,8 @@ import {
   LinkIcon as LinkIconSolid,
   FolderIcon as FolderIconSolid,
   RocketLaunchIcon as RocketLaunchIconSolid,
+  KeyIcon as KeyIconSolid,
+  BellAlertIcon as BellAlertIconSolid,
 } from "@heroicons/react/24/solid";
 
 const Sidebar = ({ isOpen, onClose, userPermissions = [] }) => {
@@ -68,6 +70,7 @@ const Sidebar = ({ isOpen, onClose, userPermissions = [] }) => {
       iconSolid: HomeIconSolid,
       badge: null,
     },
+
     {
       name: "Start Workflows",
       href: "/start-workflows",
@@ -105,32 +108,49 @@ const Sidebar = ({ isOpen, onClose, userPermissions = [] }) => {
 
   const configurationNavigation = [
     {
-      name: t("nav.manageWorkflows"),
+      name: t("nav.configuration.manageWorkflows"),
       href: "/workflows/list",
       icon: Cog8ToothIcon,
       iconSolid: Cog8ToothIconSolid,
-      description: "Create and configure workflows",
     },
     {
-      name: t("nav.forms"),
+      name: t("nav.configuration.forms"),
       href: "/forms",
       icon: DocumentTextIcon,
       iconSolid: DocumentTextIconSolid,
       badge: null,
     },
     {
-      name: t("nav.files"),
+      name: t("nav.configuration.files"),
       href: "/files",
       icon: FolderIcon,
       iconSolid: FolderIconSolid,
       badge: null,
     },
     {
-      name: t("nav.webhooks"),
+      name: t("nav.configuration.webhooks"),
       href: "/webhooks",
       icon: LinkIcon,
       iconSolid: LinkIconSolid,
       badge: null,
+    },
+    {
+      name: t("nav.configuration.lookupsManagement"),
+      href: "/admin/lookups",
+      icon: TableCellsIcon,
+      iconSolid: TableCellsIcon,
+    },
+    {
+      name: t("nav.configuration.notificationManagement"),
+      href: "/admin/notifications",
+      icon: BellAlertIcon,
+      iconSolid: BellAlertIconSolid,
+    },
+    {
+      name: t("nav.configuration.scripts"),
+      href: "/configuration/scripts",
+      icon: BellAlertIcon,
+      iconSolid: BellAlertIconSolid,
     },
   ];
 
@@ -145,8 +165,8 @@ const Sidebar = ({ isOpen, onClose, userPermissions = [] }) => {
     {
       name: "Roles & Permissions",
       href: "/admin/roles",
-      icon: ShieldCheckIcon,
-      iconSolid: ShieldCheckIcon,
+      icon: KeyIcon,
+      iconSolid: KeyIconSolid,
     },
     {
       name: t("nav.admin.health"),
@@ -154,12 +174,7 @@ const Sidebar = ({ isOpen, onClose, userPermissions = [] }) => {
       icon: ShieldCheckIcon,
       iconSolid: ShieldCheckIcon,
     },
-    {
-      name: t("nav.admin.lookupsManagement"),
-      href: "/admin/lookups",
-      icon: TableCellsIcon,
-      iconSolid: TableCellsIcon,
-    },
+
     {
       name: t("nav.admin.auditLogs"),
       href: "/admin/audit-logs",

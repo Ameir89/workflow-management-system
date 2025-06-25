@@ -507,23 +507,25 @@ const RolesManagement = () => {
                 </span>
               </div>
 
-              {role.permissions && role.permissions.length > 0 && (
+              {role?.permissions && role?.permissions?.length > 0 && (
                 <div className="mt-3">
                   <div className="text-xs text-gray-500 mb-2">
                     Key Permissions:
                   </div>
                   <div className="flex flex-wrap gap-1">
-                    {role.permissions.slice(0, 3).map((permission) => (
+                    {role?.permissions?.slice(0, 3).map((permission) => (
                       <span
                         key={permission}
                         className="inline-flex items-center px-2 py-1 rounded text-xs bg-blue-50 text-blue-700"
                       >
                         {permission
-                          .replace(/_/g, " ")
-                          .replace(/\b\w/g, (l) => l.toUpperCase())}
+                          ? permission
+                          : //     ?.replace(/_/g, " ")
+                            //     ?.replace(/\b\w/g, (l) => l.toUpperCase())
+                            null}
                       </span>
                     ))}
-                    {role.permissions.length > 3 && (
+                    {role?.permissions?.length > 3 && (
                       <span className="inline-flex items-center px-2 py-1 rounded text-xs bg-gray-100 text-gray-600">
                         +{role.permissions.length - 3} more
                       </span>

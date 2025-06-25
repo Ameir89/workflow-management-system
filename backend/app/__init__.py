@@ -26,7 +26,11 @@ def create_app(config_class=Config):
     # ---------------------------
     # Initialize CORS
     # ---------------------------
-    CORS(app, origins=app.config['CORS_ORIGINS'])
+    # CORS(app, origins=app.config['CORS_ORIGINS'])
+    CORS(app, origins="*",
+         allow_headers=["Content-Type", "Authorization", "X-Requested-With", "Accept", "Origin"],
+         methods=["GET", "POST", "PUT", "DELETE", "OPTIONS", "PATCH"],
+         supports_credentials=True)
 
     # ---------------------------
     # Initialize Database

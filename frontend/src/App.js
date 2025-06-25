@@ -1,113 +1,28 @@
-// src/App.js - Updated with separated workflow configuration and instance starting
-import React, { Suspense } from "react";
-import {
-  BrowserRouter as Router,
-  Routes,
-  Route,
-  Navigate,
-} from "react-router-dom";
+// src/App.js - Refactored and simplified
+import React from "react";
+import { BrowserRouter as Router } from "react-router-dom";
 import { QueryClient, QueryClientProvider } from "react-query";
 import { ToastContainer } from "react-toastify";
-import { AuthProvider, useAuth } from "./hooks/useAuth";
+import { AuthProvider } from "./hooks/useAuth";
 import { I18nProvider } from "./i18n/I18nProvider";
-import Layout from "./components/Layout/Layout";
-import Login from "./components/Auth/Login";
-import Dashboard from "./components/Dashboard/Dashboard";
-
-// Workflow components - Configuration
-import WorkflowDesigner from "./components/WorkflowDesigner/WorkflowDesigner";
-import WorkflowList from "./components/Workflows/WorkflowList";
-
-// Workflow components - Instance Management
-import StartInstancesHub from "./components/Workflows/StartInstancesHub";
-import StartWorkflowInstance from "./components/Workflows/StartWorkflowInstance";
-import WorkflowInstancesDashboard from "./components/Workflows/WorkflowInstancesDashboard";
-
-// Task components
-import TaskList from "./components/Tasks/TaskList";
-import TaskDetail from "./components/Tasks/TaskDetail";
-import TaskForm from "./components/Tasks/TaskForm";
-
-// Forms components
-import FormsList from "./components/Forms/FormsList";
-import FormBuilder from "./components/Forms/FormBuilder/FormBuilder";
-import FormResponses from "./components/Forms/FormResponses";
-
-// Webhooks components
-import WebhooksList from "./components/Webhooks/WebhooksList";
-import WebhookForm from "./components/Webhooks/WebhookForm";
-import WebhookDeliveries from "./components/Webhooks/WebhookDeliveries";
-
-// Files components
-import FileManager from "./components/Files/FileManager";
-
-// Admin components
-import UserManagement from "./components/Admin/UserManagement";
-import SystemHealth from "./components/Admin/SystemHealth";
-import AuditLogs from "./components/Admin/AuditLogs";
-import LookupsManagement from "./components/Admin/LookupsManagement";
-import RolesManagement from "./components/Admin/RolesManagement";
-
-// Other components
-import Reports from "./components/Reports/Reports";
-import Profile from "./components/Auth/Profile";
-import LoadingSpinner from "./components/Common/LoadingSpinner";
+import AppRoutes from "./routes/AppRoutes";
 
 import "react-toastify/dist/ReactToastify.css";
 import "./styles/globals.css";
 
+// Configure React Query client
 const queryClient = new QueryClient({
   defaultOptions: {
     queries: {
       retry: 1,
       staleTime: 5 * 60 * 1000, // 5 minutes
+      refetchOnWindowFocus: false,
+    },
+    mutations: {
+      retry: 1,
     },
   },
 });
-
-// Protected Route Component
-const ProtectedRoute = ({ children, requiredPermissions = [] }) => {
-  const { user, loading } = useAuth();
-
-  if (loading) {
-    return <LoadingSpinner />;
-  }
-
-  if (!user) {
-    return <Navigate to="/login" replace />;
-  }
-
-  // Check permissions if required
-  // if (requiredPermissions.length > 0) {
-  //   const userPermissions = user.permissions || [];
-  //   const hasPermission =
-  //     userPermissions.includes("*") ||
-  //     requiredPermissions.some((permission) =>
-  //       userPermissions.includes(permission)
-  //     );
-
-  //   if (!hasPermission) {
-  //     return <Navigate to="/dashboard" replace />;
-  //   }
-  // }
-
-  return children;
-};
-
-// Public Route Component
-const PublicRoute = ({ children }) => {
-  const { user, loading } = useAuth();
-
-  if (loading) {
-    return <LoadingSpinner />;
-  }
-
-  if (user) {
-    return <Navigate to="/dashboard" replace />;
-  }
-
-  return children;
-};
 
 function App() {
   return (
@@ -120,255 +35,11 @@ function App() {
               v7_relativeSplatPath: true,
             }}
           >
-            <div className="App">
-              <Suspense fallback={<LoadingSpinner />}>
-                <Routes>
-                  {/* Public Routes */}
-                  <Route
-                    path="/login"
-                    element={
-                      <PublicRoute>
-                        <Login />
-                      </PublicRoute>
-                    }
-                  />
+            <div className="App min-h-screen bg-gray-50">
+              {/* Main Application Routes */}
+              <AppRoutes />
 
-                  {/* Protected Routes */}
-                  <Route
-                    path="/"
-                    element={
-                      <ProtectedRoute>
-                        <Layout />
-                      </ProtectedRoute>
-                    }
-                  >
-                    <Route
-                      index
-                      element={<Navigate to="/dashboard" replace />}
-                    />
-                    <Route path="dashboard" element={<Dashboard />} />
-
-                    {/* Workflow Configuration Routes */}
-                    <Route path="workflows/list" element={<WorkflowList />} />
-                    <Route
-                      path="workflows/designer"
-                      element={
-                        <ProtectedRoute
-                          requiredPermissions={[
-                            "create_workflows",
-                            "manage_workflows",
-                          ]}
-                        >
-                          <WorkflowDesigner />
-                        </ProtectedRoute>
-                      }
-                    />
-                    <Route
-                      path="workflows/designer/:id"
-                      element={
-                        <ProtectedRoute
-                          requiredPermissions={["manage_workflows"]}
-                        >
-                          <WorkflowDesigner />
-                        </ProtectedRoute>
-                      }
-                    />
-
-                    {/* Workflow Instance Management Routes */}
-                    <Route
-                      path="start-workflows"
-                      element={
-                        <ProtectedRoute
-                          requiredPermissions={["start_workflow_instances"]}
-                        >
-                          <StartInstancesHub />
-                        </ProtectedRoute>
-                      }
-                    />
-                    <Route
-                      path="workflows/:workflowId/start"
-                      element={
-                        <ProtectedRoute
-                          requiredPermissions={["start_workflow_instances"]}
-                        >
-                          <StartWorkflowInstance />
-                        </ProtectedRoute>
-                      }
-                    />
-
-                    {/* Workflow Instance Monitoring Routes */}
-                    <Route
-                      path="workflows/instances"
-                      element={
-                        <ProtectedRoute
-                          requiredPermissions={["view_workflow_instances"]}
-                        >
-                          <WorkflowInstancesDashboard />
-                        </ProtectedRoute>
-                      }
-                    />
-                    <Route
-                      path="workflows/:workflowId/instances"
-                      element={
-                        <ProtectedRoute
-                          requiredPermissions={["view_workflow_instances"]}
-                        >
-                          <WorkflowInstancesDashboard />
-                        </ProtectedRoute>
-                      }
-                    />
-                    <Route
-                      path="workflows/instances/:instanceId"
-                      element={
-                        <ProtectedRoute
-                          requiredPermissions={["view_workflow_instances"]}
-                        >
-                          <WorkflowInstanceDetail />
-                        </ProtectedRoute>
-                      }
-                    />
-
-                    {/* Task Routes */}
-                    <Route path="tasks" element={<TaskList />} />
-                    <Route path="tasks/:id" element={<TaskDetail />} />
-                    <Route path="tasks/:taskId/form" element={<TaskForm />} />
-                    <Route path="tasks/start" element={<TaskForm />} />
-
-                    {/* Forms Routes */}
-                    <Route path="forms" element={<FormsList />} />
-                    <Route
-                      path="forms/create"
-                      element={
-                        <ProtectedRoute requiredPermissions={["create_forms"]}>
-                          <FormBuilder />
-                        </ProtectedRoute>
-                      }
-                    />
-                    <Route
-                      path="forms/:id/edit"
-                      element={
-                        <ProtectedRoute requiredPermissions={["manage_forms"]}>
-                          <FormBuilder />
-                        </ProtectedRoute>
-                      }
-                    />
-                    <Route
-                      path="forms/:id/responses"
-                      element={
-                        <ProtectedRoute
-                          requiredPermissions={["view_form_responses"]}
-                        >
-                          <FormResponses />
-                        </ProtectedRoute>
-                      }
-                    />
-
-                    {/* Webhooks Routes */}
-                    <Route
-                      path="webhooks"
-                      element={
-                        <ProtectedRoute requiredPermissions={["view_webhooks"]}>
-                          <WebhooksList />
-                        </ProtectedRoute>
-                      }
-                    />
-                    <Route
-                      path="webhooks/create"
-                      element={
-                        <ProtectedRoute
-                          requiredPermissions={["manage_webhooks"]}
-                        >
-                          <WebhookForm />
-                        </ProtectedRoute>
-                      }
-                    />
-                    <Route
-                      path="webhooks/:id/edit"
-                      element={
-                        <ProtectedRoute
-                          requiredPermissions={["manage_webhooks"]}
-                        >
-                          <WebhookForm />
-                        </ProtectedRoute>
-                      }
-                    />
-                    <Route
-                      path="webhooks/:id/deliveries"
-                      element={
-                        <ProtectedRoute requiredPermissions={["view_webhooks"]}>
-                          <WebhookDeliveries />
-                        </ProtectedRoute>
-                      }
-                    />
-
-                    {/* Files Routes */}
-                    <Route path="files" element={<FileManager />} />
-
-                    {/* Admin Routes */}
-                    <Route
-                      path="admin/users"
-                      element={
-                        <ProtectedRoute requiredPermissions={["manage_users"]}>
-                          <UserManagement />
-                        </ProtectedRoute>
-                      }
-                    />
-                    <Route
-                      path="admin/roles"
-                      element={
-                        <ProtectedRoute
-                          requiredPermissions={["manage_roles", "manage_users"]}
-                        >
-                          <RolesManagement />
-                        </ProtectedRoute>
-                      }
-                    />
-
-                    <Route
-                      path="admin/health"
-                      element={
-                        <ProtectedRoute
-                          requiredPermissions={["view_system_health"]}
-                        >
-                          <SystemHealth />
-                        </ProtectedRoute>
-                      }
-                    />
-                    <Route
-                      path="admin/audit-logs"
-                      element={
-                        <ProtectedRoute
-                          requiredPermissions={["view_audit_logs"]}
-                        >
-                          <AuditLogs />
-                        </ProtectedRoute>
-                      }
-                    />
-                    <Route
-                      path="admin/lookups"
-                      element={
-                        <ProtectedRoute
-                          requiredPermissions={["manage_lookups"]}
-                        >
-                          <LookupsManagement />
-                        </ProtectedRoute>
-                      }
-                    />
-
-                    {/* Other Routes */}
-                    <Route
-                      path="reports"
-                      element={
-                        <ProtectedRoute requiredPermissions={["view_reports"]}>
-                          <Reports />
-                        </ProtectedRoute>
-                      }
-                    />
-                    <Route path="profile" element={<Profile />} />
-                  </Route>
-                </Routes>
-              </Suspense>
-
+              {/* Global Toast Notifications */}
               <ToastContainer
                 position="top-right"
                 autoClose={5000}
@@ -380,6 +51,9 @@ function App() {
                 draggable
                 pauseOnHover
                 theme="light"
+                toastClassName="toast-custom"
+                bodyClassName="toast-body-custom"
+                progressClassName="toast-progress-custom"
               />
             </div>
           </Router>
@@ -388,20 +62,5 @@ function App() {
     </QueryClientProvider>
   );
 }
-
-// Workflow Instance Detail Component (placeholder - you can create this separately)
-const WorkflowInstanceDetail = () => {
-  return (
-    <div className="p-6">
-      <h1 className="text-2xl font-bold text-gray-900">
-        Workflow Instance Details
-      </h1>
-      <p className="text-gray-600">
-        Detailed view of a single workflow instance
-      </p>
-      {/* Implementation would go here */}
-    </div>
-  );
-};
 
 export default App;

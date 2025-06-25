@@ -11,6 +11,7 @@ from app.services.audit_logger import AuditLogger
 from app.services.automation_engine import AutomationEngine
 import logging
 from app.utils.json_utils import JSONUtils
+from app.utils.external_api import OrgAPI
 
 logger = logging.getLogger(__name__)
 
@@ -420,7 +421,8 @@ class WorkflowEngine:
             # Support legacy script property for backward compatibility
             if not automation_config and properties.get('script'):
                 automation_config = {
-                    'type': 'script_execution',
+                    # 'type': 'script_execution',
+                    'type': properties.get('automation_type', 'script_execution'),
                     'script_type': 'python',
                     'script': properties.get('script'),
                     'timeout': properties.get('timeout', 300)
@@ -600,85 +602,153 @@ class WorkflowEngine:
             logger.error(f"Error handling workflow failure: {e}")
 
     # Keep all existing methods with enhancements...
-
     @staticmethod
     def _resolve_assignee(assignee_config, context):
-        """Enhanced assignee resolution with automation result support"""
+        """Enhanced assignee resolution including dotted variables like {{initiator.branch_manager}}"""
         if not assignee_config:
             return None
 
-        # If it's already a valid UUID, return it
+        # Direct UUID
         if WorkflowEngine._is_valid_uuid(assignee_config):
             return assignee_config
 
-        # Handle template variables
+        # Template string
         if isinstance(assignee_config, str):
-            # Handle {{initiator}} template
-            if assignee_config == '{{initiator}}' or assignee_config == '{{initiated_by}}':
+
+            # Direct initiator
+            if assignee_config in ['{{initiator}}', '{{initiated_by}}']:
                 return context.get('initiator') or context.get('initiated_by')
 
-            # Handle automation result variables like {{automation_results.api_step.response.user_id}}
-            if assignee_config.startswith('{{automation_results.'):
-                try:
-                    # Extract the path from the template
-                    path = assignee_config[2:-2]  # Remove {{ and }}
-                    parts = path.split('.')
-
-                    # Navigate through the workflow data
-                    workflow_data = context.get('workflow_data', {})
-                    value = workflow_data
-
-                    for part in parts:
-                        value = value[part]
-
-                    if WorkflowEngine._is_valid_uuid(value):
-                        return value
-
-                except (KeyError, TypeError):
-                    logger.warning(f"Could not resolve automation result assignee: {assignee_config}")
-                    return None
-
-            # Handle other template variables like {{manager}}, {{supervisor}}
+            # Regex match for templates
             template_match = re.match(r'\{\{([^}]+)\}\}', assignee_config)
             if template_match:
-                var_name = template_match.group(1)
+                variable = template_match.group(1).strip()
 
-                # Check if variable exists in workflow data
-                workflow_data = context.get('workflow_data', {})
-                if var_name in workflow_data:
-                    assignee_value = workflow_data[var_name]
-                    if WorkflowEngine._is_valid_uuid(assignee_value):
-                        return assignee_value
+                # Support dot notation e.g. initiator.branch_manager
+                parts = variable.split('.')
+                if parts[0] == 'initiator' and len(parts) == 2:
+                    role_key = parts[1]  # e.g. branch_manager
+                    user_id = context.get('initiator') or context.get('initiated_by')
+                    if user_id:
+                        # Option 1: try from workflow_data first (cached)
+                        workflow_data = context.get("workflow_data", {})
+                        if role_key in workflow_data:
+                            value = workflow_data[role_key]
+                            if WorkflowEngine._is_valid_uuid(value):
+                                return value
 
-                # Check if it's a role-based assignment
-                if var_name in ['manager', 'supervisor', 'department_head']:
-                    return WorkflowEngine._get_user_by_role(var_name, context.get('tenant_id'))
+                        # Option 2: try from external org system
+                        manager_id = OrgAPI.get_manager(user_id, role_key)
+                        if manager_id:
+                            return manager_id
+                        else:
+                            logger.warning(f"Could not fetch {role_key} for user {user_id}")
+                            return None
 
-                # If not found, log warning and return None
-                logger.warning(f"Could not resolve assignee variable: {var_name}")
+                # Basic variable resolution from workflow data
+                workflow_data = context.get("workflow_data", {})
+                if variable in workflow_data:
+                    val = workflow_data[variable]
+                    if WorkflowEngine._is_valid_uuid(val):
+                        return val
+
+                # Role-based assignment
+                if variable in ['manager', 'supervisor', 'department_head']:
+                    return WorkflowEngine._get_user_by_role(variable, context.get('tenant_id'))
+
+                logger.warning(f"Unresolved template variable: {variable}")
                 return None
 
-            # Handle role-based assignment like "role:manager"
-            if assignee_config.startswith('role:'):
+            # Static role or username
+            if assignee_config.startswith("role:"):
                 role_name = assignee_config[5:]
-                return WorkflowEngine._get_user_by_role(role_name, context.get('tenant_id'))
+                return WorkflowEngine._get_user_by_role(role_name, context.get("tenant_id"))
 
-            # Handle dynamic assignment based on automation results
-            if assignee_config.startswith('auto:'):
-                auto_type = assignee_config[5:]
-                return WorkflowEngine._resolve_auto_assignee(auto_type, context)
-
-            # Handle user lookup by username or email
             if '@' in assignee_config:
-                # Assume it's an email
-                return WorkflowEngine._get_user_by_email(assignee_config, context.get('tenant_id'))
-            else:
-                # Assume it's a username
-                return WorkflowEngine._get_user_by_username(assignee_config, context.get('tenant_id'))
+                return WorkflowEngine._get_user_by_email(assignee_config, context.get("tenant_id"))
 
-        # If we can't resolve it, return None (unassigned task)
+            return WorkflowEngine._get_user_by_username(assignee_config, context.get("tenant_id"))
+
         logger.warning(f"Could not resolve assignee: {assignee_config}")
         return None
+    # @staticmethod
+    # def _resolve_assignee(assignee_config, context):
+    #     """Enhanced assignee resolution with automation result support"""
+    #     if not assignee_config:
+    #         return None
+
+    #     # If it's already a valid UUID, return it
+    #     if WorkflowEngine._is_valid_uuid(assignee_config):
+    #         return assignee_config
+
+    #     # Handle template variables
+    #     if isinstance(assignee_config, str):
+    #         # Handle {{initiator}} template
+    #         if assignee_config == '{{initiator}}' or assignee_config == '{{initiated_by}}':
+    #             return context.get('initiator') or context.get('initiated_by')
+
+    #         # Handle automation result variables like {{automation_results.api_step.response.user_id}}
+    #         if assignee_config.startswith('{{automation_results.'):
+    #             try:
+    #                 # Extract the path from the template
+    #                 path = assignee_config[2:-2]  # Remove {{ and }}
+    #                 parts = path.split('.')
+
+    #                 # Navigate through the workflow data
+    #                 workflow_data = context.get('workflow_data', {})
+    #                 value = workflow_data
+
+    #                 for part in parts:
+    #                     value = value[part]
+
+    #                 if WorkflowEngine._is_valid_uuid(value):
+    #                     return value
+
+    #             except (KeyError, TypeError):
+    #                 logger.warning(f"Could not resolve automation result assignee: {assignee_config}")
+    #                 return None
+
+    #         # Handle other template variables like {{manager}}, {{supervisor}}
+    #         template_match = re.match(r'\{\{([^}]+)\}\}', assignee_config)
+    #         if template_match:
+    #             var_name = template_match.group(1)
+
+    #             # Check if variable exists in workflow data
+    #             workflow_data = context.get('workflow_data', {})
+    #             if var_name in workflow_data:
+    #                 assignee_value = workflow_data[var_name]
+    #                 if WorkflowEngine._is_valid_uuid(assignee_value):
+    #                     return assignee_value
+
+    #             # Check if it's a role-based assignment
+    #             if var_name in ['manager', 'supervisor', 'department_head']:
+    #                 return WorkflowEngine._get_user_by_role(var_name, context.get('tenant_id'))
+
+    #             # If not found, log warning and return None
+    #             logger.warning(f"Could not resolve assignee variable: {var_name}")
+    #             return None
+
+    #         # Handle role-based assignment like "role:manager"
+    #         if assignee_config.startswith('role:'):
+    #             role_name = assignee_config[5:]
+    #             return WorkflowEngine._get_user_by_role(role_name, context.get('tenant_id'))
+
+    #         # Handle dynamic assignment based on automation results
+    #         if assignee_config.startswith('auto:'):
+    #             auto_type = assignee_config[5:]
+    #             return WorkflowEngine._resolve_auto_assignee(auto_type, context)
+
+    #         # Handle user lookup by username or email
+    #         if '@' in assignee_config:
+    #             # Assume it's an email
+    #             return WorkflowEngine._get_user_by_email(assignee_config, context.get('tenant_id'))
+    #         else:
+    #             # Assume it's a username
+    #             return WorkflowEngine._get_user_by_username(assignee_config, context.get('tenant_id'))
+
+    #     # If we can't resolve it, return None (unassigned task)
+    #     logger.warning(f"Could not resolve assignee: {assignee_config}")
+    #     return None
 
     @staticmethod
     def _resolve_auto_assignee(auto_type, context):
@@ -1191,7 +1261,8 @@ class WorkflowEngine:
 
         # Get workflow instance data
         instance = WorkflowEngine._get_workflow_instance(instance_id)
-        workflow_data = json.loads(instance['data']) if instance['data'] else {}
+        # workflow_data = json.loads(instance['data']) if instance['data'] else {}
+        workflow_data = json.loads(instance['data']) if isinstance(instance['data'], str) else (instance['data'] if isinstance(instance['data'], dict) else {})
 
         # Evaluate condition
         condition_met = WorkflowEngine._evaluate_condition_expression(condition, workflow_data)

@@ -1,105 +1,93 @@
-/* Auth component specific styles */
+/* Enhanced Auth component styles */
 .auth-container {
-  @apply min-h-screen flex items-center justify-center bg-gradient-to-br from-blue-50 to-indigo-100 py-12 px-4 sm:px-6 lg:px-8;
+  @apply min-h-screen flex items-center justify-center bg-gradient-to-br from-blue-100 to-indigo-200 py-12 px-4 sm:px-6 lg:px-8;
 }
 
 .auth-card {
-  @apply max-w-md w-full space-y-8 bg-white p-8 rounded-lg shadow-lg;
+  @apply max-w-md w-full space-y-8 bg-white p-10 rounded-2xl shadow-2xl transition-all duration-300;
 }
 
 .auth-logo {
-  @apply mx-auto h-12 w-12 flex items-center justify-center rounded-full bg-indigo-600;
+  @apply mx-auto h-14 w-14 flex items-center justify-center rounded-full bg-indigo-600 shadow-md;
 }
 
 .auth-title {
-  @apply mt-6 text-center text-3xl font-extrabold text-gray-900;
+  @apply mt-6 text-center text-3xl font-extrabold text-gray-900 tracking-tight;
 }
 
 .auth-subtitle {
-  @apply mt-2 text-center text-sm text-gray-600;
+  @apply mt-1 text-center text-sm text-gray-600;
 }
 
 .auth-form {
-  @apply mt-8 space-y-6;
+  @apply mt-6 space-y-6;
 }
 
 .auth-form-group {
-  @apply rounded-md shadow-sm -space-y-px;
+  @apply rounded-lg shadow-sm space-y-4;
 }
 
 .auth-input {
-  @apply appearance-none rounded-none relative block w-full px-3 py-2 border border-gray-300 placeholder-gray-500 text-gray-900 focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 focus:z-10 sm:text-sm;
-}
-
-.auth-input:first-child {
-  @apply rounded-t-md;
-}
-
-.auth-input:last-child {
-  @apply rounded-b-md;
+  @apply block w-full px-4 py-2 border border-gray-300 placeholder-gray-400 text-gray-900 rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm transition duration-200;
 }
 
 .auth-button {
-  @apply relative w-full flex justify-center py-2 px-4 border border-transparent text-sm font-medium rounded-md text-white bg-indigo-600 hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 disabled:opacity-50 disabled:cursor-not-allowed;
+  @apply w-full py-2 px-4 border border-transparent text-sm font-semibold rounded-md text-white bg-indigo-600 hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 disabled:opacity-50 disabled:cursor-not-allowed transition duration-200;
 }
 
 .auth-error {
-  @apply mt-1 text-sm text-red-600;
+  @apply mt-1 text-sm text-red-600 italic;
 }
 
 .auth-link {
-  @apply text-sm text-indigo-600 hover:text-indigo-500 underline;
+  @apply text-sm text-indigo-600 hover:text-indigo-500 underline transition duration-150;
 }
 
 .required-indicator {
   @apply text-red-500 ml-1;
 }
 
-/* 2FA specific styles */
+/* 2FA styles */
 .two-fa-container {
-  @apply space-y-4;
+  @apply space-y-5;
 }
 
 .two-fa-input {
-  @apply mt-1 appearance-none relative block w-full px-3 py-2 border border-gray-300 placeholder-gray-500 text-gray-900 rounded-md focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm text-center tracking-widest;
+  @apply mt-1 block w-full px-4 py-3 text-center tracking-widest text-lg border border-gray-300 rounded-md placeholder-gray-400 text-gray-900 focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-base shadow-md;
 }
 
 .two-fa-actions {
-  @apply flex space-x-3;
+  @apply flex flex-col sm:flex-row sm:space-x-3 space-y-3 sm:space-y-0;
 }
 
 .two-fa-back-button {
-  @apply flex-1 py-2 px-4 border border-gray-300 rounded-md text-sm font-medium text-gray-700 bg-white hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500;
+  @apply py-2 px-4 border border-gray-300 rounded-md text-sm font-medium text-gray-700 bg-white hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 transition duration-200;
 }
 
 .two-fa-verify-button {
-  @apply flex-1 py-2 px-4 border border-transparent rounded-md text-sm font-medium text-white bg-indigo-600 hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 disabled:opacity-50;
+  @apply py-2 px-4 border border-transparent rounded-md text-sm font-medium text-white bg-indigo-600 hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 disabled:opacity-50 transition duration-200;
 }
 
-/* Loading states */
+/* Loading spinner */
 .auth-loading {
-  @apply animate-spin rounded-full h-4 w-4 border-b-2 border-white;
+  @apply animate-spin rounded-full h-5 w-5 border-b-2 border-white;
 }
 
 .auth-loading-container {
   @apply flex items-center justify-center;
 }
 
-/* Language toggle */
+/* Language switch */
 .language-toggle {
-  @apply flex justify-center mt-4;
+  @apply flex justify-center mt-6;
 }
 
 .language-toggle-button {
-  @apply text-sm text-indigo-600 hover:text-indigo-500 transition-colors duration-200;
+  @apply text-sm text-indigo-600 hover:text-indigo-500 underline transition-colors duration-200;
 }
 
-/* Mobile responsive */
+/* Mobile responsive tweaks */
 @media (max-width: 640px) {
-  .auth-container {
-    @apply px-4;
-  }
-
   .auth-card {
     @apply p-6;
   }
@@ -107,4 +95,13 @@
   .auth-title {
     @apply text-2xl;
   }
+
+  .two-fa-input {
+    @apply text-base;
+  }
+}
+
+.auth-input:-webkit-autofill {
+  box-shadow: 0 0 0 30px white inset !important;
+  -webkit-text-fill-color: #1f2937 !important; /* text-gray-900 */
 }

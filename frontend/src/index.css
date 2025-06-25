@@ -2,7 +2,9 @@
 @tailwind components;
 @tailwind utilities;
 
+/* Import Google Fonts - Inter for English and Zain for Arabic */
 @import url("https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap");
+@import url("https://fonts.googleapis.com/css2?family=Zain:wght@300;400;700&display=swap");
 
 body {
   margin: 0;
@@ -12,6 +14,38 @@ body {
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
   @apply bg-gray-50 text-gray-900;
+}
+
+/* Arabic font support */
+[lang="ar"],
+[dir="rtl"] {
+  font-family: "Zain", "Arial Unicode MS", "Tahoma", sans-serif;
+}
+
+/* Font weight mapping for Arabic */
+[lang="ar"] .font-light,
+[dir="rtl"] .font-light {
+  font-weight: 300;
+}
+
+[lang="ar"] .font-normal,
+[dir="rtl"] .font-normal {
+  font-weight: 400;
+}
+
+[lang="ar"] .font-bold,
+[dir="rtl"] .font-bold {
+  font-weight: 700;
+}
+
+/* Specific font declarations for different contexts */
+.font-inter {
+  font-family: "Inter", -apple-system, BlinkMacSystemFont, "Segoe UI",
+    sans-serif;
+}
+
+.font-zain {
+  font-family: "Zain", "Arial Unicode MS", "Tahoma", sans-serif;
 }
 
 code {
@@ -58,6 +92,7 @@ body,
 ::-moz-selection {
   @apply bg-blue-500 text-white;
 }
+
 /* Custom CSS Variables for theming */
 :root {
   --color-primary: #3b82f6;
@@ -95,6 +130,15 @@ body,
   body {
     @apply bg-gray-50 text-gray-900 antialiased;
     font-feature-settings: "cv03", "cv04", "cv11";
+  }
+
+  /* Enhanced Arabic text rendering */
+  [lang="ar"],
+  [dir="rtl"] {
+    font-feature-settings: normal;
+    text-rendering: optimizeLegibility;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
   }
 
   /* Focus styles */
@@ -414,6 +458,32 @@ body,
   .dropdown-menu {
     @apply left-0 right-auto;
   }
+
+  /* RTL specific text alignment */
+  .table th {
+    @apply text-right;
+  }
+
+  .table td {
+    @apply text-right;
+  }
+
+  /* RTL button and form adjustments */
+  .btn {
+    direction: rtl;
+  }
+
+  .form-input,
+  .form-textarea,
+  .form-select {
+    direction: rtl;
+    text-align: right;
+  }
+
+  /* RTL navigation */
+  .nav-link {
+    direction: rtl;
+  }
 }
 
 /* Print styles */
@@ -534,4 +604,134 @@ body,
 
 .Toastify__toast--info {
   @apply bg-primary-50 text-primary-800 border-l-4 border-primary-500;
+}
+
+/* Auth component specific styles */
+.auth-container {
+  @apply min-h-screen flex items-center justify-center bg-gradient-to-br from-blue-50 to-indigo-100 py-12 px-4 sm:px-6 lg:px-8;
+}
+
+.auth-card {
+  @apply max-w-md w-full space-y-8 bg-white p-8 rounded-lg shadow-lg;
+}
+
+.auth-logo {
+  @apply mx-auto h-12 w-12 flex items-center justify-center rounded-full bg-indigo-600;
+}
+
+.auth-title {
+  @apply mt-6 text-center text-3xl font-extrabold text-gray-900;
+}
+
+.auth-subtitle {
+  @apply mt-2 text-center text-sm text-gray-600;
+}
+
+.auth-form {
+  @apply mt-8 space-y-6;
+}
+
+.auth-form-group {
+  @apply rounded-md shadow-sm -space-y-px;
+}
+
+.auth-input {
+  @apply appearance-none rounded-none relative block w-full px-3 py-2 border border-gray-300 placeholder-gray-500 text-gray-900 focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 focus:z-10 sm:text-sm;
+}
+
+.auth-input:first-child {
+  @apply rounded-t-md;
+}
+
+.auth-input:last-child {
+  @apply rounded-b-md;
+}
+
+.auth-button {
+  @apply relative w-full flex justify-center py-2 px-4 border border-transparent text-sm font-medium rounded-md text-white bg-indigo-600 hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 disabled:opacity-50 disabled:cursor-not-allowed;
+}
+
+.auth-error {
+  @apply mt-1 text-sm text-red-600;
+}
+
+.auth-link {
+  @apply text-sm text-indigo-600 hover:text-indigo-500 underline;
+}
+
+.required-indicator {
+  @apply text-red-500 ml-1;
+}
+
+/* 2FA specific styles */
+.two-fa-container {
+  @apply space-y-4;
+}
+
+.two-fa-input {
+  @apply mt-1 appearance-none relative block w-full px-3 py-2 border border-gray-300 placeholder-gray-500 text-gray-900 rounded-md focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm text-center tracking-widest;
+}
+
+.two-fa-actions {
+  @apply flex space-x-3;
+}
+
+.two-fa-back-button {
+  @apply flex-1 py-2 px-4 border border-gray-300 rounded-md text-sm font-medium text-gray-700 bg-white hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500;
+}
+
+.two-fa-verify-button {
+  @apply flex-1 py-2 px-4 border border-transparent rounded-md text-sm font-medium text-white bg-indigo-600 hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 disabled:opacity-50;
+}
+
+/* Loading states */
+.auth-loading {
+  @apply animate-spin rounded-full h-4 w-4 border-b-2 border-white;
+}
+
+.auth-loading-container {
+  @apply flex items-center justify-center;
+}
+
+/* Language toggle */
+.language-toggle {
+  @apply flex justify-center mt-4;
+}
+
+.language-toggle-button {
+  @apply text-sm text-indigo-600 hover:text-indigo-500 transition-colors duration-200;
+}
+
+/* Mobile responsive */
+@media (max-width: 640px) {
+  .auth-container {
+    @apply px-4;
+  }
+
+  .auth-card {
+    @apply p-6;
+  }
+
+  .auth-title {
+    @apply text-2xl;
+  }
+}
+
+/* RTL specific adjustments for auth components */
+[dir="rtl"] .auth-input,
+[dir="rtl"] .two-fa-input {
+  direction: rtl;
+  text-align: right;
+}
+
+[dir="rtl"] .two-fa-input {
+  text-align: center; /* Keep 2FA input centered */
+}
+
+[dir="rtl"] .required-indicator {
+  @apply mr-1 ml-0;
+}
+
+[dir="rtl"] .two-fa-actions {
+  @apply space-x-reverse;
 }
