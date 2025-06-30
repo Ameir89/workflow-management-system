@@ -1,6 +1,6 @@
 import json
 import logging
-from typing import Any, Dict, Optional, Union
+from typing import Any, Dict, List, Optional, Union
 logger = logging.getLogger(__name__)
 
 
@@ -230,8 +230,8 @@ class JSONUtils:
         Returns:
             Merged dictionary
         """
-        base = JSONUtils.safe_parse_json(base_data, {})
-        new = JSONUtils.safe_parse_json(new_data, {})
+        base = JSONUtils.safe_parse_json_new(base_data, {})
+        new = JSONUtils.safe_parse_json_new(new_data, {})
         
         # Deep merge
         result = base.copy()
@@ -261,7 +261,7 @@ class JSONUtils:
         Returns:
             Field value or default
         """
-        parsed_data = JSONUtils.safe_parse_json(data, {})
+        parsed_data = JSONUtils.safe_parse_json_new(data, {})
         
         if not field_path:
             return default
@@ -289,7 +289,7 @@ class JSONUtils:
         Returns:
             Dictionary with validation results
         """
-        parsed_data = JSONUtils.safe_parse_json(data, {})
+        parsed_data = JSONUtils.safe_parse_json_new(data, {})
         
         result = {
             'is_valid': True,
@@ -327,7 +327,7 @@ class JSONUtils:
         Returns:
             Cleaned dictionary
         """
-        parsed_data = JSONUtils.safe_parse_json(data, {})
+        parsed_data = JSONUtils.safe_parse_json_new(data, {})
         
         # Remove sensitive fields
         sensitive_fields = ['password', 'secret', 'token', 'key', 'private']
@@ -368,7 +368,7 @@ class JSONUtils:
         Returns:
             Formatted JSON string
         """
-        parsed_data = JSONUtils.safe_parse_json(data, {})
+        parsed_data = JSONUtils.safe_parse_json_new(data, {})
         
         try:
             return json.dumps(parsed_data, indent=indent, ensure_ascii=False, sort_keys=True)
@@ -386,7 +386,7 @@ class JSONUtils:
         Returns:
             Compressed JSON string
         """
-        parsed_data = JSONUtils.safe_parse_json(data, {})
+        parsed_data = JSONUtils.safe_parse_json_new(data, {})
         
         try:
             return json.dumps(parsed_data, separators=(',', ':'), ensure_ascii=False)
@@ -426,8 +426,8 @@ class JSONUtils:
         Returns:
             Dictionary with changes
         """
-        old = JSONUtils.safe_parse_json(old_data, {})
-        new = JSONUtils.safe_parse_json(new_data, {})
+        old = JSONUtils.safe_parse_json_new(old_data, {})
+        new = JSONUtils.safe_parse_json_new(new_data, {})
         
         changes = {
             'added': {},
