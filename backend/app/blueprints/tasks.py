@@ -263,50 +263,16 @@ def get_task(task_id):
         if not task:
             return jsonify({'error': 'Task not found'}), 404
 
-        # Parse JSON fields
-        task_dict = dict(task)
+        # 
+        try:
+            task_dict = dict(task)
+        except Exception as ex:
+            logger.error(f"Failed to convert DB task result to dict: {ex}; raw={task}")
+            return jsonify({'error': 'Internal format error while reading task'}), 500
 
-        # Parse form_data
-        if task_dict.get('form_data'):
-            try:
-                task_dict['form_data'] = json.loads(task_dict['form_data']) if isinstance(task_dict['form_data'], str) else task_dict['form_data']
-            except (json.JSONDecodeError, TypeError):
-                task_dict['form_data'] = {}
-
-        # Parse result
-        if task_dict.get('result'):
-            try:
-                task_dict['result'] = json.loads(task_dict['result']) if isinstance(task_dict['result'], str) else task_dict['result']
-            except (json.JSONDecodeError, TypeError):
-                task_dict['result'] = {}
-
-        # Parse metadata
-        if task_dict.get('metadata'):
-            try:
-                task_dict['metadata'] = json.loads(task_dict['metadata']) if isinstance(task_dict['metadata'], str) else task_dict['metadata']
-            except (json.JSONDecodeError, TypeError):
-                task_dict['metadata'] = {}
-
-        # Parse workflow_data
-        if task_dict.get('workflow_data'):
-            try:
-                task_dict['workflow_data'] = json.loads(task_dict['workflow_data']) if isinstance(task_dict['workflow_data'], str) else task_dict['workflow_data']
-            except (json.JSONDecodeError, TypeError):
-                task_dict['workflow_data'] = {}
-
-        # Parse workflow_definition
-        if task_dict.get('workflow_definition'):
-            try:
-                task_dict['workflow_definition'] = json.loads(task_dict['workflow_definition']) if isinstance(task_dict['workflow_definition'], str) else task_dict['workflow_definition']
-            except (json.JSONDecodeError, TypeError):
-                task_dict['workflow_definition'] = {}
-
-        # Parse form_schema
-        if task_dict.get('form_schema'):
-            try:
-                task_dict['form_schema'] = json.loads(task_dict['form_schema']) if isinstance(task_dict['form_schema'], str) else task_dict['form_schema']
-            except (json.JSONDecodeError, TypeError):
-                task_dict['form_schema'] = None
+        # Safely parse all expected JSON fields
+        for field in ['form_data', 'result', 'metadata', 'workflow_data', 'workflow_definition', 'form_schema']:
+            task_dict[field] = JSONUtils.safe_parse_json(task_dict.get(field))
 
         # Add detailed approval information
         approval_info = _extract_approval_info(task_dict, detailed=True)
@@ -2293,7 +2259,9 @@ def _extract_approval_info(task_dict, detailed=False):
             approval_info['approval_required'] = True
 
         # Get step definition from workflow
-        workflow_definition = task_dict.get('workflow_definition', {})
+        # Use safe JSON parsing to avoid 'NoneType' errors
+        workflow_definition = JSONUtils.safe_parse_json(task_dict.get('workflow_definition'), {})
+        # workflow_definition = task_dict.get('workflow_definition', {})
         step_id = task_dict.get('step_id')
         
         if workflow_definition and step_id:
@@ -2318,7 +2286,9 @@ def _extract_approval_info(task_dict, detailed=False):
                 approvers_config = properties.get('approvers', [])
                 if approvers_config:
                     # Create context for resolving approvers
-                    workflow_data = task_dict.get('workflow_data', {})
+                    workflow_data = JSONUtils.safe_parse_json(task_dict.get('workflow_data'), {})
+        
+                    #workflow_data = task_dict.get('workflow_data', {})
                     context = {
                         'workflow_data': workflow_data,
                         'tenant_id': workflow_data.get('tenant_id'),
@@ -2349,7 +2319,8 @@ def _extract_approval_info(task_dict, detailed=False):
                         approval_info['approval_deadline'] = due_date.isoformat()
 
         # Check metadata for approval information (fallback)
-        metadata = task_dict.get('metadata', {})
+        metadata = JSONUtils.safe_parse_json(task_dict.get('metadata'), {})
+        # metadata = task_dict.get('metadata', {})
         if not approval_info['approval_type'] and metadata.get('approval_type'):
             approval_info['approval_type'] = metadata.get('approval_type')
         
