@@ -4,18 +4,15 @@ import { useQuery } from "react-query";
 import { useTranslation } from "react-i18next";
 import { Link } from "react-router-dom";
 import { workflowService } from "../../services/workflowService";
-import { workflowExecutionService } from "../../services/workflowExecutionService";
 import {
   RocketLaunchIcon,
   MagnifyingGlassIcon,
   ClockIcon,
   UserGroupIcon,
   ChartBarIcon,
-  FunnelIcon,
   StarIcon,
   BoltIcon,
   DocumentTextIcon,
-  CalendarIcon,
   PlayIcon,
 } from "@heroicons/react/24/outline";
 import { StarIcon as StarIconSolid } from "@heroicons/react/24/solid";
@@ -56,14 +53,8 @@ const StartInstancesHub = () => {
 
   // Get workflow categories
   const categories = [
-    { value: "", label: "All Categories" },
-    { value: "approval", label: "Approval Workflows" },
-    { value: "automation", label: "Automation" },
-    { value: "notification", label: "Notifications" },
-    { value: "integration", label: "Integrations" },
-    { value: "finance", label: "Finance" },
-    { value: "hr", label: "Human Resources" },
-    { value: "operations", label: "Operations" },
+    { value: "", label: t("workflow.instances.allCategories") },
+    { value: "approval", label: t("workflow.instances.approval") },
   ];
 
   const getWorkflowIcon = (category) => {
@@ -120,10 +111,10 @@ const StartInstancesHub = () => {
           <RocketLaunchIcon className="h-8 w-8 text-white" />
         </div>
         <h1 className="text-3xl font-bold text-gray-900">
-          Start Workflow Instances
+          {t("workflow.instances.startInstancesHubTitle")}
         </h1>
         <p className="text-lg text-gray-600 mt-2">
-          Choose a workflow to start a new instance and begin processing
+          {t("workflow.instances.startInstancesHubDescription")}
         </p>
       </div>
 
@@ -136,7 +127,7 @@ const StartInstancesHub = () => {
           <div className="bg-white border border-gray-200 rounded-lg p-6">
             <h2 className="text-lg font-semibold text-gray-900 mb-4 flex items-center">
               <ClockIcon className="h-5 w-5 mr-2 text-gray-500" />
-              Recently Used
+              {t("common.recentUsed")}
             </h2>
             <div className="space-y-3">
               {recentWorkflows.workflows.map((workflow) => (
@@ -165,7 +156,7 @@ const StartInstancesHub = () => {
           <div className="bg-white border border-gray-200 rounded-lg p-6">
             <h2 className="text-lg font-semibold text-gray-900 mb-4 flex items-center">
               <StarIconSolid className="h-5 w-5 mr-2 text-yellow-500" />
-              Favorites
+              {t("common.favorites")}
             </h2>
             <div className="space-y-3">
               {favoriteWorkflows.workflows.map((workflow) => (
@@ -228,7 +219,7 @@ const StartInstancesHub = () => {
               }`}
             >
               <StarIcon className="h-4 w-4 mr-2" />
-              Favorites Only
+              {t("common.favoritesOnly")}
             </button>
           </div>
         </div>

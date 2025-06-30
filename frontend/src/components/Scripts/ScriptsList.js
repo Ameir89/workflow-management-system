@@ -129,13 +129,13 @@ const ScriptsList = () => {
     );
   }
 
-  if (error) {
-    return (
-      <div className="text-center py-12">
-        <p className="text-red-600">{error.message}</p>
-      </div>
-    );
-  }
+  // if (error) {
+  //   return (
+  //     <div className="text-center py-12">
+  //       <p className="text-red-600">{error.message}</p>
+  //     </div>
+  //   );
+  // }
 
   return (
     <div className="space-y-6">

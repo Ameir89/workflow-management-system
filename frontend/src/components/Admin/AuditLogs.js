@@ -6,13 +6,13 @@ import { EyeIcon, UserIcon, CogIcon } from "@heroicons/react/24/outline";
 
 const AuditLogs = () => {
   const { t } = useTranslation();
-  const [page, setPage] = useState(1);
+
   const [filters, setFilters] = useState({});
   const [selectedLog, setSelectedLog] = useState(null);
 
   const { data: auditData, isLoading } = useQuery(
-    ["audit-logs", page, filters],
-    () => adminService.getAuditLogs({ page, limit: 50, ...filters }),
+    ["audit-logs", 1, filters],
+    () => adminService.getAuditLogs({ page: 1, limit: 50, ...filters }),
     { keepPreviousData: true }
   );
 

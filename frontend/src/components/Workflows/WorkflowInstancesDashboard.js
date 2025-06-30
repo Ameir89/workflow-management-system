@@ -1,5 +1,5 @@
 // src/components/Workflows/WorkflowInstancesDashboard.js
-import React, { useState, useEffect } from "react";
+import React, { useState } from "react";
 import { useQuery, useMutation, useQueryClient } from "react-query";
 import { useTranslation } from "react-i18next";
 import { Link, useParams } from "react-router-dom";
@@ -14,7 +14,6 @@ import {
   ClockIcon,
   CheckCircleIcon,
   XCircleIcon,
-  ExclamationTriangleIcon,
   CalendarIcon,
   UserIcon,
   DocumentDuplicateIcon,
@@ -172,7 +171,7 @@ const InstanceCard = ({ instance, onAction }) => {
       {instance.status === "running" && instance.total_steps > 0 && (
         <div className="mt-4">
           <div className="flex justify-between text-sm text-gray-600 mb-1">
-            <span>Progress</span>
+            <span>{t("workflows.progress")}</span>
             <span>
               {instance.completed_steps}/{instance.total_steps} steps
             </span>
@@ -219,7 +218,10 @@ const InstanceCard = ({ instance, onAction }) => {
         {instance.due_date && (
           <div className="flex items-center text-gray-600">
             <CalendarIcon className="h-4 w-4 mr-2" />
-            <span>Due {new Date(instance.due_date).toLocaleDateString()}</span>
+            <span>
+              {t("workflows.due")}{" "}
+              {new Date(instance.due_date).toLocaleDateString()}
+            </span>
           </div>
         )}
       </div>
@@ -228,11 +230,11 @@ const InstanceCard = ({ instance, onAction }) => {
       {instance.current_step && (
         <div className="mt-4 p-3 bg-blue-50 rounded-lg">
           <div className="text-sm font-medium text-blue-900">
-            Current Step: {instance.current_step}
+            {t("workflows.currentStep")}: {instance.current_step}
           </div>
           {instance.current_step.assignee && (
             <div className="text-xs text-blue-700 mt-1">
-              Assigned to: {instance.current_step.assignee}
+              {t("workflows.assignedTo")}: {instance.current_step.assignee}
             </div>
           )}
         </div>
@@ -361,7 +363,8 @@ const WorkflowInstancesDashboard = () => {
     if (action === "cancel") {
       if (
         !window.confirm(
-          "Are you sure you want to cancel this workflow instance?"
+          // "Are you sure you want to cancel this workflow instance?"
+          t("workflows.cancelInstanceConfirmation")
         )
       ) {
         return;
@@ -419,11 +422,11 @@ const WorkflowInstancesDashboard = () => {
       <div className="flex justify-between items-center">
         <div>
           <h1 className="text-2xl font-bold text-gray-900">
-            {workflowId ? "Workflow Instances" : "All Workflow Instances"}
+            {workflowId
+              ? t("workflows.workflowInstances")
+              : t("workflows.allWorkflowInstances")}
           </h1>
-          <p className="text-gray-600">
-            Monitor and manage workflow execution instances
-          </p>
+          <p className="text-gray-600">{t("workflows.monitorManage")}</p>
         </div>
 
         <div className="flex items-center space-x-3">
@@ -432,7 +435,7 @@ const WorkflowInstancesDashboard = () => {
             className="inline-flex items-center px-3 py-2 border border-gray-300 rounded-md text-sm font-medium text-gray-700 bg-white hover:bg-gray-50"
           >
             <ArrowPathIcon className="h-4 w-4 mr-2" />
-            Refresh
+            {t("common.refresh")}
           </button>
 
           {workflowId && (
@@ -441,7 +444,7 @@ const WorkflowInstancesDashboard = () => {
               className="inline-flex items-center px-4 py-2 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-indigo-600 hover:bg-indigo-700"
             >
               <ChartBarIcon className="h-4 w-4 mr-2" />
-              View Workflow
+              {t("workflows.viewWorkflow")}
             </Link>
           )}
         </div>
@@ -472,26 +475,26 @@ const WorkflowInstancesDashboard = () => {
         <div className="flex items-center justify-between mb-4">
           <h3 className="text-lg font-medium text-gray-900 flex items-center">
             <FunnelIcon className="h-5 w-5 mr-2" />
-            Filters
+            {t("common.filters")}
           </h3>
           <button
             onClick={clearFilters}
             className="text-sm text-indigo-600 hover:text-indigo-800"
           >
-            Clear All
+            {t("common.clearAll")}
           </button>
         </div>
 
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
           <div>
             <label className="block text-sm font-medium text-gray-700 mb-1">
-              Search
+              {t("common.search")}
             </label>
             <div className="relative">
               <MagnifyingGlassIcon className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-gray-400" />
               <input
                 type="text"
-                placeholder="Search instances..."
+                placeholder={t("common.searchInstances")}
                 value={filters.search}
                 onChange={(e) => handleFilterChange("search", e.target.value)}
                 className="pl-10 w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-indigo-500"
@@ -501,43 +504,43 @@ const WorkflowInstancesDashboard = () => {
 
           <div>
             <label className="block text-sm font-medium text-gray-700 mb-1">
-              Status
+              {t("common.status")}
             </label>
             <select
               value={filters.status}
               onChange={(e) => handleFilterChange("status", e.target.value)}
               className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-indigo-500"
             >
-              <option value="">All Statuses</option>
-              <option value="pending">Pending</option>
-              <option value="running">Running</option>
-              <option value="completed">Completed</option>
-              <option value="failed">Failed</option>
-              <option value="cancelled">Cancelled</option>
-              <option value="scheduled">Scheduled</option>
+              <option value="">{t("common.allStatuses")}</option>
+              <option value="pending">{t("common.pending")}</option>
+              <option value="running">{t("common.running")}</option>
+              <option value="completed">{t("common.completed")}</option>
+              <option value="failed">{t("common.failed")}</option>
+              <option value="cancelled">{t("common.cancelled")}</option>
+              <option value="scheduled">{t("common.scheduled")}</option>
             </select>
           </div>
 
           <div>
             <label className="block text-sm font-medium text-gray-700 mb-1">
-              Priority
+              {t("common.priority")}
             </label>
             <select
               value={filters.priority}
               onChange={(e) => handleFilterChange("priority", e.target.value)}
               className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-indigo-500"
             >
-              <option value="">All Priorities</option>
-              <option value="low">Low</option>
-              <option value="medium">Medium</option>
-              <option value="high">High</option>
-              <option value="urgent">Urgent</option>
+              <option value="">{t("common.allPriorities")}</option>
+              <option value="low">{t("common.low")}</option>
+              <option value="medium">{t("common.medium")}</option>
+              <option value="high">{t("common.high")}</option>
+              <option value="urgent">{t("common.urgent")}</option>
             </select>
           </div>
 
           <div>
             <label className="block text-sm font-medium text-gray-700 mb-1">
-              View Mode
+              {t("common.viewMode")}
             </label>
             <div className="flex rounded-md shadow-sm">
               <button
@@ -548,7 +551,7 @@ const WorkflowInstancesDashboard = () => {
                     : "bg-white text-gray-700 border-gray-300 hover:bg-gray-50"
                 }`}
               >
-                Grid
+                {t("common.grid")}
               </button>
               <button
                 onClick={() => setViewMode("list")}
@@ -558,7 +561,7 @@ const WorkflowInstancesDashboard = () => {
                     : "bg-white text-gray-700 border-gray-300 hover:bg-gray-50"
                 }`}
               >
-                List
+                {t("common.list")}
               </button>
             </div>
           </div>
@@ -609,7 +612,7 @@ const WorkflowInstancesDashboard = () => {
         <div className="text-center py-12">
           <ClockIcon className="mx-auto h-12 w-12 text-gray-400" />
           <h3 className="mt-2 text-sm font-medium text-gray-900">
-            No workflow instances found
+            {t("workflows.noInstances")}
           </h3>
           <p className="mt-1 text-sm text-gray-500">
             {workflowId
@@ -628,7 +631,7 @@ const WorkflowInstancesDashboard = () => {
               disabled={page === 1}
               className="relative inline-flex items-center px-4 py-2 border border-gray-300 text-sm font-medium rounded-md text-gray-700 bg-white hover:bg-gray-50"
             >
-              Previous
+              {t("common.previous")}
             </button>
             <button
               onClick={() =>
@@ -637,15 +640,17 @@ const WorkflowInstancesDashboard = () => {
               disabled={page === instancesData.pagination.pages}
               className="ml-3 relative inline-flex items-center px-4 py-2 border border-gray-300 text-sm font-medium rounded-md text-gray-700 bg-white hover:bg-gray-50"
             >
-              Next
+              {t("common.next")}
             </button>
           </div>
           <div className="hidden sm:flex-1 sm:flex sm:items-center sm:justify-between">
             <div>
               <p className="text-sm text-gray-700">
-                Showing {(page - 1) * 20 + 1} to{" "}
-                {Math.min(page * 20, instancesData.pagination.total)} of{" "}
-                {instancesData.pagination.total} results
+                {t("paginationShowing", {
+                  from: (page - 1) * 20 + 1,
+                  to: Math.min(page * 20, instancesData.pagination.total),
+                  total: instancesData.pagination.total,
+                })}
               </p>
             </div>
             <div>
@@ -655,7 +660,7 @@ const WorkflowInstancesDashboard = () => {
                   disabled={page === 1}
                   className="relative inline-flex items-center px-2 py-2 rounded-l-md border border-gray-300 bg-white text-sm font-medium text-gray-500 hover:bg-gray-50"
                 >
-                  Previous
+                  {t("common.previous")}
                 </button>
                 <button
                   onClick={() =>
@@ -664,7 +669,7 @@ const WorkflowInstancesDashboard = () => {
                   disabled={page === instancesData.pagination.pages}
                   className="relative inline-flex items-center px-2 py-2 rounded-r-md border border-gray-300 bg-white text-sm font-medium text-gray-500 hover:bg-gray-50"
                 >
-                  Next
+                  {t("common.next")}
                 </button>
               </nav>
             </div>

@@ -21,6 +21,7 @@ const TaskDetailHeader = ({
   onStatusChange,
   onShowForm,
   onApprovalAction,
+  onAssignTask,
   submitting,
   form,
 }) => {
@@ -51,7 +52,7 @@ const TaskDetailHeader = ({
           </Link>
         </div>
 
-        <div className="flex items-start justify-between">
+        <div className="flex items-start gap-4 justify-between">
           <div className="flex-1">
             <div className="flex items-center space-x-3 mb-2">
               {isApprovalTask && (
@@ -159,6 +160,7 @@ const TaskDetailHeader = ({
               onStatusChange={onStatusChange}
               onShowForm={onShowForm}
               onApprovalAction={onApprovalAction}
+              onAssignTask={onAssignTask}
               submitting={submitting}
             />
           </div>

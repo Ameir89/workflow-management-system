@@ -1,4 +1,4 @@
-// src/utils/taskDataUtils.js - Utility functions for extracting task data
+// src/utils/taskDataUtils.js - Updated utility functions for extracting task data
 
 /**
  * Extract submitted form data from a task object
@@ -6,25 +6,93 @@
  */
 export const getSubmittedData = (task) => {
   // Priority order for finding submitted data:
-  // 1. workflow_data.form_data (most specific)
-  // 2. form_data (direct property)
-  // 3. submitted_data (fallback)
-  // 4. result (legacy)
-  // 5. workflow_data.data (general workflow data)
-  // 6. workflow_data (entire workflow data object)
+  // 1. workflow_data.result (for completed tasks - highest priority)
+  // 2. workflow_data.form_data (most specific)
+  // 3. form_data (direct property)
+  // 4. submitted_data (fallback)
+  // 5. result (legacy)
+  // 6. workflow_data.data (general workflow data)
+  // 7. workflow_data (entire workflow data object, excluding metadata)
 
-  return (
-    task?.workflow_data?.form_data ||
-    task?.form_data ||
-    task?.submitted_data ||
-    task?.result ||
-    task?.workflow_data?.data ||
-    (task?.workflow_data &&
-    typeof task.workflow_data === "object" &&
-    Object.keys(task.workflow_data).length > 0
-      ? task.workflow_data
-      : null)
-  );
+  // Check workflow_data.result first (for completed tasks)
+  if (
+    task?.workflow_data?.result &&
+    typeof task.workflow_data.result === "object"
+  ) {
+    return task.workflow_data.result;
+  }
+
+  // Check other locations
+  if (task?.workflow_data?.form_data) {
+    return task.workflow_data.form_data;
+  }
+
+  if (task?.form_data) {
+    return task.form_data;
+  }
+
+  if (task?.submitted_data) {
+    return task.submitted_data;
+  }
+
+  if (task?.result) {
+    return task.result;
+  }
+
+  if (task?.workflow_data?.data) {
+    return task.workflow_data.data;
+  }
+
+  // Last resort: check if workflow_data has form-like data (exclude metadata fields)
+  if (task?.workflow_data && typeof task.workflow_data === "object") {
+    // Create a copy without common metadata fields
+    const workflowDataCopy = { ...task.workflow_data };
+    const metadataFields = [
+      "approval_decision",
+      "approval_status",
+      "approved_by",
+      "comments",
+      "cost_center",
+      "department",
+      "project_id",
+      "start_reason",
+      "started_by",
+      "form_data",
+      "result",
+      "data",
+      "submitted_at",
+      "submitted_by",
+      "created_at",
+      "updated_at",
+      "status",
+      "workflow_id",
+      "task_id",
+    ];
+
+    metadataFields.forEach((field) => delete workflowDataCopy[field]);
+
+    // If there's still data after removing metadata, return it
+    if (Object.keys(workflowDataCopy).length > 0) {
+      return workflowDataCopy;
+    }
+  }
+
+  return null;
+};
+
+/**
+ * Get all possible data sources from a task for debugging/inspection
+ */
+export const getAllDataSources = (task) => {
+  return {
+    workflow_data_result: task?.workflow_data?.result || null,
+    workflow_data_form_data: task?.workflow_data?.form_data || null,
+    form_data: task?.form_data || null,
+    submitted_data: task?.submitted_data || null,
+    result: task?.result || null,
+    workflow_data_data: task?.workflow_data?.data || null,
+    workflow_data_full: task?.workflow_data || null,
+  };
 };
 
 /**
@@ -81,9 +149,12 @@ export const getApprovalMetadata = (task) => {
     approvalType: task?.approval_type || "Single Approver",
     approvers: task?.approvers || [],
     approvalDeadline: task?.approval_deadline || task?.due_date,
-    approvalDecision: task?.approval_decision,
-    approvalComment: task?.approval_comment,
+    approvalDecision:
+      task?.approval_decision || task?.workflow_data?.approval_decision,
+    approvalComment: task?.approval_comment || task?.workflow_data?.comments,
     approvalCompletedAt: task?.approval_completed_at || task?.completed_at,
+    approvalStatus: task?.workflow_data?.approval_status,
+    approvedBy: task?.workflow_data?.approved_by,
   };
 };
 
@@ -104,6 +175,11 @@ export const formatDisplayValue = (value) => {
   }
 
   if (typeof value === "object") {
+    // Handle objects with label/value structure (from select fields)
+    if (value.label && value.value) {
+      return value.label || value.value;
+    }
+
     // For dates
     if (value instanceof Date) {
       return value.toLocaleString();
@@ -196,8 +272,55 @@ export const prepareApprovalData = (
   };
 };
 
+/**
+ * Check if the task data contains meaningful form data (not just metadata)
+ */
+export const hasFormData = (task) => {
+  const data = getSubmittedData(task);
+
+  if (!data || typeof data !== "object") {
+    return false;
+  }
+
+  // If it's an array, check if it has content
+  if (Array.isArray(data)) {
+    return data.length > 0;
+  }
+
+  // Check if there are any non-metadata fields
+  const keys = Object.keys(data);
+  const metadataFields = [
+    "approval_decision",
+    "approval_status",
+    "approved_by",
+    "comments",
+    "start_reason",
+    "started_by",
+    "created_at",
+    "updated_at",
+  ];
+
+  const formFields = keys.filter((key) => !metadataFields.includes(key));
+  return formFields.length > 0;
+};
+
+/**
+ * Get data source information for debugging
+ */
+export const getDataSource = (task) => {
+  if (task?.workflow_data?.result) return "workflow_data.result";
+  if (task?.workflow_data?.form_data) return "workflow_data.form_data";
+  if (task?.form_data) return "form_data";
+  if (task?.submitted_data) return "submitted_data";
+  if (task?.result) return "result";
+  if (task?.workflow_data?.data) return "workflow_data.data";
+  if (task?.workflow_data) return "workflow_data";
+  return "none";
+};
+
 const taskDataUtils = {
   getSubmittedData,
+  getAllDataSources,
   hasSubmittedData,
   getSubmissionMetadata,
   isApprovalTask,
@@ -208,6 +331,8 @@ const taskDataUtils = {
   getTaskTypeLabel,
   getWorkflowContext,
   prepareApprovalData,
+  hasFormData,
+  getDataSource,
 };
 
 export default taskDataUtils;

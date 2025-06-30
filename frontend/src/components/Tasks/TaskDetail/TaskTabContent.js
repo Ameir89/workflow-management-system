@@ -8,6 +8,12 @@ import {
   ChatBubbleLeftRightIcon,
   TagIcon,
 } from "@heroicons/react/24/outline";
+import {
+  hasSubmittedData,
+  shouldShowDataProminently,
+  isApprovalTask,
+  getFormDefaultValues,
+} from "../../../utils/taskDataUtils";
 
 const TaskTabContent = ({
   activeTab,
@@ -21,19 +27,14 @@ const TaskTabContent = ({
   const renderDetailsTab = () => (
     <div className="space-y-6">
       {/* Submitted Data Section - Show prominently if this is an approval task */}
-      {(task.workflow_data?.form_data ||
-        task.form_data ||
-        task.submitted_data ||
-        task.result ||
-        task.workflow_data) &&
-        (task.type === "approval" || task.step_type === "approval") && (
-          <div>
-            <h3 className="text-lg font-medium text-gray-900 mb-4">
-              {t("tasks.submittedDataForReview")}
-            </h3>
-            <SubmittedDataViewer task={task} form={form} />
-          </div>
-        )}
+      {shouldShowDataProminently(task) && (
+        <div>
+          <h3 className="text-lg font-medium text-gray-900 mb-4">
+            {t("tasks.submittedDataForReview")}
+          </h3>
+          <SubmittedDataViewer task={task} form={form} />
+        </div>
+      )}
 
       <div>
         <h3 className="text-lg font-medium text-gray-900 mb-4">Task Details</h3>
@@ -110,7 +111,7 @@ const TaskTabContent = ({
           )}
 
           {/* Approval-specific fields */}
-          {(task.type === "approval" || task.step_type === "approval") && (
+          {isApprovalTask(task) && (
             <>
               {task.approval_type && (
                 <div>
@@ -134,7 +135,8 @@ const TaskTabContent = ({
                 </div>
               )}
 
-              {task.approval_decision && (
+              {(task.approval_decision ||
+                task.workflow_data?.approval_decision) && (
                 <div>
                   <dt className="text-sm font-medium text-gray-500">
                     Approval Decision
@@ -142,26 +144,30 @@ const TaskTabContent = ({
                   <dd className="mt-1">
                     <span
                       className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium ${
-                        task.approval_decision === "approve"
+                        (task.approval_decision ||
+                          task.workflow_data?.approval_decision) === "approve"
                           ? "bg-green-100 text-green-800"
-                          : task.approval_decision === "reject"
+                          : (task.approval_decision ||
+                              task.workflow_data?.approval_decision) ===
+                            "reject"
                           ? "bg-red-100 text-red-800"
                           : "bg-yellow-100 text-yellow-800"
                       }`}
                     >
-                      {task.approval_decision}
+                      {task.approval_decision ||
+                        task.workflow_data?.approval_decision}
                     </span>
                   </dd>
                 </div>
               )}
 
-              {task.approval_comment && (
+              {(task.approval_comment || task.workflow_data?.comments) && (
                 <div className="sm:col-span-2">
                   <dt className="text-sm font-medium text-gray-500">
                     Approval Comment
                   </dt>
                   <dd className="mt-1 text-sm text-gray-900">
-                    {task.approval_comment}
+                    {task.approval_comment || task.workflow_data?.comments}
                   </dd>
                 </div>
               )}
@@ -189,38 +195,31 @@ const TaskTabContent = ({
         </dl>
       </div>
 
-      {/* Show general submitted data for non-approval tasks */}
-      {(task.workflow_data?.form_data ||
-        task.form_data ||
-        task.submitted_data ||
-        task.result) &&
-        !(task.type === "approval" || task.step_type === "approval") && (
-          <div>
-            <h4 className="text-md font-medium text-gray-900 mb-3">
-              Task Result
-            </h4>
-            <SubmittedDataViewer task={task} form={form} />
-          </div>
-        )}
+      {/* Show general submitted data for non-approval tasks or if not shown prominently */}
+      {hasSubmittedData(task) && !shouldShowDataProminently(task) && (
+        <div>
+          <h4 className="text-md font-medium text-gray-900 mb-3">
+            Task Result
+          </h4>
+          <SubmittedDataViewer task={task} form={form} />
+        </div>
+      )}
 
       {/* Legacy result display for backward compatibility */}
-      {task.result &&
-        !task.workflow_data?.form_data &&
-        !task.form_data &&
-        !task.submitted_data && (
-          <div>
-            <h4 className="text-md font-medium text-gray-900 mb-3">
-              Task Result
-            </h4>
-            <div className="bg-gray-50 border border-gray-200 rounded-lg p-4">
-              <pre className="text-sm text-gray-800 whitespace-pre-wrap">
-                {typeof task.result === "object"
-                  ? JSON.stringify(task.result, null, 2)
-                  : task.result}
-              </pre>
-            </div>
+      {task.result && !hasSubmittedData(task) && (
+        <div>
+          <h4 className="text-md font-medium text-gray-900 mb-3">
+            Task Result
+          </h4>
+          <div className="bg-gray-50 border border-gray-200 rounded-lg p-4">
+            <pre className="text-sm text-gray-800 whitespace-pre-wrap">
+              {typeof task.result === "object"
+                ? JSON.stringify(task.result, null, 2)
+                : task.result}
+            </pre>
           </div>
-        )}
+        </div>
+      )}
     </div>
   );
 
@@ -239,7 +238,7 @@ const TaskTabContent = ({
     }
 
     // For approval tasks, show the form in read-only mode with submitted data
-    if (task.type === "approval" || task.step_type === "approval") {
+    if (isApprovalTask(task)) {
       return (
         <div className="space-y-4">
           <div className="flex items-center justify-between">
@@ -255,12 +254,7 @@ const TaskTabContent = ({
 
           <DynamicForm
             schema={form.schema}
-            defaultValues={
-              task.workflow_data?.form_data ||
-              task.form_data ||
-              task.submitted_data ||
-              {}
-            }
+            defaultValues={getFormDefaultValues(task)}
             readOnly={true}
             showSubmitButton={false}
             className="approval-form-review"
@@ -282,7 +276,7 @@ const TaskTabContent = ({
 
         <DynamicForm
           schema={form.schema}
-          defaultValues={task.workflow_data?.form_data || task.form_data || {}}
+          defaultValues={getFormDefaultValues(task)}
           readOnly={task.status === "completed"}
           onSubmit={task.status === "completed" ? undefined : onFormSubmit}
           isSubmitting={submitting}

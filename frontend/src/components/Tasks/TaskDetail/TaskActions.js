@@ -13,6 +13,7 @@ const TaskActions = ({
   onStatusChange,
   onShowForm,
   onApprovalAction,
+  onAssignTask,
   submitting,
 }) => {
   const { t } = useTranslation();
@@ -32,6 +33,7 @@ const TaskActions = ({
         task={task}
         form={form}
         onApprovalAction={onApprovalAction}
+        onAssignTask={onAssignTask}
         submitting={submitting}
       />
     );

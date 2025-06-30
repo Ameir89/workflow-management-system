@@ -51,7 +51,7 @@ import UserManagement from "../components/Admin/UserManagement/UserManagement";
 import SystemHealth from "../components/Admin/SystemHealth";
 import AuditLogs from "../components/Admin/AuditLogs";
 import LookupsManagement from "../components/Admin/LookupsManagement/LookupsManagement";
-import RolesManagement from "../components/Admin/RolesManagement";
+import RolesManagement from "../components/Admin/RolesManagement/RolesManagement";
 
 // Other components
 import Reports from "../components/Reports/Reports";

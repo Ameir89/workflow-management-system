@@ -1,4 +1,4 @@
-// src/components/Layout/Sidebar.js - Updated with separated workflow navigation
+// src/components/Layout/Sidebar.js - Updated with RTL support
 import React, { useState } from "react";
 import { Link, useLocation } from "react-router-dom";
 import { useTranslation } from "react-i18next";
@@ -17,14 +17,13 @@ import {
   ChevronRightIcon,
   SparklesIcon,
   ShieldCheckIcon,
-  QuestionMarkCircleIcon,
-  BookOpenIcon,
   TableCellsIcon,
   PencilSquareIcon,
   WrenchScrewdriverIcon,
   RocketLaunchIcon,
   KeyIcon,
   BellAlertIcon,
+  CodeBracketSquareIcon,
 } from "@heroicons/react/24/outline";
 import {
   HomeIcon as HomeIconSolid,
@@ -38,15 +37,19 @@ import {
   RocketLaunchIcon as RocketLaunchIconSolid,
   KeyIcon as KeyIconSolid,
   BellAlertIcon as BellAlertIconSolid,
+  CodeBracketSquareIcon as CodeBracketSquareIconSolid,
 } from "@heroicons/react/24/solid";
 
 const Sidebar = ({ isOpen, onClose, userPermissions = [] }) => {
-  const { t } = useTranslation();
+  const { t, i18n } = useTranslation();
   const location = useLocation();
   const [expandedSections, setExpandedSections] = useState({
     workflows: false,
     admin: false,
   });
+
+  // Check if current language is RTL
+  const isRTL = i18n.language === "ar";
 
   // Fetch task stats for sidebar
   const { data: taskStats } = useQuery(
@@ -89,12 +92,6 @@ const Sidebar = ({ isOpen, onClose, userPermissions = [] }) => {
               type: "warning",
             }
           : null,
-    },
-    {
-      name: "workflows instances",
-      href: "/workflows/instances",
-      icon: RocketLaunchIcon,
-      iconSolid: RocketLaunchIconSolid,
     },
 
     {
@@ -148,9 +145,9 @@ const Sidebar = ({ isOpen, onClose, userPermissions = [] }) => {
     },
     {
       name: t("nav.configuration.scripts"),
-      href: "/configuration/scripts",
-      icon: BellAlertIcon,
-      iconSolid: BellAlertIconSolid,
+      href: "/scripts",
+      icon: CodeBracketSquareIcon,
+      iconSolid: CodeBracketSquareIconSolid,
     },
   ];
 
@@ -210,19 +207,16 @@ const Sidebar = ({ isOpen, onClose, userPermissions = [] }) => {
               ? "bg-gradient-to-r from-indigo-500 to-purple-600 text-white shadow-lg shadow-indigo-500/25"
               : "text-gray-700 hover:bg-gray-100 hover:text-gray-900"
           }
-          ${isAdmin || isSubItem ? "ml-4" : ""}
+          ${isAdmin || isSubItem ? (isRTL ? "mr-4" : "ml-4") : ""}
         `}
         onClick={() => isOpen && window.innerWidth < 768 && onClose()}
       >
-        {/* Active indicator */}
-        {active && (
-          <div className="absolute left-0 top-0 bottom-0 w-1 bg-white rounded-r-full opacity-80"></div>
-        )}
-
         {/* Icon */}
         <IconComponent
           className={`
-            mr-3 h-6 w-6 flex-shrink-0 transition-all duration-200
+            ${
+              isRTL ? "ml-3" : "mr-3"
+            } h-6 w-6 flex-shrink-0 transition-all duration-200
             ${active ? "text-white" : "text-gray-500 group-hover:text-gray-700"}
           `}
         />
@@ -241,7 +235,9 @@ const Sidebar = ({ isOpen, onClose, userPermissions = [] }) => {
         {item.badge && (
           <span
             className={`
-              ml-2 inline-flex items-center justify-center px-2 py-0.5 text-xs font-bold rounded-full min-w-[20px] h-5
+              ${
+                isRTL ? "mr-2" : "ml-2"
+              } inline-flex items-center justify-center px-2 py-0.5 text-xs font-bold rounded-full min-w-[20px] h-5
               ${
                 item.badge.type === "warning"
                   ? "bg-yellow-100 text-yellow-800"
@@ -279,11 +275,22 @@ const Sidebar = ({ isOpen, onClose, userPermissions = [] }) => {
       {/* Sidebar */}
       <div
         className={`
-          fixed inset-y-0 left-0 z-50 flex w-72 flex-col transition-transform duration-300 ease-in-out lg:translate-x-0
-          ${isOpen ? "translate-x-0" : "-translate-x-full"}
+          fixed inset-y-0 z-50 flex w-72 flex-col transition-transform duration-300 ease-in-out lg:translate-x-0
+          ${isRTL ? "right-0" : "left-0"}
+          ${
+            isOpen
+              ? "translate-x-0"
+              : isRTL
+              ? "translate-x-full"
+              : "-translate-x-full"
+          }
         `}
       >
-        <div className="flex grow flex-col gap-y-5 overflow-y-auto bg-white border-r border-gray-200 px-6 pb-4 shadow-xl">
+        <div
+          className={`flex grow flex-col gap-y-5 overflow-y-auto bg-white border-gray-200 px-6 pb-4 shadow-xl ${
+            isRTL ? "border-l" : "border-r"
+          }`}
+        >
           {/* Logo/Brand */}
           <div className="flex h-16 shrink-0 items-center border-b border-gray-100">
             <div className="flex items-center space-x-3">
@@ -318,13 +325,21 @@ const Sidebar = ({ isOpen, onClose, userPermissions = [] }) => {
                   className="flex w-full items-center justify-between px-3 py-2 text-sm font-semibold text-gray-900 hover:bg-gray-50 rounded-lg transition-colors duration-200"
                 >
                   <span className="flex items-center">
-                    <WrenchScrewdriverIcon className="mr-2 h-5 w-5 text-gray-500" />
+                    <WrenchScrewdriverIcon
+                      className={`${
+                        isRTL ? "ml-2" : "mr-2"
+                      } h-5 w-5 text-gray-500`}
+                    />
                     {t("nav.configuration.title")}
                   </span>
                   {expandedSections.configuration ? (
                     <ChevronDownIcon className="h-4 w-4 text-gray-500" />
                   ) : (
-                    <ChevronRightIcon className="h-4 w-4 text-gray-500" />
+                    <ChevronRightIcon
+                      className={`h-4 w-4 text-gray-500 ${
+                        isRTL ? "rotate-180" : ""
+                      }`}
+                    />
                   )}
                 </button>
 
@@ -346,13 +361,21 @@ const Sidebar = ({ isOpen, onClose, userPermissions = [] }) => {
                   className="flex w-full items-center justify-between px-3 py-2 text-sm font-semibold text-gray-900 hover:bg-gray-50 rounded-lg transition-colors duration-200"
                 >
                   <span className="flex items-center">
-                    <ShieldCheckIcon className="mr-2 h-5 w-5 text-gray-500" />
+                    <ShieldCheckIcon
+                      className={`${
+                        isRTL ? "ml-2" : "mr-2"
+                      } h-5 w-5 text-gray-500`}
+                    />
                     {t("nav.admin.title")}
                   </span>
                   {expandedSections.admin ? (
                     <ChevronDownIcon className="h-4 w-4 text-gray-500" />
                   ) : (
-                    <ChevronRightIcon className="h-4 w-4 text-gray-500" />
+                    <ChevronRightIcon
+                      className={`h-4 w-4 text-gray-500 ${
+                        isRTL ? "rotate-180" : ""
+                      }`}
+                    />
                   )}
                 </button>
 
@@ -391,24 +414,6 @@ const Sidebar = ({ isOpen, onClose, userPermissions = [] }) => {
                     <span className="w-2 h-2 bg-green-400 rounded-full mr-1 animate-pulse"></span>
                     {taskStats?.stats?.overdue_tasks || 0} overdue
                   </span>
-                </div>
-              </div>
-
-              {/* Help/Support */}
-              <div className="bg-gray-50 rounded-xl p-4 hover:bg-gray-100 transition-colors duration-200 cursor-pointer">
-                <div className="flex items-center space-x-3">
-                  <div className="p-2 bg-gray-200 rounded-lg">
-                    <QuestionMarkCircleIcon className="h-5 w-5 text-gray-600" />
-                  </div>
-                  <div className="flex-1">
-                    <p className="text-sm font-medium text-gray-900">
-                      Need Help?
-                    </p>
-                    <p className="text-xs text-gray-500">
-                      Check our documentation
-                    </p>
-                  </div>
-                  <BookOpenIcon className="h-4 w-4 text-gray-400" />
                 </div>
               </div>
 

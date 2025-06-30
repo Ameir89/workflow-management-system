@@ -22,6 +22,9 @@ const Layout = () => {
   const [notificationCenterOpen, setNotificationCenterOpen] = useState(false);
   const [userMenuOpen, setUserMenuOpen] = useState(false);
 
+  // Check if current language is RTL
+  const isRTL = i18n.language === "ar";
+
   const { data: notificationStats } = useQuery(
     "notification-stats",
     () => notificationsService.getNotificationStats(),
@@ -49,7 +52,11 @@ const Layout = () => {
       />
 
       {/* Main content area */}
-      <div className="flex flex-1 flex-col overflow-hidden lg:pl-72">
+      <div
+        className={`flex flex-1 flex-col overflow-hidden ${
+          isRTL ? "lg:pr-72" : "lg:pl-72"
+        }`}
+      >
         {/* Top navigation bar */}
         <header className="bg-white border-b border-gray-200 shadow-sm">
           <div className="flex h-16 items-center justify-between px-4 sm:px-6 lg:px-8">
@@ -69,7 +76,11 @@ const Layout = () => {
             </div>
 
             {/* Right side actions */}
-            <div className="flex items-center space-x-4">
+            <div
+              className={`flex items-center ${
+                isRTL ? "space-x-reverse space-x-4" : "space-x-4"
+              }`}
+            >
               {/* Notifications */}
               <button
                 onClick={() => setNotificationCenterOpen(true)}
@@ -77,7 +88,11 @@ const Layout = () => {
               >
                 <BellIcon className="h-6 w-6" />
                 {notificationStats?.stats?.unread_count > 0 && (
-                  <span className="absolute -top-1 -right-1 h-5 w-5 bg-red-500 text-white text-xs rounded-full flex items-center justify-center font-medium animate-pulse">
+                  <span
+                    className={`absolute h-5 w-5 bg-red-500 text-white text-xs rounded-full flex items-center justify-center font-medium animate-pulse ${
+                      isRTL ? "-bottom-1 -left-1" : "-top-1 -right-1"
+                    }`}
+                  >
                     {notificationStats.stats.unread_count > 9
                       ? "9+"
                       : notificationStats.stats.unread_count}
@@ -99,9 +114,15 @@ const Layout = () => {
               <div className="relative">
                 <button
                   onClick={() => setUserMenuOpen(!userMenuOpen)}
-                  className="flex items-center space-x-3 p-2 text-sm rounded-lg hover:bg-gray-100 transition-colors duration-200"
+                  className={`flex items-center p-2 text-sm rounded-lg hover:bg-gray-100 transition-colors duration-200 ${
+                    isRTL ? "space-x-reverse space-x-3" : "space-x-3"
+                  }`}
                 >
-                  <div className="flex items-center space-x-3">
+                  <div
+                    className={`flex items-center ${
+                      isRTL ? "space-x-reverse space-x-3" : "space-x-3"
+                    }`}
+                  >
                     {/* Avatar */}
                     <div className="h-8 w-8 rounded-full bg-gradient-to-br from-indigo-500 to-purple-600 flex items-center justify-center shadow-md">
                       {user?.first_name ? (
@@ -115,7 +136,11 @@ const Layout = () => {
                     </div>
 
                     {/* User info - hidden on mobile */}
-                    <div className="hidden md:block text-left">
+                    <div
+                      className={`hidden md:block ${
+                        isRTL ? "text-right" : "text-left"
+                      }`}
+                    >
                       <div className="text-sm font-medium text-gray-900">
                         {user?.first_name} {user?.last_name}
                       </div>
@@ -142,7 +167,11 @@ const Layout = () => {
                     />
 
                     {/* Dropdown */}
-                    <div className="absolute right-0 mt-2 w-48 bg-white rounded-lg shadow-lg ring-1 ring-black ring-opacity-5 z-20">
+                    <div
+                      className={`absolute mt-2 w-48 bg-white rounded-lg shadow-lg ring-1 ring-black ring-opacity-5 z-20 ${
+                        isRTL ? "left-0" : "right-0"
+                      }`}
+                    >
                       <div className="py-1">
                         {/* User info on mobile */}
                         <div className="md:hidden px-4 py-3 border-b border-gray-100">
@@ -162,7 +191,11 @@ const Layout = () => {
                           }}
                           className="flex w-full items-center px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 transition-colors duration-200"
                         >
-                          <UserIcon className="mr-3 h-4 w-4 text-gray-500" />
+                          <UserIcon
+                            className={`h-4 w-4 text-gray-500 ${
+                              isRTL ? "ml-3" : "mr-3"
+                            }`}
+                          />
                           {t("nav.profile")}
                         </button>
 
@@ -173,7 +206,11 @@ const Layout = () => {
                           }}
                           className="flex w-full items-center px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 transition-colors duration-200"
                         >
-                          <ArrowRightOnRectangleIcon className="mr-3 h-4 w-4 text-gray-500" />
+                          <ArrowRightOnRectangleIcon
+                            className={`h-4 w-4 text-gray-500 ${
+                              isRTL ? "ml-3" : "mr-3"
+                            }`}
+                          />
                           {t("auth.logout")}
                         </button>
                       </div>

@@ -297,3 +297,19 @@
   mask-composite: xor;
   -webkit-mask-composite: xor;
 }
+/* RTL Support */
+[dir="rtl"] .sidebar-slide-enter {
+  transform: translateX(100%);
+}
+
+[dir="rtl"] .sidebar-slide-enter-active {
+  transform: translateX(0);
+}
+
+[dir="rtl"] .sidebar-slide-exit {
+  transform: translateX(0);
+}
+
+[dir="rtl"] .sidebar-slide-exit-active {
+  transform: translateX(100%);
+}

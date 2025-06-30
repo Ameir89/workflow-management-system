@@ -105,6 +105,23 @@ const TaskDetail = () => {
     }
   );
 
+  // Task assignment mutation
+  const assignTaskMutation = useMutation(
+    (assigneeEmail) => taskService.assignTask(id, assigneeEmail),
+    {
+      onSuccess: () => {
+        toast.success(t("tasks.taskAssigned"));
+        queryClient.invalidateQueries(["task", id]);
+        queryClient.invalidateQueries(["tasks"]);
+        setSubmitting(false);
+      },
+      onError: (error) => {
+        toast.error(error.message || t("tasks.assignmentFailed"));
+        setSubmitting(false);
+      },
+    }
+  );
+
   const handleStatusChange = (newStatus) => {
     setSubmitting(true);
     updateTaskStatusMutation.mutate({
@@ -151,6 +168,11 @@ const TaskDetail = () => {
     }
   };
 
+  const handleAssignTask = (assigneeEmail) => {
+    setSubmitting(true);
+    assignTaskMutation.mutate(assigneeEmail);
+  };
+
   if (taskLoading || formLoading) {
     return <LoadingSpinner fullScreen text={t("common.loading")} />;
   }
@@ -175,6 +197,7 @@ const TaskDetail = () => {
         onStatusChange={handleStatusChange}
         onShowForm={setShowForm}
         onApprovalAction={handleApprovalAction}
+        onAssignTask={handleAssignTask}
         submitting={submitting}
       />
 

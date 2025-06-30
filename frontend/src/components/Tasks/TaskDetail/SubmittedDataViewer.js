@@ -6,34 +6,65 @@ import {
   ChevronRightIcon,
   CalendarIcon,
   UserIcon,
+  InformationCircleIcon,
+  EyeIcon,
 } from "@heroicons/react/24/outline";
 import DynamicForm from "../../Forms/DynamicForm";
+import {
+  getSubmittedData,
+  getAllDataSources,
+  getDataSource,
+  formatDisplayValue,
+  hasSubmittedData,
+  shouldShowDataProminently,
+} from "../../../utils/taskDataUtils";
 
 const SubmittedDataViewer = ({ task, form, className = "" }) => {
   const { t } = useTranslation();
   const [isExpanded, setIsExpanded] = useState(true);
-  const [viewMode, setViewMode] = useState("form"); // 'form' or 'raw'
+  const [viewMode, setViewMode] = useState("form"); // 'form', 'raw', or 'debug'
 
-  // Look for submitted data in multiple possible locations
-  const submittedData =
-    task.workflow_data?.form_data ||
-    task.form_data ||
-    task.submitted_data ||
-    task.result ||
-    task.workflow_data?.data ||
-    task.workflow_data;
+  // Use the updated utility function
+  const submittedData = getSubmittedData(task);
+  const dataSource = getDataSource(task);
+
+  // Get all data sources for debugging
+  const allDataSources = getAllDataSources(task);
+
+  console.log("=== SubmittedDataViewer Debug Info ===");
+  console.log("Task:", task);
+  console.log("Submitted Data:", submittedData);
+  console.log("Data Source:", dataSource);
+  console.log("All Data Sources:", allDataSources);
+  console.log("Form:", form);
 
   if (!submittedData) {
-    return null;
+    // Show debug info when no data is found
+    return (
+      <div
+        className={`bg-yellow-50 border border-yellow-200 rounded-lg p-4 ${className}`}
+      >
+        <div className="flex items-center space-x-2 text-yellow-800">
+          <InformationCircleIcon className="h-5 w-5" />
+          <span className="font-medium">No submitted data found</span>
+        </div>
+        <div className="mt-2 text-sm text-yellow-700">
+          <p>Data source checked: {dataSource}</p>
+          <details className="mt-2">
+            <summary className="cursor-pointer font-medium">
+              Show debug info
+            </summary>
+            <pre className="mt-2 text-xs bg-yellow-100 p-2 rounded overflow-auto">
+              {JSON.stringify(allDataSources, null, 2)}
+            </pre>
+          </details>
+        </div>
+      </div>
+    );
   }
 
   const formatValue = (value) => {
-    if (value === null || value === undefined) return t("common.notProvided");
-    if (typeof value === "boolean")
-      return value ? t("common.yes") : t("common.no");
-    if (typeof value === "object") return JSON.stringify(value, null, 2);
-    if (Array.isArray(value)) return value.join(", ");
-    return String(value);
+    return formatDisplayValue(value);
   };
 
   const renderFormView = () => {
@@ -79,6 +110,73 @@ const SubmittedDataViewer = ({ task, form, className = "" }) => {
     );
   };
 
+  const renderDebugView = () => {
+    return (
+      <div className="space-y-4">
+        {/* Data Source Info */}
+        <div className="bg-blue-50 border border-blue-200 rounded p-3">
+          <h4 className="text-sm font-medium text-blue-900 mb-2">
+            Data Source Information
+          </h4>
+          <p className="text-sm text-blue-800">
+            <strong>Source:</strong> {dataSource}
+          </p>
+          <p className="text-sm text-blue-800">
+            <strong>Data Type:</strong> {typeof submittedData}
+            {Array.isArray(submittedData) ? " (array)" : ""}
+          </p>
+          <p className="text-sm text-blue-800">
+            <strong>Keys Count:</strong>{" "}
+            {typeof submittedData === "object"
+              ? Object.keys(submittedData).length
+              : "N/A"}
+          </p>
+        </div>
+
+        {/* All Available Data Sources */}
+        <div className="bg-gray-50 border border-gray-200 rounded p-3">
+          <h4 className="text-sm font-medium text-gray-900 mb-2">
+            All Available Data Sources
+          </h4>
+          <div className="space-y-2">
+            {Object.entries(allDataSources).map(([source, data]) => (
+              <div key={source} className="text-xs">
+                <strong className={data ? "text-green-700" : "text-gray-500"}>
+                  {source}:
+                </strong>{" "}
+                <span className={data ? "text-green-600" : "text-gray-400"}>
+                  {data
+                    ? `${typeof data} (${Object.keys(data).length} keys)`
+                    : "null"}
+                </span>
+              </div>
+            ))}
+          </div>
+        </div>
+
+        {/* Raw Data */}
+        <div className="bg-gray-50 border border-gray-200 rounded p-3">
+          <h4 className="text-sm font-medium text-gray-900 mb-2">
+            Raw Submitted Data
+          </h4>
+          <pre className="text-xs text-gray-800 whitespace-pre-wrap overflow-x-auto">
+            {JSON.stringify(submittedData, null, 2)}
+          </pre>
+        </div>
+
+        {/* Full Task Object */}
+        <details className="bg-red-50 border border-red-200 rounded p-3">
+          <summary className="text-sm font-medium text-red-900 cursor-pointer">
+            Full Task Object (Advanced Debug)
+          </summary>
+          <pre className="mt-2 text-xs text-red-800 whitespace-pre-wrap overflow-x-auto max-h-64">
+            {JSON.stringify(task, null, 2)}
+          </pre>
+        </details>
+      </div>
+    );
+  };
+
   return (
     <div className={`bg-white border border-gray-200 rounded-lg ${className}`}>
       {/* Header */}
@@ -119,9 +217,30 @@ const SubmittedDataViewer = ({ task, form, className = "" }) => {
               >
                 {t("tasks.rawView")}
               </button>
+              <button
+                onClick={() => setViewMode("debug")}
+                className={`px-2 py-1 text-xs rounded ${
+                  viewMode === "debug"
+                    ? "bg-red-100 text-red-700"
+                    : "text-gray-500 hover:text-gray-700"
+                }`}
+                title="Debug view - shows all data sources"
+              >
+                <EyeIcon className="h-3 w-3" />
+              </button>
             </div>
           )}
         </div>
+
+        {/* Data source indicator */}
+        {isExpanded && (
+          <div className="mt-2 text-xs text-gray-500">
+            <span>
+              Data source:{" "}
+              <code className="bg-gray-100 px-1 rounded">{dataSource}</code>
+            </span>
+          </div>
+        )}
 
         {/* Submission metadata */}
         {isExpanded && (
@@ -162,7 +281,9 @@ const SubmittedDataViewer = ({ task, form, className = "" }) => {
       {/* Content */}
       {isExpanded && (
         <div className="p-4">
-          {viewMode === "form" ? renderFormView() : renderRawView()}
+          {viewMode === "form" && renderFormView()}
+          {viewMode === "raw" && renderRawView()}
+          {viewMode === "debug" && renderDebugView()}
         </div>
       )}
     </div>
