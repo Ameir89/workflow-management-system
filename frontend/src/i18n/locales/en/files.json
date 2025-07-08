@@ -1,0 +1,34 @@
+{
+  "files": {
+    "title": "File Manager",
+    "subtitle": "Upload and manage files",
+    "upload": "Upload Files",
+    "download": "Download",
+    "dragDropFiles": "Drag and drop files here, or click to select",
+    "dropFiles": "Drop files here",
+    "maxFileSize": "Maximum file size: 50MB",
+    "totalFiles": "Total Files",
+    "totalSize": "Total Size",
+    "recentFiles": "Recent Files",
+    "fileType": "File Type",
+    "accessLevel": "Access Level",
+    "gridView": "Grid View",
+    "listView": "List View",
+    "noFiles": "No files found",
+    "noFilesDescription": "Upload your first file to get started",
+    "uploadSuccess": "File uploaded successfully",
+    "deleteSuccess": "File deleted successfully",
+    "confirmDelete": "Are you sure you want to delete '{{name}}'?",
+    "access": {
+      "private": "Private",
+      "team": "Team",
+      "public": "Public"
+    },
+    "types": {
+      "images": "Images",
+      "documents": "Documents",
+      "videos": "Videos",
+      "audio": "Audio"
+    }
+  }
+}

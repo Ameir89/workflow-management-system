@@ -75,7 +75,7 @@ const Sidebar = ({ isOpen, onClose, userPermissions = [] }) => {
     },
 
     {
-      name: "Start Workflows",
+      name: t("nav.startWorkflows"),
       href: "/start-workflows",
       icon: RocketLaunchIcon,
       iconSolid: RocketLaunchIconSolid,
@@ -399,7 +399,7 @@ const Sidebar = ({ isOpen, onClose, userPermissions = [] }) => {
                 <div className="flex items-center justify-between">
                   <div>
                     <p className="text-xs font-medium text-indigo-600 uppercase tracking-wide">
-                      Active Tasks
+                      {t("nav.activeTasks")}
                     </p>
                     <p className="text-2xl font-bold text-indigo-900">
                       {taskStats?.stats?.pending_tasks || 0}
@@ -412,7 +412,10 @@ const Sidebar = ({ isOpen, onClose, userPermissions = [] }) => {
                 <div className="mt-2 flex items-center text-xs text-indigo-600">
                   <span className="inline-flex items-center">
                     <span className="w-2 h-2 bg-green-400 rounded-full mr-1 animate-pulse"></span>
-                    {taskStats?.stats?.overdue_tasks || 0} overdue
+
+                    {t("nav.dueCount", {
+                      count: taskStats?.stats?.overdue_tasks || 0,
+                    })}
                   </span>
                 </div>
               </div>

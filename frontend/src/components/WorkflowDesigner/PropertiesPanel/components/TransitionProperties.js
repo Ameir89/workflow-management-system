@@ -58,28 +58,28 @@ const TransitionProperties = ({ transition, workflow, onTransitionChange }) => {
   };
 
   const operatorOptions = [
-    { value: "and", label: t("designer.and") },
-    { value: "or", label: t("designer.or") },
+    { value: "and", label: t("designer.condition.and") },
+    { value: "or", label: t("designer.condition.or") },
   ];
 
   const comparisonOperators = [
-    { value: "equals", label: t("designer.equals") },
-    { value: "not_equals", label: t("designer.notEquals") },
-    { value: "greater_than", label: t("designer.greaterThan") },
-    { value: "less_than", label: t("designer.lessThan") },
-    { value: "contains", label: t("designer.contains") },
-    { value: "starts_with", label: t("designer.startsWith") },
-    { value: "ends_with", label: t("designer.endsWith") },
-    { value: "is_empty", label: t("designer.isEmpty") },
-    { value: "is_not_empty", label: t("designer.isNotEmpty") },
+    { value: "equals", label: t("designer.condition.equals") },
+    { value: "not_equals", label: t("designer.condition.notEquals") },
+    { value: "greater_than", label: t("designer.condition.greaterThan") },
+    { value: "less_than", label: t("designer.condition.lessThan") },
+    { value: "contains", label: t("designer.condition.contains") },
+    { value: "starts_with", label: t("designer.condition.startsWith") },
+    { value: "ends_with", label: t("designer.condition.endsWith") },
+    { value: "is_empty", label: t("designer.condition.isEmpty") },
+    { value: "is_not_empty", label: t("designer.condition.isNotEmpty") },
   ];
 
   const fieldOptions = [
-    { value: "workflow.status", label: t("designer.workflowStatus") },
-    { value: "task.status", label: t("designer.taskStatus") },
-    { value: "task.assignee", label: t("designer.taskAssignee") },
-    { value: "form.field", label: t("designer.formField") },
-    { value: "custom", label: t("designer.customField") },
+    { value: "workflow.status", label: t("designer.condition.workflowStatus") },
+    { value: "task.status", label: t("designer.condition.taskStatus") },
+    { value: "task.assignee", label: t("designer.condition.taskAssignee") },
+    { value: "form.field", label: t("designer.condition.formField") },
+    { value: "custom", label: t("designer.condition.customField") },
   ];
 
   return (
@@ -228,7 +228,9 @@ const TransitionProperties = ({ transition, workflow, onTransitionChange }) => {
                           }
                           className="w-full px-2 py-1 text-xs border border-gray-300 rounded focus:ring-1 focus:ring-indigo-500"
                         >
-                          <option value="">{t("designer.selectField")}</option>
+                          <option value="">
+                            {t("designer.condition.selectField")}
+                          </option>
                           {fieldOptions.map((option) => (
                             <option key={option.value} value={option.value}>
                               {option.label}
@@ -272,7 +274,7 @@ const TransitionProperties = ({ transition, workflow, onTransitionChange }) => {
                               )
                             }
                             className="w-full px-2 py-1 text-xs border border-gray-300 rounded focus:ring-1 focus:ring-indigo-500"
-                            placeholder={t("designer.conditionValue")}
+                            placeholder={t("designer.condition.value")}
                           />
                         )}
                       </div>
@@ -341,7 +343,7 @@ const TransitionProperties = ({ transition, workflow, onTransitionChange }) => {
           <div className="space-y-4">
             <div>
               <label className="block text-sm font-medium text-gray-700 mb-1">
-                {t("designer.priority")}
+                {t("designer.priority.title")}
               </label>
               <select
                 value={transition.priority || "normal"}

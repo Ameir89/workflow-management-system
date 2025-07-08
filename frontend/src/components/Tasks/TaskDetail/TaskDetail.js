@@ -182,7 +182,7 @@ const TaskDetail = () => {
       <div className="max-w-2xl mx-auto py-12">
         <ErrorDisplay
           title={t("tasks.notFound")}
-          message="The requested task could not be found or you don't have permission to access it."
+          message={t("tasks.detailNotFound")}
           onBack={() => navigate("/tasks")}
         />
       </div>

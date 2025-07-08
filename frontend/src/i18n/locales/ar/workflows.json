@@ -1,0 +1,69 @@
+{
+  "workflows": {
+    "title": "سير العمل",
+    "subtitle": "تصميم وإدارة سير العمل",
+    "cancelInstanceConfirmation": "هل أنت متأكد من أنك تريد إلغاء هذا المثيل من سير العمل؟",
+    "progress": "التقدم",
+    "due": "مستحقة",
+    "currentStep": "الخطوة الحالية",
+    "assignedTo": "مُسند إلى",
+    "monitorManage": "مراقبة وإدارة مثيلات تنفيذ سير العمل",
+    "workflowInstances": "مثيلات سير العمل",
+    "allWorkflowInstances": "جميع مثيلات سير العمل",
+    "noInstances": "لم يتم العثور على مثيلات سير العمل"
+  },
+  "workflow": {
+    "form": "نموذج",
+    "status": "الحالة",
+    "name": "اسم سير العمل",
+    "category": "فئة سير العمل",
+    "description": "وصف سير العمل",
+    "selectCategory": "اختر فئة",
+    "active": "نشط",
+    "enterName": "أدخل اسم سير العمل",
+    "enterDescription": "أدخل وصف سير العمل",
+    "savedSuccessfully": "تم حفظ سير العمل بنجاح",
+    "saveFailed": "فشل في حفظ سير العمل",
+    "nameRequired": "اسم سير العمل مطلوب",
+    "atLeastOneStepRequired": "مطلوب خطوة واحدة على الأقل",
+    "startStepRequired": "خطوة البداية مطلوبة",
+    "transitionAlreadyExists": "الانتقال موجود بالفعل",
+    "categories": {
+      "approval": "موافقة",
+      "automation": "أتمتة",
+      "notification": "إشعار",
+      "condition": "شرط",
+      "integration": "تكامل"
+    },
+    "nodes": {
+      "task": "مهمة",
+      "approval": "موافقة",
+      "condition": "شرط",
+      "notification": "إشعار",
+      "automation": "أتمتة",
+      "start": "بداية",
+      "end": "نهاية",
+      "taskDescription": "إسناد وتتبع المهام اليدوية",
+      "approvalDescription": "تتطلب موافقة من مستخدمين محددين",
+      "conditionDescription": "توجيه سير العمل بناءً على الشروط",
+      "notificationDescription": "إرسال إشعارات للمستخدمين",
+      "automationDescription": "تنفيذ البرامج النصية والإجراءات الآلية"
+    },
+    "steps": {
+      "design": "تصميم",
+      "properties": "خصائص",
+      "test": "اختبار",
+      "export": "تصدير",
+      "approval": "موافقة",
+      "automation": "أتمتة",
+      "notification": "إشعار",
+      "condition": "شرط"
+    },
+    "instances": {
+      "allCategories": "جميع الفئات",
+      "approval": "موافقة",
+      "startInstancesHubTitle": "بدء مثيلات سير العمل",
+      "startInstancesHubDescription": "اختر سير عمل لبدء مثيل جديد والبدء في المعالجة"
+    }
+  }
+}

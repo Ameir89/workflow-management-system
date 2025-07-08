@@ -1,89 +1,3 @@
-// import React, { useState } from "react";
-// import { useTranslation } from "react-i18next";
-// import {
-//   CheckCircleIcon,
-//   XCircleIcon,
-//   ArrowUturnLeftIcon,
-//   ChatBubbleLeftIcon,
-// } from "@heroicons/react/24/outline";
-// import DynamicForm from "../../Forms/DynamicForm";
-// import SubmittedDataViewer from "./SubmittedDataViewer";
-
-// const TaskApprovalActions = ({
-//   task,
-//   form,
-//   onApprovalAction,
-//   submitting,
-// }) => {
-//   const { t } = useTranslation();
-//   const [showCommentModal, setShowCommentModal] = useState(false);
-//   const [selectedAction, setSelectedAction] = useState(null);
-//   const [comment, setComment] = useState("");
-//   const [showForm, setShowForm] = useState(false);
-//   const [showSubmittedData, setShowSubmittedData] = useState(false);
-
-//   if (task.status === "completed") {
-//     return null;
-//   }
-
-//   // Check if this is an approval task
-//   const isApprovalTask = task.type === "approval" || task.step_type === "approval";
-
-//   if (!isApprovalTask) {
-//     return null;
-//   }
-
-//   const handleActionClick = (action) => {
-//     setSelectedAction(action);
-//     setShowCommentModal(true);
-//   };
-
-//   const handleFormSubmit = (formData) => {
-//     // Submit approval with form data
-//     onApprovalAction("approve", {
-//       comment: comment,
-//       form_data: formData,
-//     });
-//     setShowForm(false);
-//     setShowCommentModal(false);
-//     setComment("");
-//     setSelectedAction(null);
-//   };
-
-//   const handleApprovalSubmit = () => {
-//     onApprovalAction(selectedAction, {
-//       comment: comment,
-//       reviewed_data: task.workflow_data?.form_data || task.form_data || task.submitted_data,
-//     });
-//     setShowCommentModal(false);
-//     setComment("");
-//     setSelectedAction(null);
-//   };
-
-//   const getActionConfig = (action) => {
-//     const configs = {
-//       approve: {
-//         label: t("tasks.approve"),
-//         icon: CheckCircleIcon,
-//         className: "bg-green-600 hover:bg-green-700 text-white",
-//         description: "Approve this request",
-//       },
-//       reject: {
-//         label: t("tasks.reject"),
-//         icon: XCircleIcon,
-//         className: "bg-red-600 hover:bg-red-700 text-white",
-//         description: "Reject this request",
-//       },
-//       return: {
-//         label: t("tasks.returnForChanges"),
-//         icon: ArrowUturnLeftIcon,
-//         className: "bg-yellow-600 hover:bg-yellow-700 text-white",
-//         description: "Return for changes",
-//       },
-//     };
-//     return configs[action];
-//   };
-
 import React, { useState } from "react";
 import { useTranslation } from "react-i18next";
 import {
@@ -173,7 +87,7 @@ const TaskApprovalActions = ({
           "bg-gradient-to-r from-red-600 to-red-700 hover:from-red-700 hover:to-red-800 text-white shadow-lg hover:shadow-xl",
         description: "Reject this request and stop the workflow",
       },
-      return: {
+      return_for_edit: {
         label: t("tasks.returnForChanges"),
         icon: ArrowUturnLeftIcon,
         className:
@@ -314,10 +228,10 @@ const TaskApprovalActions = ({
 
             {/* Return for Changes Button */}
             <button
-              onClick={() => handleActionClick("return")}
+              onClick={() => handleActionClick("return_for_edit")}
               disabled={submitting}
               className={`group relative inline-flex items-center justify-center px-6 py-4 border-0 rounded-xl text-base font-medium transition-all duration-200 transform hover:scale-[1.02] disabled:opacity-50 disabled:transform-none ${
-                getActionConfig("return").className
+                getActionConfig("return_for_edit").className
               }`}
             >
               <ArrowUturnLeftIcon className="h-6 w-6 mr-3" />
@@ -326,7 +240,7 @@ const TaskApprovalActions = ({
                   {t("tasks.returnForChanges")}
                 </div>
                 <div className="text-sm opacity-90">
-                  {getActionConfig("return").description}
+                  {getActionConfig("return_for_edit").description}
                 </div>
               </div>
               <div className="absolute inset-0 rounded-xl bg-white opacity-0 group-hover:opacity-10 transition-opacity"></div>
@@ -423,7 +337,7 @@ const TaskApprovalActions = ({
                 {selectedAction === "reject" && (
                   <XCircleIconSolid className="h-6 w-6 text-red-600 mr-2" />
                 )}
-                {selectedAction === "return" && (
+                {selectedAction === "return_for_edit" && (
                   <ArrowUturnLeftIcon className="h-6 w-6 text-amber-600 mr-2" />
                 )}
                 {getActionConfig(selectedAction)?.label}

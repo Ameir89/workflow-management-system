@@ -189,7 +189,7 @@ const StartInstancesHub = () => {
               <MagnifyingGlassIcon className="absolute left-3 top-1/2 transform -translate-y-1/2 h-5 w-5 text-gray-400" />
               <input
                 type="text"
-                placeholder="Search workflows..."
+                placeholder={t("workflows.search")}
                 value={search}
                 onChange={(e) => setSearch(e.target.value)}
                 className="pl-10 w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500"
@@ -228,14 +228,14 @@ const StartInstancesHub = () => {
       {/* Workflows Grid */}
       <div>
         <h2 className="text-xl font-semibold text-gray-900 mb-6">
-          Available Workflows ({filteredWorkflows.length})
+          {t("workflows.available")} ({filteredWorkflows.length})
         </h2>
 
         {filteredWorkflows.length === 0 ? (
           <div className="text-center py-12 bg-white border border-gray-200 rounded-lg">
             <RocketLaunchIcon className="mx-auto h-12 w-12 text-gray-400" />
             <h3 className="mt-2 text-sm font-medium text-gray-900">
-              No workflows found
+              {t("workflows.noWorkflowsFound")}
             </h3>
             <p className="mt-1 text-sm text-gray-500">
               {showFavoritesOnly
@@ -312,40 +312,6 @@ const StartInstancesHub = () => {
           </div>
         )}
       </div>
-
-      {/* Templates Section */}
-      {templates?.templates?.length > 0 && (
-        <div className="bg-gradient-to-r from-gray-50 to-gray-100 border border-gray-200 rounded-lg p-6">
-          <h2 className="text-lg font-semibold text-gray-900 mb-4 flex items-center">
-            <DocumentTextIcon className="h-5 w-5 mr-2 text-gray-500" />
-            Quick Start Templates
-          </h2>
-          <p className="text-gray-600 mb-6">
-            Pre-configured workflow templates for common business processes
-          </p>
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-            {templates.templates.map((template) => (
-              <div
-                key={template.id}
-                className="bg-white border border-gray-200 rounded-lg p-4 hover:border-indigo-300 transition-colors"
-              >
-                <h3 className="font-medium text-gray-900">{template.name}</h3>
-                <p className="text-sm text-gray-600 mt-1">
-                  {template.description}
-                </p>
-                <div className="mt-3 flex items-center justify-between">
-                  <span className="text-xs text-gray-500">
-                    Used {template.usage_count || 0} times
-                  </span>
-                  <button className="text-sm text-indigo-600 hover:text-indigo-800 font-medium">
-                    Use Template
-                  </button>
-                </div>
-              </div>
-            ))}
-          </div>
-        </div>
-      )}
     </div>
   );
 };

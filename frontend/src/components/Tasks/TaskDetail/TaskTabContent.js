@@ -3,11 +3,7 @@ import { useTranslation } from "react-i18next";
 import { Link } from "react-router-dom";
 import DynamicForm from "../../Forms/DynamicForm";
 import SubmittedDataViewer from "./SubmittedDataViewer";
-import {
-  ClockIcon,
-  ChatBubbleLeftRightIcon,
-  TagIcon,
-} from "@heroicons/react/24/outline";
+import { ClockIcon, TagIcon } from "@heroicons/react/24/outline";
 import {
   hasSubmittedData,
   shouldShowDataProminently,
@@ -289,25 +285,25 @@ const TaskTabContent = ({
     <div>
       <h3 className="text-lg font-medium text-gray-900 mb-4">Task History</h3>
       <div className="space-y-4">
-        {task.history && task.history.length > 0 ? (
-          task.history.map((entry, index) => (
+        {task.approval_history && task.approval_history.length > 0 ? (
+          task.approval_history.map((entry, index) => (
             <div key={index} className="border-l-4 border-gray-200 pl-4">
               <div className="flex items-center justify-between">
                 <div className="text-sm font-medium text-gray-900">
-                  {entry.action}
+                  {entry.decision}
                 </div>
                 <div className="text-sm text-gray-500">
                   {new Date(entry.timestamp).toLocaleString()}
                 </div>
               </div>
-              {entry.details && (
+              {entry.comments && (
                 <div className="text-sm text-gray-600 mt-1">
-                  {entry.details}
+                  {entry.comments}
                 </div>
               )}
-              {entry.user && (
+              {entry.user_name && (
                 <div className="text-xs text-gray-500 mt-1">
-                  by {entry.user}
+                  by {entry.user_name}
                 </div>
               )}
             </div>
@@ -327,21 +323,6 @@ const TaskTabContent = ({
     </div>
   );
 
-  const renderCommentsTab = () => (
-    <div>
-      <h3 className="text-lg font-medium text-gray-900 mb-4">Comments</h3>
-      <div className="text-center py-8">
-        <ChatBubbleLeftRightIcon className="mx-auto h-12 w-12 text-gray-400" />
-        <h3 className="mt-2 text-sm font-medium text-gray-900">
-          No comments yet
-        </h3>
-        <p className="mt-1 text-sm text-gray-500">
-          Comments and collaboration features coming soon.
-        </p>
-      </div>
-    </div>
-  );
-
   const renderContent = () => {
     switch (activeTab) {
       case "details":
@@ -350,8 +331,7 @@ const TaskTabContent = ({
         return renderFormTab();
       case "history":
         return renderHistoryTab();
-      case "comments":
-        return renderCommentsTab();
+
       default:
         return renderDetailsTab();
     }

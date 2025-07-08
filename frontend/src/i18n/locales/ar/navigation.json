@@ -1,0 +1,29 @@
+{
+  "nav": {
+    "dashboard": "لوحة التحكم",
+    "tasks": "المهام",
+    "reports": "التقارير",
+    "profile": "الملف الشخصي",
+    "startWorkflows": "بدء سير العمل",
+    "admin": {
+      "title": "الإدارة",
+      "users": "إدارة المستخدمين",
+      "health": "صحة النظام",
+      "lookupsManagement": "إدارة القوائم المرجعية",
+      "auditLogs": "سجلات التدقيق"
+    },
+    "configuration": {
+      "title": "الإعدادات",
+      "workflows": "سير العمل",
+      "manageWorkflows": "إدارة سير العمل",
+      "forms": "النماذج",
+      "webhooks": "Webhooks",
+      "lookupsManagement": "إدارة القوائم المرجعية",
+      "notificationManagement": "إدارة الإشعارات",
+      "files": "الملفات",
+      "scripts": "البرامج النصية"
+    },
+    "activeTasks": "المهام النشطة",
+    "dueCount": "{{count}} مستحقة"
+  }
+}

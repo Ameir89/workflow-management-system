@@ -13,7 +13,7 @@ import {
   Tooltip,
   Legend,
 } from "chart.js";
-import { Bar, Pie, Line } from "react-chartjs-2";
+import { Bar, Line } from "react-chartjs-2";
 import { api } from "../../services/authService";
 import {
   ChartBarIcon,

@@ -1,4 +1,3 @@
-// src/components/Admin/LookupsManagement/SettingsTab.js
 import React from "react";
 import { Cog6ToothIcon } from "@heroicons/react/24/outline";
 

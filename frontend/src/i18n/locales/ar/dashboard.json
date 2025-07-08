@@ -1,0 +1,27 @@
+{
+  "dashboard": {
+    "title": "لوحة التحكم",
+    "welcome": "مرحبًا بك في لوحة التحكم الخاصة بسير العمل",
+    "totalTasks": "إجمالي المهام",
+    "pendingTasks": "المهام المعلقة",
+    "overdueTasks": "المهام المتأخرة",
+    "completionRate": "معدل الإنجاز",
+    "taskDistribution": "توزيع المهام",
+    "workflowTrends": "اتجاهات سير العمل",
+    "quickActions": "إجراءات سريعة",
+    "createWorkflow": "إنشاء سير عمل",
+    "designNewWorkflow": "تصميم سير عمل جديد",
+    "viewAllTasks": "عرض جميع المهام",
+    "manageYourTasks": "إدارة مهامك",
+    "viewReports": "عرض التقارير",
+    "analyzePerformance": "تحليل الأداء",
+    "pending": "معلقة",
+    "inProgress": "قيد التنفيذ",
+    "completed": "مكتملة",
+    "overdue": "متأخرة",
+    "workflowsStarted": "سير العمل التي بدأت",
+    "workflowsCompleted": "سير العمل المكتملة",
+    "recentTasks": "المهام الأخيرة",
+    "duration": "المدة"
+  }
+}

@@ -16,7 +16,6 @@ const TaskTabs = ({ activeTab, setActiveTab, hasForm }) => {
       show: hasForm,
     },
     { id: "history", name: "History", icon: ClockIcon },
-    { id: "comments", name: "Comments", icon: ChatBubbleLeftRightIcon },
   ].filter((tab) => tab.show !== false);
 
   return (

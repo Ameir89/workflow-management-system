@@ -5,6 +5,7 @@ import { PlusIcon, TableCellsIcon } from "@heroicons/react/24/outline";
 import { formsService } from "../../../services/formsService";
 import { toast } from "react-toastify";
 import FieldEditor from "./FieldEditor";
+import { lookupsService } from "services/lookupsService";
 // Enhanced Form Builder with Lookups Support
 const EnhancedFormBuilder = () => {
   const navigate = useNavigate();
@@ -15,6 +16,7 @@ const EnhancedFormBuilder = () => {
   const [formDescription, setFormDescription] = useState("");
   const [fields, setFields] = useState([]);
   const [isSaving, setIsSaving] = useState(false);
+
   const [availableLookups, setAvailableLookups] = useState([
     {
       id: 1,
@@ -75,6 +77,29 @@ const EnhancedFormBuilder = () => {
       );
     },
   });
+
+  const { data: lookupTablesData } = useQuery(
+    ["lookup-tables"],
+    () => lookupsService.getLookupTables(),
+    {
+      keepPreviousData: true,
+    }
+  );
+
+  useEffect(() => {
+    if (lookupTablesData?.tables) {
+      setAvailableLookups(
+        lookupTablesData.tables.map((table) => ({
+          id: table.id,
+          name: table.name,
+          displayName: table.displayName,
+          valueField: table.valueField,
+          displayField: table.displayField,
+          fields: table.fields,
+        }))
+      );
+    }
+  }, [lookupTablesData]);
 
   const fieldTypes = [
     { value: "text", label: "Text Input", hasLookup: false },
@@ -302,6 +327,71 @@ const EnhancedFormBuilder = () => {
       navigate("/forms");
     }
   };
+  const removeField = (id) => {
+    setFields(fields.filter((field) => field.id !== id));
+  };
+
+  const moveField = (id, direction) => {
+    const index = fields.findIndex((field) => field.id === id);
+    if (
+      (direction === "up" && index > 0) ||
+      (direction === "down" && index < fields.length - 1)
+    ) {
+      const newFields = [...fields];
+      const targetIndex = direction === "up" ? index - 1 : index + 1;
+      [newFields[index], newFields[targetIndex]] = [
+        newFields[targetIndex],
+        newFields[index],
+      ];
+      setFields(newFields);
+    }
+  };
+
+  const updateField = (id, property, value) => {
+    setFields(
+      fields.map((field) => {
+        if (field.id !== id) return field;
+
+        const updatedField = { ...field, [property]: value };
+
+        // Special handling for field type changes
+        if (property === "type") {
+          const newFieldType = fieldTypes.find((type) => type.value === value);
+
+          // If the new field type doesn't support lookups, reset lookup-related data
+          if (!newFieldType?.hasLookup) {
+            updatedField.dataSource = "manual";
+            updatedField.lookupTable = null;
+            updatedField.lookupConfig = {
+              valueField: "",
+              displayField: "",
+              additionalFields: [],
+            };
+
+            // Ensure options array exists for manual configuration
+            if (!updatedField.options || updatedField.options.length === 0) {
+              updatedField.options = [{ value: "", label: "" }];
+            }
+          }
+        }
+
+        return updatedField;
+      })
+    );
+  };
+
+  const updateLookupConfig = (id, property, value) => {
+    setFields(
+      fields.map((field) =>
+        field.id === id
+          ? {
+              ...field,
+              lookupConfig: { ...field.lookupConfig, [property]: value },
+            }
+          : field
+      )
+    );
+  };
 
   return (
     <div className="min-h-screen bg-gray-50">
@@ -383,13 +473,17 @@ const EnhancedFormBuilder = () => {
             <div className="space-y-6">
               {fields.map((field, index) => (
                 <FieldEditor
-                  key={field.name}
+                  key={index}
                   field={field}
                   index={index}
                   fields={fields}
                   setFields={setFields}
                   fieldTypes={fieldTypes}
                   availableLookups={availableLookups}
+                  removeField={removeField}
+                  moveField={moveField}
+                  updateField={updateField}
+                  updateLookupConfig={updateLookupConfig}
                 />
               ))}
             </div>

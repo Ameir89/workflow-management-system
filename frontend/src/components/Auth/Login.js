@@ -177,9 +177,7 @@ const Login = () => {
                 ></div>
               </div>
               <span className="text-sm">
-                {currentLang === "en"
-                  ? "Streamline Your Workflow"
-                  : "تبسيط سير العمل"}
+                {t("auth.streamlineYourWorkflow")}
               </span>
             </div>
           </div>

@@ -129,11 +129,9 @@ const WorkflowList = () => {
       <div className="flex justify-between items-center">
         <div>
           <h1 className="text-2xl font-bold text-gray-900">
-            Workflow Management
+            {t("workflows.title")}
           </h1>
-          <p className="text-gray-600">
-            Create, configure, and manage your workflow definitions
-          </p>
+          <p className="text-gray-600">{t("workflows.subtitle")}</p>
         </div>
         <div className="flex space-x-3">
           <Link
@@ -159,7 +157,7 @@ const WorkflowList = () => {
           <div className="md:col-span-2">
             <input
               type="text"
-              placeholder="Search workflows..."
+              placeholder={t("workflows.search")}
               value={search}
               onChange={(e) => setSearch(e.target.value)}
               className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-indigo-500"

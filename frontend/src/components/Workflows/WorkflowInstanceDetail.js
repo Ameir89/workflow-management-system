@@ -1,12 +1,11 @@
 // src/components/Workflows/WorkflowInstanceDetail.js
 import React, { useState } from "react";
 import { useParams, useNavigate, Link } from "react-router-dom";
-import { useQuery, useMutation, useQueryClient } from "react-query";
+import { useQuery, useMutation } from "react-query";
 import { useTranslation } from "react-i18next";
 import { toast } from "react-toastify";
 import { workflowService } from "../../services/workflowService";
 import { workflowExecutionService } from "../../services/workflowExecutionService";
-import { taskService } from "../../services/taskService";
 import LoadingSpinner from "../Common/LoadingSpinner";
 import {
   ArrowLeftIcon,
@@ -15,14 +14,11 @@ import {
   StopIcon,
   ClockIcon,
   CheckCircleIcon,
-  XCircleIcon,
   ExclamationTriangleIcon,
   UserIcon,
   CalendarIcon,
   DocumentDuplicateIcon,
   EyeIcon,
-  PencilIcon,
-  ChatBubbleLeftIcon,
   ClipboardDocumentListIcon,
   ChartBarIcon,
   ArrowPathIcon,
@@ -120,7 +116,7 @@ const PriorityBadge = ({ priority }) => {
   );
 };
 
-const TaskItem = ({ task, onTaskUpdate }) => {
+const TaskItem = ({ task }) => {
   const getTaskStatusIcon = (status) => {
     switch (status) {
       case "completed":
@@ -194,11 +190,13 @@ const ExecutionTimeline = ({ instance, tasks = [] }) => {
       icon: PlayIcon,
       color: "bg-green-500",
     },
+
     ...tasks.map((task, index) => ({
       id: `task-${task.id}`,
       type: "task",
       title: `Task: ${task.name}`,
-      timestamp: task.completed_at || task.created_at,
+      timestamp: task.completed_at || task.created_at || task.completed_at,
+      comment: task.result?.comments || "",
       user: task.assigned_to_name,
       icon: task.status === "completed" ? CheckCircleIcon : ClockIcon,
       color: task.status === "completed" ? "bg-green-500" : "bg-yellow-500",
@@ -248,10 +246,17 @@ const ExecutionTimeline = ({ instance, tasks = [] }) => {
                   <div className="min-w-0 flex-1 pt-1.5 flex justify-between space-x-4">
                     <div>
                       <p className="text-sm text-gray-900">{event.title}</p>
+
+                      {event.comment && (
+                        <p className="mt-1 text-xs text-gray-700">
+                          {event.comment}
+                        </p>
+                      )}
                       {event.user && (
                         <p className="text-xs text-gray-500">by {event.user}</p>
                       )}
                     </div>
+
                     <div className="text-right text-sm whitespace-nowrap text-gray-500">
                       {new Date(event.timestamp).toLocaleString()}
                     </div>
@@ -270,7 +275,6 @@ const WorkflowInstanceDetail = () => {
   const { t } = useTranslation();
   const { instanceId } = useParams();
   const navigate = useNavigate();
-  const queryClient = useQueryClient();
   const [activeTab, setActiveTab] = useState("overview");
   const [showActions, setShowActions] = useState(false);
 
@@ -288,16 +292,6 @@ const WorkflowInstanceDetail = () => {
         // Auto-refresh every 30 seconds if instance is running
         return data?.instance?.status === "running" ? 30000 : false;
       },
-    }
-  );
-
-  // Fetch related tasks
-  const { data: tasksData } = useQuery(
-    ["instance-tasks", instanceId],
-    () => taskService.getTasks({ workflow_instance_id: instanceId }),
-    {
-      enabled: !!instanceId,
-      refetchInterval: instance?.instance?.status === "running" ? 30000 : false,
     }
   );
 
@@ -373,9 +367,9 @@ const WorkflowInstanceDetail = () => {
   };
 
   const getDuration = () => {
-    if (!instance?.instance?.started_at) return "Not started";
+    if (!instance?.instance?.created_at) return "Not started";
 
-    const start = new Date(instance.instance.started_at);
+    const start = new Date(instance.instance.created_at);
     const end = instance.instance.completed_at
       ? new Date(instance.instance.completed_at)
       : new Date();
@@ -428,7 +422,7 @@ const WorkflowInstanceDetail = () => {
   }
 
   const instanceData = instance.instance;
-  const tasks = tasksData?.tasks || [];
+  const tasks = instance?.tasks || [];
 
   const tabs = [
     { id: "overview", name: "Overview", icon: InformationCircleIcon },

@@ -58,7 +58,7 @@ const TaskProperties = ({ node, forms, onPropertyChange }) => {
         </FormField>
 
         <FormSelect
-          label={t("designer.priority")}
+          label={t("designer.priority.title")}
           value={properties.priority || "medium"}
           onChange={(e) => onPropertyChange("priority", e.target.value)}
           options={priorityOptions}

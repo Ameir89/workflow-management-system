@@ -15,8 +15,6 @@ import {
   getAllDataSources,
   getDataSource,
   formatDisplayValue,
-  hasSubmittedData,
-  shouldShowDataProminently,
 } from "../../../utils/taskDataUtils";
 
 const SubmittedDataViewer = ({ task, form, className = "" }) => {
@@ -30,13 +28,6 @@ const SubmittedDataViewer = ({ task, form, className = "" }) => {
 
   // Get all data sources for debugging
   const allDataSources = getAllDataSources(task);
-
-  console.log("=== SubmittedDataViewer Debug Info ===");
-  console.log("Task:", task);
-  console.log("Submitted Data:", submittedData);
-  console.log("Data Source:", dataSource);
-  console.log("All Data Sources:", allDataSources);
-  console.log("Form:", form);
 
   if (!submittedData) {
     // Show debug info when no data is found

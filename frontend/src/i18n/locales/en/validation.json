@@ -1,0 +1,20 @@
+{
+  "validation": {
+    "required": "This field is required",
+    "minLength": "Must be at least {{min}} characters",
+    "maxLength": "Must be no more than {{max}} characters",
+    "email": "Please enter a valid email address",
+    "url": "Please enter a valid URL",
+    "number": "Please enter a valid number",
+    "min": "Must be at least {{min}}",
+    "max": "Must be no more than {{max}}",
+    "form": {
+      "required": "{{field}} is required",
+      "minLength": "{{field}} must be at least {{min}} characters",
+      "maxLength": "{{field}} must be no more than {{max}} characters",
+      "pattern": "{{field}} format is invalid",
+      "min": "{{field}} must be at least {{min}}",
+      "max": "{{field}} must be no more than {{max}}"
+    }
+  }
+}

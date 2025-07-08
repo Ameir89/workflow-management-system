@@ -4,7 +4,7 @@
 Workflows blueprint - handles workflow management
 """
 from datetime import datetime, timedelta
-
+from decimal import Decimal, InvalidOperation
 from flask import Blueprint, request, jsonify, g
 from app.middleware import require_auth, require_permissions, audit_log
 from app.database import Database
@@ -1189,6 +1189,7 @@ def get_execution_recommendations(workflow_id):
         """, (workflow_id, tenant_id))
 
         # Priority Recommendation
+        success_rate = None
         if historical_data['total_executions'] > 0:
             success_rate = (historical_data['completed_executions'] / historical_data['total_executions']) * 100
             high_priority_rate = (historical_data['high_priority_count'] / historical_data['total_executions']) * 100
@@ -1253,11 +1254,17 @@ def get_execution_recommendations(workflow_id):
             'suggested_time': 'immediately' if timing_score >= 70 else 'during business hours'
         }
 
-        if historical_data['avg_completion_hours']:
-            estimated_completion = datetime.now() + timedelta(hours=historical_data['avg_completion_hours'])
-            timing_recommendation['estimated_completion'] = estimated_completion.isoformat()
-
-        recommendations['timing_recommendation'] = timing_recommendation
+        # if historical_data['avg_completion_hours']:
+        #     estimated_completion = datetime.now() + timedelta(hours=float(historical_data['avg_completion_hours']))
+        #     timing_recommendation['estimated_completion'] = estimated_completion.isoformat()
+        if historical_data['avg_completion_hours'] is not None:
+            try:
+                hours = float(historical_data['avg_completion_hours'])
+                estimated_completion = datetime.now() + timedelta(hours=hours)
+                timing_recommendation['estimated_completion'] = estimated_completion.isoformat()
+            except (ValueError, TypeError, InvalidOperation):
+                timing_recommendation['estimated_completion'] = None
+                recommendations['timing_recommendation'] = timing_recommendation
 
         # Assignment Recommendations
         steps = definition.get('steps', [])
@@ -1406,7 +1413,7 @@ def get_execution_recommendations(workflow_id):
 
         # Overall recommendation score
         overall_score = timing_score
-        if success_rate and success_rate > 90:
+        if success_rate is not None and success_rate > 90:
             overall_score += 10
         if len(risks) == 0:
             overall_score += 5

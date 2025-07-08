@@ -1,0 +1,29 @@
+{
+  "nav": {
+    "dashboard": "Dashboard",
+    "tasks": "Tasks",
+    "reports": "Reports",
+    "profile": "Profile",
+    "startWorkflows": "Start Workflows",
+    "admin": {
+      "title": "Administration",
+      "users": "User Management",
+      "health": "System Health",
+      "lookupsManagement": "Lookups Management",
+      "auditLogs": "Audit Logs"
+    },
+    "configuration": {
+      "title": "Configuration",
+      "workflows": "Workflows",
+      "manageWorkflows": "Manage Workflows",
+      "forms": "Forms",
+      "webhooks": "Webhooks",
+      "lookupsManagement": "Lookups Management",
+      "notificationManagement": "Notification Management",
+      "files": "Files",
+      "scripts": "Scripts"
+    },
+    "activeTasks": "Active Tasks",
+    "dueCount": "{{count}} due"
+  }
+}

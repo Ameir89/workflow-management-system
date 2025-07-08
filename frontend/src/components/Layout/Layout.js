@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import { Outlet, useNavigate } from "react-router-dom";
+import { Outlet, useNavigate, useLocation } from "react-router-dom";
 import { useTranslation } from "react-i18next";
 import { useQuery } from "react-query";
 import { useAuth } from "../../hooks/useAuth";
@@ -17,6 +17,7 @@ import {
 const Layout = () => {
   const { t, i18n } = useTranslation();
   const navigate = useNavigate();
+  const location = useLocation();
   const { user, logout } = useAuth();
   const [sidebarOpen, setSidebarOpen] = useState(false);
   const [notificationCenterOpen, setNotificationCenterOpen] = useState(false);
@@ -24,6 +25,9 @@ const Layout = () => {
 
   // Check if current language is RTL
   const isRTL = i18n.language === "ar";
+
+  // Check if current route is workflow designer
+  const isDesignerRoute = location.pathname.includes("/workflows/designer");
 
   const { data: notificationStats } = useQuery(
     "notification-stats",
@@ -59,11 +63,17 @@ const Layout = () => {
       >
         {/* Top navigation bar */}
         <header className="bg-white border-b border-gray-200 shadow-sm">
-          <div className="flex h-16 items-center justify-between px-4 sm:px-6 lg:px-8">
+          <div
+            className={`flex h-16 items-center justify-between ${
+              isDesignerRoute ? "px-0" : "px-4 sm:px-6 lg:px-8"
+            }`}
+          >
             {/* Mobile menu button */}
             <button
               onClick={() => setSidebarOpen(true)}
-              className="lg:hidden inline-flex items-center justify-center p-2 rounded-md text-gray-500 hover:text-gray-900 hover:bg-gray-100 transition-colors duration-200"
+              className={`lg:hidden inline-flex items-center justify-center p-2 rounded-md text-gray-500 hover:text-gray-900 hover:bg-gray-100 transition-colors duration-200 ${
+                isDesignerRoute ? "ml-4" : ""
+              }`}
             >
               <Bars3Icon className="h-6 w-6" />
             </button>
@@ -79,7 +89,7 @@ const Layout = () => {
             <div
               className={`flex items-center ${
                 isRTL ? "space-x-reverse space-x-4" : "space-x-4"
-              }`}
+              } ${isDesignerRoute ? "mr-4" : ""}`}
             >
               {/* Notifications */}
               <button
@@ -224,8 +234,14 @@ const Layout = () => {
 
         {/* Main content */}
         <main className="flex-1 overflow-y-auto focus:outline-none">
-          <div className="py-6">
-            <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
+          <div className={`${isDesignerRoute ? "h-full" : "py-6"}`}>
+            <div
+              className={`${
+                isDesignerRoute
+                  ? "h-full"
+                  : "mx-auto max-w-7xl px-4 sm:px-6 lg:px-8"
+              }`}
+            >
               <Outlet />
             </div>
           </div>

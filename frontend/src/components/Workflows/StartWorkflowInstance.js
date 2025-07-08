@@ -280,10 +280,6 @@ const StartWorkflowInstance = () => {
     await startInstanceMutation.mutateAsync(processedData);
   };
 
-  const handleUseTemplate = (template) => {
-    setSelectedTemplate(template);
-  };
-
   const getDefaultValues = () => {
     const defaults = {
       priority: "medium",
@@ -419,57 +415,24 @@ const StartWorkflowInstance = () => {
         </div>
       </div>
 
-      {/* Templates Section */}
-      {templates?.templates?.length > 0 && (
-        <div className="mb-8">
-          <h3 className="text-lg font-medium text-gray-900 mb-4">
-            Quick Start Templates
-          </h3>
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-            {templates.templates.map((template) => (
-              <button
-                key={template.id}
-                onClick={() => handleUseTemplate(template)}
-                className={`text-left p-4 border-2 rounded-lg transition-colors ${
-                  selectedTemplate?.id === template.id
-                    ? "border-indigo-500 bg-indigo-50"
-                    : "border-gray-200 hover:border-gray-300"
-                }`}
-              >
-                <h4 className="font-medium text-gray-900">{template.name}</h4>
-                <p className="text-sm text-gray-600 mt-1">
-                  {template.description}
-                </p>
-                <div className="flex items-center mt-2">
-                  <DocumentTextIcon className="h-4 w-4 text-gray-400 mr-1" />
-                  <span className="text-xs text-gray-500">
-                    Used {template.usage_count} times
-                  </span>
-                </div>
-              </button>
-            ))}
-          </div>
-        </div>
-      )}
-
       {/* Recommendations */}
-      {recommendations?.recommendations?.length > 0 && (
-        <div className="mb-8 bg-amber-50 border border-amber-200 rounded-lg p-4">
-          <div className="flex items-start">
-            <InformationCircleIcon className="h-5 w-5 text-amber-600 mt-0.5 mr-3" />
-            <div>
-              <h3 className="text-sm font-medium text-amber-900">
-                Recommendations
-              </h3>
-              <ul className="text-sm text-amber-800 mt-1 space-y-1">
-                {recommendations.recommendations.map((rec, index) => (
-                  <li key={index}>• {rec}</li>
-                ))}
-              </ul>
-            </div>
+      {/* {recommendations?.recommendations?.length > 0 && ( */}
+      <div className="mb-8 bg-amber-50 border border-amber-200 rounded-lg p-4">
+        <div className="flex items-start">
+          <InformationCircleIcon className="h-5 w-5 text-amber-600 mt-0.5 mr-3" />
+          <div>
+            <h3 className="text-sm font-medium text-amber-900">
+              Recommendations
+            </h3>
+            <ul className="text-sm text-amber-800 mt-1 space-y-1">
+              {recommendations?.recommendations?.map((rec, index) => (
+                <li key={index}>• {rec}</li>
+              ))}
+            </ul>
           </div>
         </div>
-      )}
+      </div>
+      {/* )} */}
 
       {/* Configuration Form */}
       <div className="bg-white border border-gray-200 rounded-lg">

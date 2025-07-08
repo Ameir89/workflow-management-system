@@ -1,0 +1,27 @@
+{
+  "dashboard": {
+    "title": "Dashboard",
+    "welcome": "Welcome to your workflow dashboard",
+    "totalTasks": "Total Tasks",
+    "pendingTasks": "Pending Tasks",
+    "overdueTasks": "Overdue Tasks",
+    "completionRate": "Completion Rate",
+    "taskDistribution": "Task Distribution",
+    "workflowTrends": "Workflow Trends",
+    "quickActions": "Quick Actions",
+    "createWorkflow": "Create Workflow",
+    "designNewWorkflow": "Design a new workflow",
+    "viewAllTasks": "View All Tasks",
+    "manageYourTasks": "Manage your tasks",
+    "viewReports": "View Reports",
+    "analyzePerformance": "Analyze performance",
+    "pending": "Pending",
+    "inProgress": "In Progress",
+    "completed": "Completed",
+    "overdue": "Overdue",
+    "workflowsStarted": "Workflows Started",
+    "workflowsCompleted": "Workflows Completed",
+    "recentTasks": "Recent Tasks",
+    "duration": "Duration"
+  }
+}

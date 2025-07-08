@@ -1,12 +1,12 @@
-import React, { useState } from "react";
 import {
-  TrashIcon,
-  ArrowUpIcon,
   ArrowDownIcon,
+  ArrowUpIcon,
   ChevronDownIcon,
   ChevronRightIcon,
+  TrashIcon,
 } from "@heroicons/react/24/outline";
-import DataSourceConfiguration from "./ DataSourceConfiguration";
+import { useState } from "react";
+import DataSourceConfiguration from "./DataSourceConfiguration";
 
 const FieldEditor = ({
   field,
@@ -15,49 +15,12 @@ const FieldEditor = ({
   fieldTypes,
   fields,
   setFields,
+  removeField,
+  moveField,
+  updateField,
+  updateLookupConfig,
 }) => {
   const [isCollapsed, setIsCollapsed] = useState(false);
-
-  const removeField = (id) => {
-    setFields(fields.filter((field) => field.id !== id));
-  };
-
-  const moveField = (id, direction) => {
-    const index = fields.findIndex((field) => field.id === id);
-    if (
-      (direction === "up" && index > 0) ||
-      (direction === "down" && index < fields.length - 1)
-    ) {
-      const newFields = [...fields];
-      const targetIndex = direction === "up" ? index - 1 : index + 1;
-      [newFields[index], newFields[targetIndex]] = [
-        newFields[targetIndex],
-        newFields[index],
-      ];
-      setFields(newFields);
-    }
-  };
-
-  const updateField = (id, property, value) => {
-    setFields(
-      fields.map((field) =>
-        field.id === id ? { ...field, [property]: value } : field
-      )
-    );
-  };
-
-  const updateLookupConfig = (id, property, value) => {
-    setFields(
-      fields.map((field) =>
-        field.id === id
-          ? {
-              ...field,
-              lookupConfig: { ...field.lookupConfig, [property]: value },
-            }
-          : field
-      )
-    );
-  };
 
   const selectedFieldType = fieldTypes.find(
     (type) => type.value === field.type
@@ -221,6 +184,7 @@ const FieldEditor = ({
               </label>
               <input
                 type="text"
+                id={"field-name-" + field.id}
                 value={field.name}
                 onChange={(e) => updateField(field.id, "name", e.target.value)}
                 className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 transition-colors duration-150"
@@ -233,6 +197,7 @@ const FieldEditor = ({
               </label>
               <input
                 type="text"
+                id={"field-label-" + field.id}
                 value={field.label}
                 onChange={(e) => updateField(field.id, "label", e.target.value)}
                 className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 transition-colors duration-150"
@@ -248,16 +213,7 @@ const FieldEditor = ({
               </label>
               <select
                 value={field.type}
-                onChange={(e) => {
-                  updateField(field.id, "type", e.target.value);
-                  // Reset data source when changing field type
-                  if (
-                    !fieldTypes.find((type) => type.value === e.target.value)
-                      ?.hasLookup
-                  ) {
-                    updateField(field.id, "dataSource", "manual");
-                  }
-                }}
+                onChange={(e) => updateField(field.id, "type", e.target.value)}
                 className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 transition-colors duration-150"
               >
                 {fieldTypes.map((type) => (

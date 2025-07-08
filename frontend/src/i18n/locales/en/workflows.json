@@ -1,0 +1,69 @@
+{
+  "workflows": {
+    "title": "Workflows",
+    "subtitle": "Design and manage workflows",
+    "cancelInstanceConfirmation": "Are you sure you want to cancel this workflow instance?",
+    "progress": "Progress",
+    "due": "Due",
+    "currentStep": "Current Step",
+    "assignedTo": "Assigned To",
+    "monitorManage": "Monitor and manage workflow execution instances",
+    "workflowInstances": "Workflow Instances",
+    "allWorkflowInstances": "All Workflow Instances",
+    "noInstances": "No workflow instances found"
+  },
+  "workflow": {
+    "form": "Form",
+    "status": "Status",
+    "name": "Workflow Name",
+    "category": "Workflow Category",
+    "description": "Workflow Description",
+    "selectCategory": "Select a category",
+    "active": "Active",
+    "enterName": "Enter workflow name",
+    "enterDescription": "Enter workflow description",
+    "savedSuccessfully": "Workflow saved successfully",
+    "saveFailed": "Failed to save workflow",
+    "nameRequired": "Workflow name is required",
+    "atLeastOneStepRequired": "At least one step is required",
+    "startStepRequired": "A start step is required",
+    "transitionAlreadyExists": "Transition already exists",
+    "categories": {
+      "approval": "Approval",
+      "automation": "Automation",
+      "notification": "Notification",
+      "condition": "Condition",
+      "integration": "Integration"
+    },
+    "nodes": {
+      "task": "Task",
+      "approval": "Approval",
+      "condition": "Condition",
+      "notification": "Notification",
+      "automation": "Automation",
+      "start": "Start",
+      "end": "End",
+      "taskDescription": "Assign and track manual tasks",
+      "approvalDescription": "Require approval from designated users",
+      "conditionDescription": "Branch workflow based on conditions",
+      "notificationDescription": "Send notifications to users",
+      "automationDescription": "Execute automated scripts and actions"
+    },
+    "steps": {
+      "design": "Design",
+      "properties": "Properties",
+      "test": "Test",
+      "export": "Export",
+      "approval": "Approval",
+      "automation": "Automation",
+      "notification": "Notification",
+      "condition": "Condition"
+    },
+    "instances": {
+      "allCategories": "All Categories",
+      "approval": "Approval",
+      "startInstancesHubTitle": "Start Workflow Instances",
+      "startInstancesHubDescription": "Choose a workflow to start a new instance and begin processing"
+    }
+  }
+}

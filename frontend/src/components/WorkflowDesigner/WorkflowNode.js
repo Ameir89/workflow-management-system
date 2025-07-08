@@ -1,4 +1,4 @@
-import React, { useRef, useEffect } from "react";
+import React, { useRef, useState } from "react";
 import {
   CheckCircleIcon,
   ClockIcon,
@@ -7,6 +7,7 @@ import {
   CogIcon,
   PlayIcon,
 } from "@heroicons/react/24/outline";
+import { useTranslation } from "react-i18next";
 
 const WorkflowNode = ({
   step,
@@ -21,9 +22,9 @@ const WorkflowNode = ({
   zoom,
 }) => {
   const nodeRef = useRef(null);
-  const [isDragging, setIsDragging] = React.useState(false);
-  const [dragStart, setDragStart] = React.useState(null);
-
+  const [isDragging, setIsDragging] = useState(false);
+  const [dragStart, setDragStart] = useState(null);
+  const { t } = useTranslation();
   // Simple drag and drop implementation without React DnD for the node content
   const handleMouseDown = (e) => {
     if (
@@ -146,7 +147,8 @@ const WorkflowNode = ({
 
   const handleDelete = (e) => {
     e.stopPropagation();
-    if (window.confirm("Are you sure you want to delete this node?")) {
+
+    if (window.confirm(t("designer.deleteNode"))) {
       onDelete();
     }
   };

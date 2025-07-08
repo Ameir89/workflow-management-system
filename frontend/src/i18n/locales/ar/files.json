@@ -1,0 +1,34 @@
+{
+  "files": {
+    "title": "مدير الملفات",
+    "subtitle": "رفع وإدارة الملفات",
+    "upload": "رفع ملفات",
+    "download": "تحميل",
+    "dragDropFiles": "اسحب الملفات إلى هنا أو انقر لاختيارها",
+    "dropFiles": "أسقط الملفات هنا",
+    "maxFileSize": "الحد الأقصى لحجم الملف: 50 ميجابايت",
+    "totalFiles": "إجمالي الملفات",
+    "totalSize": "إجمالي الحجم",
+    "recentFiles": "الملفات الأخيرة",
+    "fileType": "نوع الملف",
+    "accessLevel": "مستوى الوصول",
+    "gridView": "عرض شبكي",
+    "listView": "عرض قائمة",
+    "noFiles": "لا توجد ملفات",
+    "noFilesDescription": "قم برفع أول ملف للبدء",
+    "uploadSuccess": "تم رفع الملف بنجاح",
+    "deleteSuccess": "تم حذف الملف بنجاح",
+    "confirmDelete": "هل أنت متأكد من أنك تريد حذف '{{name}}'؟",
+    "access": {
+      "private": "خاص",
+      "team": "الفريق",
+      "public": "عام"
+    },
+    "types": {
+      "images": "صور",
+      "documents": "مستندات",
+      "videos": "فيديوهات",
+      "audio": "صوتيات"
+    }
+  }
+}

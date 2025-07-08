@@ -1,19 +1,29 @@
-/* Workflow Designer Layout */
 .workflow-designer {
   @apply h-full flex flex-col bg-gray-50;
+  /* Remove any max-width constraints */
+  width: 100%;
+  max-width: none;
 }
 
 .workflow-designer-toolbar {
-  @apply bg-white border-b border-gray-200 px-4 py-3 flex items-center justify-between shadow-sm;
+  @apply bg-white border-b border-gray-200 flex items-center justify-between shadow-sm;
+  /* Remove horizontal padding to allow full width */
+  padding: 0.75rem 0;
+  flex-shrink: 0;
 }
 
 .workflow-designer-main {
   @apply flex-1 flex overflow-hidden;
+  /* Ensure it takes full width */
+  width: 100%;
 }
 
-/* Toolbar styles */
+/* Toolbar styles - Updated */
 .designer-toolbar {
-  @apply flex items-center space-x-4;
+  @apply flex items-center justify-between w-full;
+  /* Add horizontal padding back to toolbar content */
+  padding-left: 1rem;
+  padding-right: 1rem;
 }
 
 .designer-toolbar-left {
@@ -94,10 +104,36 @@
   @apply text-gray-600;
 }
 
-/* Responsive design */
+/* Canvas and panels - Updated for full width */
+.node-palette {
+  @apply bg-white border-r border-gray-200 flex flex-col overflow-hidden;
+  width: 16rem; /* 256px - fixed width */
+  flex-shrink: 0;
+}
+
+.properties-panel {
+  @apply bg-white border-l border-gray-200 flex flex-col overflow-hidden;
+  width: 20rem; /* 320px - fixed width */
+  flex-shrink: 0;
+}
+
+/* Ensure canvas takes remaining space */
+.designer-canvas-container {
+  @apply flex-1 relative overflow-hidden;
+  min-width: 0; /* Allow flex item to shrink below content size */
+}
+
+/* Remove any container constraints */
+.designer-canvas {
+  @apply w-full h-full relative overflow-hidden;
+  /* Ensure canvas uses all available space */
+}
+
+/* Responsive design - Updated */
 @media (max-width: 768px) {
   .designer-toolbar {
-    @apply flex-col space-y-2 space-x-0;
+    @apply flex-col space-y-2;
+    padding: 0.75rem 1rem;
   }
 
   .designer-toolbar-left,
@@ -112,5 +148,55 @@
 
   .zoom-controls {
     @apply w-full justify-center;
+  }
+
+  /* Stack panels on mobile */
+  .workflow-designer-main {
+    @apply flex-col;
+  }
+
+  .node-palette {
+    @apply w-full border-r-0 border-b;
+    height: 12rem; /* Fixed height on mobile */
+  }
+
+  .properties-panel {
+    @apply w-full border-l-0 border-t;
+    height: 16rem; /* Fixed height on mobile */
+  }
+}
+
+/* High contrast mode */
+@media (prefers-contrast: high) {
+  .designer-toolbar-button {
+    @apply border-2;
+  }
+}
+
+/* Reduced motion */
+@media (prefers-reduced-motion: reduce) {
+  .designer-toolbar-button,
+  .zoom-button {
+    transition: none !important;
+  }
+}
+
+/* Print styles */
+@media print {
+  .workflow-designer {
+    @apply bg-white;
+  }
+
+  .designer-toolbar {
+    display: none;
+  }
+
+  .node-palette,
+  .properties-panel {
+    display: none;
+  }
+
+  .designer-canvas-container {
+    @apply w-full;
   }
 }

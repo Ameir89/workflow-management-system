@@ -1,22 +1,56 @@
 // src/components/WorkflowDesigner/PropertiesPanel/components/node-types/AutomationProperties.js
 import React, { useState } from "react";
 import { useTranslation } from "react-i18next";
+import { useQuery } from "react-query";
 import {
   CodeBracketIcon,
   InformationCircleIcon,
+  DocumentTextIcon,
 } from "@heroicons/react/24/outline";
 import FormField from "../../../../../components/Common/FormField";
 import FormSelect from "../../../../../components/Common/FormSelect";
 import FormTextarea from "../../../../../components/Common/FormTextarea";
 import PropertySection from "../PropertySection";
+import { lookupsService } from "../../../../../services/lookupsService";
 
 const AutomationProperties = ({ node, onPropertyChange }) => {
   const { t } = useTranslation();
   const properties = node.properties || {};
   const [showExamples, setShowExamples] = useState(false);
+  const [showScriptDetails, setShowScriptDetails] = useState(false);
 
-  const scriptTypeOptions = [
-    { value: "javascript", label: "JavaScript" },
+  // Fetch scripts from lookup table
+  const { data: scriptsLookupData, isLoading: scriptsLoading } = useQuery(
+    ["lookup-scripts-for-workflow"],
+    () =>
+      lookupsService.getLookupOptions("scripts", {
+        filters: {
+          status: "active",
+          categories: ["automation", "utility", "transformation", "validation"],
+        },
+      }),
+    {
+      keepPreviousData: true,
+      staleTime: 5 * 60 * 1000, // 5 minutes cache
+    }
+  );
+
+  // Get script details when one is selected
+  const { data: selectedScriptDetails } = useQuery(
+    ["script-details", properties.selectedScriptId],
+    () =>
+      lookupsService.getLookupData("scripts", {
+        filters: { id: properties.selectedScriptId },
+      }),
+    {
+      enabled: !!properties.selectedScriptId,
+      keepPreviousData: true,
+    }
+  );
+
+  const executionModeOptions = [
+    { value: "script", label: "Execute Script" },
+    { value: "inline", label: "Inline Code" },
     { value: "webhook", label: "Webhook Call" },
     { value: "email", label: "Email Action" },
     { value: "database", label: "Database Query" },
@@ -30,9 +64,25 @@ const AutomationProperties = ({ node, onPropertyChange }) => {
     { value: "PATCH", label: "PATCH" },
   ];
 
+  // Format script options from lookup data
+  const scriptOptions = [
+    { value: "", label: t("designer.selectScript") },
+    ...(scriptsLookupData?.options || []).map((script) => ({
+      value: script.value, // This will be the script ID
+      label: `${script.label} (${script.category || "General"})`,
+      data: script, // Store full script data for reference
+    })),
+  ];
+
+  const selectedScript =
+    selectedScriptDetails?.data?.[0] ||
+    scriptsLookupData?.options?.find(
+      (script) => script.value === properties.selectedScriptId
+    );
+
   const getScriptPlaceholder = () => {
-    const scriptType = properties.scriptType || "javascript";
-    switch (scriptType) {
+    const executionMode = properties.executionMode || "inline";
+    switch (executionMode) {
       case "javascript":
         return t("designer.javascriptPlaceholder");
       case "webhook":
@@ -46,10 +96,249 @@ const AutomationProperties = ({ node, onPropertyChange }) => {
     }
   };
 
-  const renderScriptTypeSpecificFields = () => {
-    const scriptType = properties.scriptType || "javascript";
+  const renderExecutionModeSpecificFields = () => {
+    const executionMode = properties.executionMode || "script";
 
-    switch (scriptType) {
+    switch (executionMode) {
+      case "script":
+        return (
+          <div className="space-y-4">
+            <FormSelect
+              label={t("designer.selectScript")}
+              value={properties.selectedScriptId || ""}
+              onChange={(e) => {
+                const scriptId = e.target.value;
+                const scriptOption = scriptsLookupData?.options?.find(
+                  (s) => s.value === scriptId
+                );
+
+                onPropertyChange("selectedScriptId", scriptId);
+                if (scriptOption) {
+                  onPropertyChange("selectedScriptName", scriptOption.label);
+                  onPropertyChange(
+                    "selectedScriptCategory",
+                    scriptOption.category || "general"
+                  );
+
+                  // Pre-populate script parameters if they exist in the script data
+                  if (scriptOption.parameters) {
+                    onPropertyChange(
+                      "scriptParameters",
+                      scriptOption.parameters
+                    );
+                  }
+                }
+              }}
+              options={scriptOptions}
+              disabled={scriptsLoading}
+            />
+
+            {scriptsLoading && (
+              <div className="flex items-center text-sm text-gray-500">
+                <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-indigo-600 mr-2"></div>
+                Loading scripts...
+              </div>
+            )}
+
+            {selectedScript && (
+              <div className="space-y-3">
+                <div className="p-3 bg-blue-50 rounded-md">
+                  <div className="flex items-start space-x-2">
+                    <DocumentTextIcon className="h-4 w-4 text-blue-500 mt-0.5 flex-shrink-0" />
+                    <div>
+                      <h5 className="text-sm font-medium text-blue-900">
+                        {selectedScript.label || selectedScript.name}
+                      </h5>
+                      <p className="text-xs text-blue-700 mt-1">
+                        {selectedScript.description}
+                      </p>
+                      <div className="flex items-center space-x-4 mt-2 text-xs text-blue-600">
+                        <span>
+                          Category: {selectedScript.category || "General"}
+                        </span>
+                        <span>
+                          Language: {selectedScript.language || "JavaScript"}
+                        </span>
+                        {selectedScript.version && (
+                          <span>Version: {selectedScript.version}</span>
+                        )}
+                      </div>
+                    </div>
+                  </div>
+
+                  <button
+                    type="button"
+                    onClick={() => setShowScriptDetails(!showScriptDetails)}
+                    className="text-xs text-blue-600 hover:text-blue-700 mt-2"
+                  >
+                    {showScriptDetails ? "Hide Details" : "Show Details"}
+                  </button>
+                </div>
+
+                {showScriptDetails && selectedScript.preview_content && (
+                  <div className="p-3 bg-gray-50 rounded-md">
+                    <h6 className="text-xs font-medium text-gray-900 mb-2">
+                      Script Preview:
+                    </h6>
+                    <pre className="text-xs bg-white p-2 rounded border overflow-x-auto max-h-32">
+                      <code>{selectedScript.preview_content}</code>
+                    </pre>
+                  </div>
+                )}
+
+                {/* Script Parameters from Lookup Data */}
+                {selectedScript.parameters &&
+                  selectedScript.parameters.length > 0 && (
+                    <div className="space-y-3">
+                      <h6 className="text-sm font-medium text-gray-900">
+                        Script Parameters:
+                      </h6>
+                      {selectedScript.parameters.map((param, index) => (
+                        <FormField
+                          key={index}
+                          label={param.name}
+                          help={param.description}
+                        >
+                          {param.type === "select" && param.options ? (
+                            <select
+                              value={
+                                properties.scriptParameterValues?.[
+                                  param.name
+                                ] ||
+                                param.default_value ||
+                                ""
+                              }
+                              onChange={(e) => {
+                                const currentValues =
+                                  properties.scriptParameterValues || {};
+                                onPropertyChange("scriptParameterValues", {
+                                  ...currentValues,
+                                  [param.name]: e.target.value,
+                                });
+                              }}
+                              className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-indigo-500"
+                            >
+                              <option value="">Select {param.name}</option>
+                              {param.options.map((option, optIndex) => (
+                                <option key={optIndex} value={option.value}>
+                                  {option.label}
+                                </option>
+                              ))}
+                            </select>
+                          ) : param.type === "textarea" ? (
+                            <textarea
+                              value={
+                                properties.scriptParameterValues?.[
+                                  param.name
+                                ] ||
+                                param.default_value ||
+                                ""
+                              }
+                              onChange={(e) => {
+                                const currentValues =
+                                  properties.scriptParameterValues || {};
+                                onPropertyChange("scriptParameterValues", {
+                                  ...currentValues,
+                                  [param.name]: e.target.value,
+                                });
+                              }}
+                              className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-indigo-500"
+                              rows={3}
+                              placeholder={
+                                param.placeholder || `Enter ${param.name}`
+                              }
+                            />
+                          ) : (
+                            <input
+                              type={
+                                param.type === "number"
+                                  ? "number"
+                                  : param.type === "email"
+                                  ? "email"
+                                  : "text"
+                              }
+                              value={
+                                properties.scriptParameterValues?.[
+                                  param.name
+                                ] ||
+                                param.default_value ||
+                                ""
+                              }
+                              onChange={(e) => {
+                                const currentValues =
+                                  properties.scriptParameterValues || {};
+                                onPropertyChange("scriptParameterValues", {
+                                  ...currentValues,
+                                  [param.name]: e.target.value,
+                                });
+                              }}
+                              className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-indigo-500"
+                              placeholder={
+                                param.placeholder || `Enter ${param.name}`
+                              }
+                            />
+                          )}
+                          {param.required && (
+                            <p className="text-xs text-red-600 mt-1">
+                              Required parameter
+                            </p>
+                          )}
+                        </FormField>
+                      ))}
+                    </div>
+                  )}
+
+                {/* Script Usage Instructions */}
+                {selectedScript.usage_instructions && (
+                  <div className="p-3 bg-yellow-50 rounded-md">
+                    <h6 className="text-xs font-medium text-yellow-900 mb-1">
+                      Usage Instructions:
+                    </h6>
+                    <p className="text-xs text-yellow-800">
+                      {selectedScript.usage_instructions}
+                    </p>
+                  </div>
+                )}
+
+                {/* Script Dependencies */}
+                {selectedScript.dependencies &&
+                  selectedScript.dependencies.length > 0 && (
+                    <div className="p-3 bg-gray-50 rounded-md">
+                      <h6 className="text-xs font-medium text-gray-900 mb-1">
+                        Dependencies:
+                      </h6>
+                      <div className="flex flex-wrap gap-1">
+                        {selectedScript.dependencies.map((dep, index) => (
+                          <span
+                            key={index}
+                            className="text-xs bg-gray-200 px-2 py-1 rounded"
+                          >
+                            {dep}
+                          </span>
+                        ))}
+                      </div>
+                    </div>
+                  )}
+              </div>
+            )}
+
+            {/* No Scripts Available Message */}
+            {!scriptsLoading &&
+              (!scriptsLookupData?.options ||
+                scriptsLookupData.options.length === 0) && (
+                <div className="p-3 bg-gray-50 rounded-md text-center">
+                  <p className="text-sm text-gray-600">
+                    No scripts available for workflow automation.
+                  </p>
+                  <p className="text-xs text-gray-500 mt-1">
+                    Create scripts in the Scripts section to use them in
+                    workflows.
+                  </p>
+                </div>
+              )}
+          </div>
+        );
+
       case "webhook":
         return (
           <div className="space-y-4">
@@ -133,9 +422,9 @@ const AutomationProperties = ({ node, onPropertyChange }) => {
   };
 
   const getCodeExamples = () => {
-    const scriptType = properties.scriptType || "javascript";
+    const executionMode = properties.executionMode || "inline";
     const examples = {
-      javascript: `// Access workflow data
+      inline: `// Access workflow data
 const workflowData = context.workflow;
 const taskData = context.task;
 
@@ -178,30 +467,33 @@ db.tasks.updateOne(
   }
 )`,
     };
-    return examples[scriptType] || examples.javascript;
+    return examples[executionMode] || examples.inline;
   };
 
   return (
     <PropertySection title={t("designer.automationProperties")}>
       <div className="space-y-4">
         <FormSelect
-          label={t("designer.scriptType")}
-          value={properties.scriptType || "javascript"}
-          onChange={(e) => onPropertyChange("scriptType", e.target.value)}
-          options={scriptTypeOptions}
+          label={t("designer.executionMode")}
+          value={properties.executionMode || "script"}
+          onChange={(e) => onPropertyChange("executionMode", e.target.value)}
+          options={executionModeOptions}
         />
 
-        {renderScriptTypeSpecificFields()}
+        {renderExecutionModeSpecificFields()}
 
-        <FormField label={t("designer.script")} required>
-          <FormTextarea
-            value={properties.script || ""}
-            onChange={(e) => onPropertyChange("script", e.target.value)}
-            rows={10}
-            className="font-mono text-sm"
-            placeholder={getScriptPlaceholder()}
-          />
-        </FormField>
+        {/* Inline code editor for non-script modes */}
+        {properties.executionMode !== "script" && (
+          <FormField label={t("designer.script")} required>
+            <FormTextarea
+              value={properties.script || ""}
+              onChange={(e) => onPropertyChange("script", e.target.value)}
+              rows={10}
+              className="font-mono text-sm"
+              placeholder={getScriptPlaceholder()}
+            />
+          </FormField>
+        )}
 
         <FormField
           label={t("designer.timeout")}
@@ -222,30 +514,32 @@ db.tasks.updateOne(
           </div>
         </FormField>
 
-        {/* Code Examples Section */}
-        <div className="border-t pt-4">
-          <button
-            type="button"
-            onClick={() => setShowExamples(!showExamples)}
-            className="flex items-center text-sm text-indigo-600 hover:text-indigo-700"
-          >
-            <CodeBracketIcon className="h-4 w-4 mr-1" />
-            {showExamples
-              ? t("designer.hideExamples")
-              : t("designer.showExamples")}
-          </button>
+        {/* Code Examples Section - only for inline mode */}
+        {properties.executionMode !== "script" && (
+          <div className="border-t pt-4">
+            <button
+              type="button"
+              onClick={() => setShowExamples(!showExamples)}
+              className="flex items-center text-sm text-indigo-600 hover:text-indigo-700"
+            >
+              <CodeBracketIcon className="h-4 w-4 mr-1" />
+              {showExamples
+                ? t("designer.hideExamples")
+                : t("designer.showExamples")}
+            </button>
 
-          {showExamples && (
-            <div className="mt-3 p-4 bg-gray-50 rounded-md">
-              <h5 className="text-sm font-medium text-gray-900 mb-2">
-                {t("designer.codeExample")}
-              </h5>
-              <pre className="text-xs bg-white p-3 rounded border overflow-x-auto">
-                <code>{getCodeExamples()}</code>
-              </pre>
-            </div>
-          )}
-        </div>
+            {showExamples && (
+              <div className="mt-3 p-4 bg-gray-50 rounded-md">
+                <h5 className="text-sm font-medium text-gray-900 mb-2">
+                  {t("designer.codeExample")}
+                </h5>
+                <pre className="text-xs bg-white p-3 rounded border overflow-x-auto">
+                  <code>{getCodeExamples()}</code>
+                </pre>
+              </div>
+            )}
+          </div>
+        )}
 
         {/* Available Variables Info */}
         <div className="p-3 bg-blue-50 rounded-md">

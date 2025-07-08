@@ -82,12 +82,15 @@ const RecentTasks = ({ tasks = [] }) => {
                   </p>
                   <div className="flex items-center text-xs text-gray-400 mt-2">
                     <UserIcon className="h-3 w-3 mr-1" />
-                    <span>{task.assigned_to_name || "Unassigned"}</span>
+                    <span>
+                      {task.assigned_to_name || t("tasks.unassigned")}
+                    </span>
                     {task.due_date && (
                       <>
                         <span className="mx-2">•</span>
                         <span>
-                          Due {new Date(task.due_date).toLocaleDateString()}
+                          {t("tasks.due")}{" "}
+                          {new Date(task.due_date).toLocaleDateString()}
                         </span>
                       </>
                     )}

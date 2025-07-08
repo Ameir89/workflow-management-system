@@ -263,22 +263,26 @@ def get_task(task_id):
         if not task:
             return jsonify({'error': 'Task not found'}), 404
 
-        # 
+        logger.debug(f"Fetched task record: {task} (type: {type(task)})")
+
+        # 🔐 SAFE DICT CONVERSION
         try:
-            task_dict = dict(task)
+            task_dict = dict(task.items())  # safest and preferred
         except Exception as ex:
-            logger.error(f"Failed to convert DB task result to dict: {ex}; raw={task}")
-            return jsonify({'error': 'Internal format error while reading task'}), 500
+            logger.error(f"Failed to convert DB result to dict: {ex}")
+            return jsonify({'error': 'Internal data conversion error'}), 500
 
-        # Safely parse all expected JSON fields
-        for field in ['form_data', 'result', 'metadata', 'workflow_data', 'workflow_definition', 'form_schema']:
-            task_dict[field] = JSONUtils.safe_parse_json(task_dict.get(field))
+        # 🔄 Parse all expected JSON fields safely
+        json_fields = ['form_data', 'result', 'metadata', 'workflow_data', 'workflow_definition', 'form_schema']
+        for field in json_fields:
+            if field in task_dict:
+                task_dict[field] = JSONUtils.safe_parse_json(task_dict.get(field))
 
-        # Add detailed approval information
+        # 🧾 Add approval info
         approval_info = _extract_approval_info(task_dict, detailed=True)
         task_dict.update(approval_info)
 
-        # Get form responses if any
+        # 📄 Form responses
         form_responses = Database.execute_query("""
             SELECT fr.*, u.first_name || ' ' || u.last_name as submitted_by_name
             FROM form_responses fr
@@ -287,9 +291,8 @@ def get_task(task_id):
             ORDER BY fr.submitted_at DESC
         """, (task_id,))
 
-        # Parse form response data
         for response in form_responses:
-            if response['data']:
+            if response.get('data'):
                 try:
                     response['data'] = json.loads(response['data']) if isinstance(response['data'], str) else response['data']
                 except (json.JSONDecodeError, TypeError):
@@ -297,7 +300,7 @@ def get_task(task_id):
 
         task_dict['form_responses'] = [dict(fr) for fr in form_responses]
 
-        # Get task comments/notes if any
+        # 📝 Comments
         task_comments = Database.execute_query("""
             SELECT tc.*, u.first_name || ' ' || u.last_name as author_name
             FROM task_comments tc
@@ -308,7 +311,7 @@ def get_task(task_id):
 
         task_dict['comments'] = [dict(tc) for tc in task_comments] if task_comments else []
 
-        # Get approval history for approval tasks
+        # 🧾 Approval history
         if task_dict.get('type') == 'approval' or task_dict.get('approval_type'):
             approval_history = Database.execute_query("""
                 SELECT al.action, al.new_values, al.created_at,
@@ -318,11 +321,10 @@ def get_task(task_id):
                 LEFT JOIN users u ON al.user_id = u.id
                 WHERE al.resource_type = 'task' 
                 AND al.resource_id = %s
-                AND al.action LIKE 'approval_%'
+                AND al.action LIKE 'approval_%%'
                 ORDER BY al.created_at DESC
             """, (task_id,))
 
-            # Parse the approval decisions
             history = []
             for record in approval_history:
                 try:
@@ -344,9 +346,9 @@ def get_task(task_id):
         return jsonify({'task': task_dict}), 200
 
     except Exception as e:
-        logger.error(f"Error getting task {task_id}: {e}")
+        logger.error(f"Error getting task {task_id}: {e}", exc_info=True)
         return jsonify({'error': 'Failed to retrieve task'}), 500
-    
+
 # @tasks_bp.route('', methods=['GET'])
 # @require_auth
 # def get_tasks():

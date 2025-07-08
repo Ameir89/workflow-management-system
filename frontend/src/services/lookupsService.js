@@ -1,4 +1,3 @@
-// services/lookupsService.js
 import { api } from "./authService";
 
 export const lookupsService = {
@@ -28,26 +27,41 @@ export const lookupsService = {
     return response.data;
   },
 
-  // Lookup Data Management
+  // Lookup Data Management - Updated to handle API response structure
   getLookupData: async (tableId, params = {}) => {
     const response = await api.get(`/lookups/tables/${tableId}/data`, {
       params,
     });
-    return response.data;
+
+    // Return the data array directly, but preserve table metadata
+    return {
+      data: response.data.data || [],
+      table: response.data.table || {},
+      pagination: response.data.pagination || {},
+    };
   },
 
   createLookupRecord: async (tableId, recordData) => {
-    const response = await api.post(
-      `/lookups/tables/${tableId}/data`,
-      recordData
-    );
+    // API expects the data in a specific format
+    const payload = {
+      data: recordData,
+      is_active: true,
+    };
+
+    const response = await api.post(`/lookups/tables/${tableId}/data`, payload);
     return response.data;
   },
 
   updateLookupRecord: async (tableId, recordId, recordData) => {
+    // API expects the data in a specific format
+    const payload = {
+      data: recordData,
+      is_active: true,
+    };
+
     const response = await api.put(
       `/lookups/tables/${tableId}/data/${recordId}`,
-      recordData
+      payload
     );
     return response.data;
   },

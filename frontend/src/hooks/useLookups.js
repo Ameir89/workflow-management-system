@@ -1,4 +1,3 @@
-// src/hooks/useLookups.js
 import { useQuery, useMutation, useQueryClient } from "react-query";
 import { lookupsService } from "../services/lookupsService";
 import { toast } from "react-toastify";
@@ -146,7 +145,7 @@ export const useLookups = () => {
       {
         onSuccess: (response) => {
           toast.success(
-            `Successfully imported ${response.imported_count} records`
+            `Successfully imported ${response.imported_count || "some"} records`
           );
           queryClient.invalidateQueries(["lookup-table-data", tableId]);
           options.onSuccess?.(response);
@@ -233,6 +232,8 @@ export const useLookupTable = (tableId) => {
 
   return {
     data: dataQuery.data?.data || [],
+    table: dataQuery.data?.table || {},
+    pagination: dataQuery.data?.pagination || {},
     isLoading: dataQuery.isLoading,
     error: dataQuery.error,
     refetch: dataQuery.refetch,

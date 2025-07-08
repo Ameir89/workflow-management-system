@@ -1,4 +1,3 @@
-// Enhanced WorkflowDesigner.js with proper condition handling
 import React, { useState, useCallback, useRef } from "react";
 import { DndProvider } from "react-dnd";
 import { HTML5Backend } from "react-dnd-html5-backend";
@@ -482,7 +481,7 @@ const WorkflowDesignerContent = () => {
   }
 
   return (
-    <div className="workflow-designer h-screen flex flex-col">
+    <div className="workflow-designer h-full flex flex-col">
       <DesignerToolbar
         workflow={workflow}
         onSave={handleSaveWorkflow}
@@ -530,7 +529,7 @@ const WorkflowDesignerContent = () => {
 };
 
 // Main component with DnD Provider
-const WorkflowDesigner = () => {
+const WorkflowDesignerUpdated = () => {
   return (
     <DndProvider backend={HTML5Backend}>
       <WorkflowDesignerContent />
@@ -538,4 +537,4 @@ const WorkflowDesigner = () => {
   );
 };
 
-export default WorkflowDesigner;
+export default WorkflowDesignerUpdated;
