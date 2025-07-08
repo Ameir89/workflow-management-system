@@ -237,10 +237,27 @@ class WorkflowEngine:
             value = cond.get('value')
 
             logger.info(f"Single condition: {field} {operator} {value}")
+            
+            # قائمة الـ prefixes المحتملة في أسماء الحقول
+            prefixes = ['task.', 'sys_', 'custom_']
 
+            # إزالة الـ prefix من اسم الحقل نفسه إن وُجد
+            original_field = field  # للاحتفاظ بالاسم الأصلي للّـ log
+            if isinstance(field, str):
+                for prefix in prefixes:
+                    if field.startswith(prefix):
+                        logger.info(f"Detected prefix '{prefix}' in field name '{field}'")
+                        field = field[len(prefix):]  # إزالة الـ prefix
+                        logger.info(f"Field name after removing prefix: {field}")
+                        break
+
+            # التحقق من وجود الحقل في البيانات بعد إزالة الـ prefix
             if field not in data:
-                logger.info(f"Field '{field}' not found in data")
+                logger.info(f"Field '{field}' not found in data (original: '{original_field}')")
                 return False
+            # if field not in data:
+            #     logger.info(f"Field '{field}' not found in data")
+            #     return False
 
             field_value = data[field]
             logger.info(f"Field value: {field_value} (type: {type(field_value)})")
@@ -291,77 +308,7 @@ class WorkflowEngine:
 
         # Single condition object
         return evaluate_single(condition)
-    # @staticmethod
-    # def complete_task(task_id, result_data, completed_by):
-    #     """Complete a task and advance workflow"""
-    #     try:
-    #         # Get task and workflow instance
-    #         task = WorkflowEngine._get_task(task_id)
-    #         if not task:
-    #             raise ValueError(f"Task {task_id} not found")
-    #
-    #         if task['status'] != 'pending':
-    #             raise ValueError(f"Task {task_id} is not in pending status")
-    #
-    #         # Update task with completed_by field
-    #         WorkflowEngine._update_task_status(task_id, 'completed', result_data, completed_by)
-    #
-    #         # Get workflow definition and context
-    #         workflow_instance = WorkflowEngine._get_workflow_instance(task['workflow_instance_id'])
-    #         workflow = WorkflowEngine._get_workflow(workflow_instance['workflow_id'])
-    #
-    #         if isinstance(workflow['definition'], str):
-    #             definition = json.loads(workflow['definition'])
-    #         else:
-    #             definition = workflow['definition']
-    #
-    #         # Create context for next step resolution
-    #         workflow_data = json.loads(workflow_instance['data']) if workflow_instance['data'] else {}
-    #         workflow_data.update(result_data)  # Merge task result into workflow data
-    #
-    #         context = {
-    #             'initiator': workflow_instance['initiated_by'],
-    #             'initiated_by': workflow_instance['initiated_by'],
-    #             'tenant_id': workflow_instance['tenant_id'],
-    #             'workflow_data': workflow_data,
-    #             'completed_by': completed_by,
-    #             'workflow_instance_id': task['workflow_instance_id']
-    #         }
-    #
-    #         # Update workflow instance data
-    #         Database.execute_query("""
-    #             UPDATE workflow_instances
-    #             SET data = %s, updated_at = NOW()
-    #             WHERE id = %s
-    #         """, (json.dumps(workflow_data), task['workflow_instance_id']))
-    #
-    #         # Determine next step
-    #         next_step = WorkflowEngine._get_next_step(
-    #             definition, task['step_id'], result_data
-    #         )
-    #
-    #         # logger.info(f"Determine next step is : {next_step} for instance {task['workflow_instance_id']}")
-    #
-    #         if next_step:
-    #             logger.info(f"Determine next step is : {next_step} for instance {task['workflow_instance_id']}")
-    #             WorkflowEngine._execute_step(task['workflow_instance_id'], next_step, definition, context)
-    #         else:
-    #             logger.info(f"Workflow complete for instance {task['workflow_instance_id']}")
-    #             # Workflow complete
-    #             WorkflowEngine._complete_workflow(task['workflow_instance_id'])
-    #
-    #         # Log audit
-    #         AuditLogger.log_action(
-    #             user_id=completed_by,
-    #             action='task_completed',
-    #             resource_type='task',
-    #             resource_id=task_id
-    #         )
-    #
-    #     except Exception as e:
-    #         logger.error(f"Failed to complete task {task_id}: {e}")
-    #         raise
-
+    
     @staticmethod
     def _execute_step(instance_id, step, definition, context):
         """Execute a workflow step with enhanced automation support"""
@@ -671,84 +618,7 @@ class WorkflowEngine:
 
         logger.warning(f"Could not resolve assignee: {assignee_config}")
         return None
-    # @staticmethod
-    # def _resolve_assignee(assignee_config, context):
-    #     """Enhanced assignee resolution with automation result support"""
-    #     if not assignee_config:
-    #         return None
-
-    #     # If it's already a valid UUID, return it
-    #     if WorkflowEngine._is_valid_uuid(assignee_config):
-    #         return assignee_config
-
-    #     # Handle template variables
-    #     if isinstance(assignee_config, str):
-    #         # Handle {{initiator}} template
-    #         if assignee_config == '{{initiator}}' or assignee_config == '{{initiated_by}}':
-    #             return context.get('initiator') or context.get('initiated_by')
-
-    #         # Handle automation result variables like {{automation_results.api_step.response.user_id}}
-    #         if assignee_config.startswith('{{automation_results.'):
-    #             try:
-    #                 # Extract the path from the template
-    #                 path = assignee_config[2:-2]  # Remove {{ and }}
-    #                 parts = path.split('.')
-
-    #                 # Navigate through the workflow data
-    #                 workflow_data = context.get('workflow_data', {})
-    #                 value = workflow_data
-
-    #                 for part in parts:
-    #                     value = value[part]
-
-    #                 if WorkflowEngine._is_valid_uuid(value):
-    #                     return value
-
-    #             except (KeyError, TypeError):
-    #                 logger.warning(f"Could not resolve automation result assignee: {assignee_config}")
-    #                 return None
-
-    #         # Handle other template variables like {{manager}}, {{supervisor}}
-    #         template_match = re.match(r'\{\{([^}]+)\}\}', assignee_config)
-    #         if template_match:
-    #             var_name = template_match.group(1)
-
-    #             # Check if variable exists in workflow data
-    #             workflow_data = context.get('workflow_data', {})
-    #             if var_name in workflow_data:
-    #                 assignee_value = workflow_data[var_name]
-    #                 if WorkflowEngine._is_valid_uuid(assignee_value):
-    #                     return assignee_value
-
-    #             # Check if it's a role-based assignment
-    #             if var_name in ['manager', 'supervisor', 'department_head']:
-    #                 return WorkflowEngine._get_user_by_role(var_name, context.get('tenant_id'))
-
-    #             # If not found, log warning and return None
-    #             logger.warning(f"Could not resolve assignee variable: {var_name}")
-    #             return None
-
-    #         # Handle role-based assignment like "role:manager"
-    #         if assignee_config.startswith('role:'):
-    #             role_name = assignee_config[5:]
-    #             return WorkflowEngine._get_user_by_role(role_name, context.get('tenant_id'))
-
-    #         # Handle dynamic assignment based on automation results
-    #         if assignee_config.startswith('auto:'):
-    #             auto_type = assignee_config[5:]
-    #             return WorkflowEngine._resolve_auto_assignee(auto_type, context)
-
-    #         # Handle user lookup by username or email
-    #         if '@' in assignee_config:
-    #             # Assume it's an email
-    #             return WorkflowEngine._get_user_by_email(assignee_config, context.get('tenant_id'))
-    #         else:
-    #             # Assume it's a username
-    #             return WorkflowEngine._get_user_by_username(assignee_config, context.get('tenant_id'))
-
-    #     # If we can't resolve it, return None (unassigned task)
-    #     logger.warning(f"Could not resolve assignee: {assignee_config}")
-    #     return None
+    
 
     @staticmethod
     def _resolve_auto_assignee(auto_type, context):
@@ -1049,46 +919,7 @@ class WorkflowEngine:
 
         return None
 
-    # @staticmethod
-    # def _evaluate_condition_expression(condition, data):
-    #     """Evaluate a condition expression (supports 'all', 'any', and simple condition objects)"""
-    #
-    #     def evaluate_single(cond):
-    #         field = cond.get('field')
-    #         operator = cond.get('operator')
-    #         value = cond.get('value')
-    #
-    #         if field not in data:
-    #             return False
-    #
-    #         field_value = data[field]
-    #
-    #         try:
-    #             if operator == 'equals':
-    #                 return field_value == value
-    #             elif operator == 'not_equals':
-    #                 return field_value != value
-    #             elif operator == 'greater_than':
-    #                 return float(field_value) > float(value)
-    #             elif operator == 'less_than':
-    #                 return float(field_value) < float(value)
-    #             elif operator == 'contains':
-    #                 return value in str(field_value)
-    #             elif operator == 'between':
-    #                 return value[0] <= float(field_value) <= value[1]
-    #         except Exception as e:
-    #             logger.warning(f"Condition evaluation error: {e}")
-    #         return False
-    #
-    #     # Compound conditions
-    #     if 'all' in condition:
-    #         return all(WorkflowEngine._evaluate_condition_expression(c, data) for c in condition['all'])
-    #     elif 'any' in condition:
-    #         return any(WorkflowEngine._evaluate_condition_expression(c, data) for c in condition['any'])
-    #
-    #     # Single condition object
-    #     return evaluate_single(condition)
-
+   
     @staticmethod
     def _find_step_by_id(steps, step_id):
         """Find step by ID in steps list"""
