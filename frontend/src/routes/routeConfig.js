@@ -17,6 +17,7 @@ export const ROUTES = {
     INSTANCES: "/workflows/instances",
     WORKFLOW_INSTANCES: "/workflows/:workflowId/instances",
     INSTANCE_DETAIL: "/workflows/instances/:instanceId",
+    MY_INSTANCES: "/my-workflows",
   },
 
   // Task routes

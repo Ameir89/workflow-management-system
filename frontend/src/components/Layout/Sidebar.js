@@ -24,6 +24,7 @@ import {
   KeyIcon,
   BellAlertIcon,
   CodeBracketSquareIcon,
+  InboxArrowDownIcon,
 } from "@heroicons/react/24/outline";
 import {
   HomeIcon as HomeIconSolid,
@@ -38,6 +39,7 @@ import {
   KeyIcon as KeyIconSolid,
   BellAlertIcon as BellAlertIconSolid,
   CodeBracketSquareIcon as CodeBracketSquareIconSolid,
+  InboxArrowDownIcon as InboxArrowDownIconSolid,
 } from "@heroicons/react/24/solid";
 
 const Sidebar = ({ isOpen, onClose, userPermissions = [] }) => {
@@ -75,13 +77,13 @@ const Sidebar = ({ isOpen, onClose, userPermissions = [] }) => {
     },
 
     {
-      name: t("nav.startWorkflows"),
+      name: t("nav.startInstances"),
       href: "/start-workflows",
       icon: RocketLaunchIcon,
       iconSolid: RocketLaunchIconSolid,
     },
     {
-      name: t("nav.tasks"),
+      name: t("nav.myTasks"),
       href: "/tasks",
       icon: ClipboardDocumentListIcon,
       iconSolid: ClipboardDocumentListIconSolid,
@@ -92,6 +94,13 @@ const Sidebar = ({ isOpen, onClose, userPermissions = [] }) => {
               type: "warning",
             }
           : null,
+    },
+    {
+      name: t("nav.myInstances"),
+      href: "/my-workflows",
+      icon: InboxArrowDownIcon,
+      iconSolid: InboxArrowDownIconSolid,
+      badge: null,
     },
 
     {

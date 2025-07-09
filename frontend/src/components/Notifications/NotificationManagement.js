@@ -12,14 +12,11 @@ import {
   EyeIcon,
   DocumentTextIcon,
   CogIcon,
-  UserGroupIcon,
   ClockIcon,
   CheckCircleIcon,
   XCircleIcon,
   ExclamationTriangleIcon,
   MagnifyingGlassIcon,
-  FunnelIcon,
-  ArrowPathIcon,
   PlayIcon,
   PauseIcon,
   ChartBarIcon,
@@ -71,15 +68,6 @@ const NotificationManagement = () => {
     {
       keepPreviousData: true,
       enabled: activeTab === "history",
-    }
-  );
-
-  // Fetch notification settings
-  const { data: settingsData } = useQuery(
-    ["notification-settings"],
-    () => notificationManagementService.getSettings(),
-    {
-      enabled: activeTab === "settings",
     }
   );
 

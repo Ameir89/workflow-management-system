@@ -209,7 +209,9 @@ class WorkflowEngine:
                 logger.info(f"Transition has condition: {condition}")
                 condition_result = WorkflowEngine._evaluate_condition_expression(condition, result_data)
                 logger.info(f"Condition evaluation result: {condition_result}")
-
+                
+                print(f"Ameir Elshareif : Condition evaluation result: {condition_result}")
+                logger.info(f"Ameir Elshareif :Condition evaluation result: {condition_result}")
                 if condition_result:
                     target_step = WorkflowEngine._find_step_by_id(steps, transition['to'])
                     logger.info(f"✓ Condition met! Target step: {target_step}")
@@ -224,10 +226,10 @@ class WorkflowEngine:
 
         logger.warning(f"❌ No valid transitions found from '{current_step_id}'")
         return None
-
+    
     @staticmethod
     def _evaluate_condition_expression(condition, data):
-        """Enhanced condition evaluation with debugging"""
+        """Evaluate a condition with optional nested rules."""
         logger.info(f"Evaluating condition: {condition}")
         logger.info(f"Against data: {data}")
 
@@ -236,78 +238,179 @@ class WorkflowEngine:
             operator = cond.get('operator')
             value = cond.get('value')
 
-            logger.info(f"Single condition: {field} {operator} {value}")
-            
-            # قائمة الـ prefixes المحتملة في أسماء الحقول
-            prefixes = ['task.', 'sys_', 'custom_']
+            logger.info(f"Evaluating single condition: {cond}")
 
-            # إزالة الـ prefix من اسم الحقل نفسه إن وُجد
-            original_field = field  # للاحتفاظ بالاسم الأصلي للّـ log
+            if not field or not operator:
+                logger.warning(f"Invalid condition: missing field/operator -> {cond}")
+                return False
+
+            prefixes = ['task.', 'sys_', 'custom_', 'workflow.']
+            original_field = field
+
             if isinstance(field, str):
                 for prefix in prefixes:
                     if field.startswith(prefix):
                         logger.info(f"Detected prefix '{prefix}' in field name '{field}'")
-                        field = field[len(prefix):]  # إزالة الـ prefix
-                        logger.info(f"Field name after removing prefix: {field}")
+                        field = field[len(prefix):]
                         break
 
-            # التحقق من وجود الحقل في البيانات بعد إزالة الـ prefix
-            if field not in data:
-                logger.info(f"Field '{field}' not found in data (original: '{original_field}')")
-                return False
-            # if field not in data:
-            #     logger.info(f"Field '{field}' not found in data")
-            #     return False
+            field_value = data.get(field)
+            if field_value is None and isinstance(data.get('form_data'), dict):
+                field_value = data['form_data'].get(field)
 
-            field_value = data[field]
+            if field_value is None:
+                logger.info(f"Field '{field}' not found in data or form_data (original: '{original_field}')")
+                return False
+
             logger.info(f"Field value: {field_value} (type: {type(field_value)})")
 
             try:
-
                 if operator == 'equals':
-                    result = field_value == value
+                    return str(field_value) == str(value)
                 elif operator == 'not_equals':
-                    result = field_value != value
+                    return str(field_value) != str(value)
                 elif operator == 'greater_than':
-                    result = float(field_value) > float(value)
+                    return float(field_value) > float(value)
                 elif operator == 'less_than':
-                    result = float(field_value) < float(value)
+                    return float(field_value) < float(value)
                 elif operator == 'contains':
-                    result = value in str(field_value)
+                    return str(value) in str(field_value)
                 elif operator == 'between':
-                    result = value[0] <= float(field_value) <= value[1]
+                    if isinstance(value, (list, tuple)) and len(value) == 2:
+                        return float(value[0]) <= float(field_value) <= float(value[1])
+                    else:
+                        logger.warning(f"Invalid 'between' value: {value}")
+                        return False
                 else:
                     logger.warning(f"Unknown operator: {operator}")
-                    result = False
-
-                logger.info(f"Condition result: {result}")
-                return result
-
+                    return False
             except Exception as e:
                 logger.warning(f"Condition evaluation error: {e}")
                 return False
 
-        # Compound conditions
-        if 'all' in condition:
-            results = []
-            for c in condition['all']:
-                result = WorkflowEngine._evaluate_condition_expression(c, data)
-                results.append(result)
-            final_result = all(results)
-            logger.info(f"ALL condition results: {results} -> {final_result}")
-            return final_result
+        # Handle complex rules with 'rules' and optional 'operator'
+        if isinstance(condition, dict):
+            # Evaluate as single condition if 'rules' has one item and no operator specified
+            if 'rules' in condition and isinstance(condition['rules'], list):
+                rules = condition['rules']
+                op = condition.get('operator', None)
 
-        elif 'any' in condition:
-            results = []
-            for c in condition['any']:
-                result = WorkflowEngine._evaluate_condition_expression(c, data)
-                results.append(result)
-            final_result = any(results)
-            logger.info(f"ANY condition results: {results} -> {final_result}")
-            return final_result
+                if not op or op.strip() == '':
+                    # Treat as single condition if only one rule
+                    if len(rules) == 1:
+                        logger.info("Operator is missing or null — evaluating as single condition.")
+                        return WorkflowEngine._evaluate_condition_expression(rules[0], data)
+                    else:
+                        logger.warning("Operator is missing but multiple rules found — treating as ALL.")
+                        op = 'all'
 
-        # Single condition object
-        return evaluate_single(condition)
+                op = op.lower()
+                results = [WorkflowEngine._evaluate_condition_expression(rule, data) for rule in rules]
+                final = all(results) if op == 'all' else any(results)
+                logger.info(f"Compound condition ({op.upper()}): {results} => {final}")
+                return final
+
+            elif 'all' in condition:
+                results = [WorkflowEngine._evaluate_condition_expression(c, data) for c in condition['all']]
+                final = all(results)
+                logger.info(f"ALL condition => {results} => {final}")
+                return final
+
+            elif 'any' in condition:
+                results = [WorkflowEngine._evaluate_condition_expression(c, data) for c in condition['any']]
+                final = any(results)
+                logger.info(f"ANY condition => {results} => {final}")
+                return final
+
+            elif 'field' in condition and 'operator' in condition:
+                return evaluate_single(condition)
+
+        logger.warning(f"Invalid condition structure: {condition}")
+        return False
+
+    # @staticmethod
+    # def _evaluate_condition_expression(condition, data):
+    #     """Enhanced condition evaluation with debugging"""
+    #     logger.info(f"Evaluating condition: {condition}")
+    #     logger.info(f"Against data: {data}")
+
+    #     def evaluate_single(cond):
+    #         field = cond.get('field')
+    #         operator = cond.get('operator')
+    #         value = cond.get('value')
+
+    #         logger.info(f"Single condition: {field} {operator} {value}")
+            
+    #         # قائمة الـ prefixes المحتملة في أسماء الحقول
+    #         prefixes = ['task.', 'sys_', 'custom_']
+
+    #         # إزالة الـ prefix من اسم الحقل نفسه إن وُجد
+    #         original_field = field  # للاحتفاظ بالاسم الأصلي للّـ log
+    #         if isinstance(field, str):
+    #             for prefix in prefixes:
+    #                 if field.startswith(prefix):
+    #                     logger.info(f"Detected prefix '{prefix}' in field name '{field}'")
+    #                     field = field[len(prefix):]  # إزالة الـ prefix
+    #                     logger.info(f"Field name after removing prefix: {field}")
+    #                     break
+
+    #         # التحقق من وجود الحقل في البيانات بعد إزالة الـ prefix
+    #         if field not in data:
+    #             logger.info(f"Field '{field}' not found in data (original: '{original_field}')")
+    #             return False
+    #         # if field not in data:
+    #         #     logger.info(f"Field '{field}' not found in data")
+    #         #     return False
+
+    #         field_value = data[field]
+    #         logger.info(f"Field value: {field_value} (type: {type(field_value)})")
+
+    #         try:
+
+    #             if operator == 'equals':
+    #                 result = field_value == value
+    #             elif operator == 'not_equals':
+    #                 result = field_value != value
+    #             elif operator == 'greater_than':
+    #                 result = float(field_value) > float(value)
+    #             elif operator == 'less_than':
+    #                 result = float(field_value) < float(value)
+    #             elif operator == 'contains':
+    #                 result = value in str(field_value)
+    #             elif operator == 'between':
+    #                 result = value[0] <= float(field_value) <= value[1]
+    #             else:
+    #                 logger.warning(f"Unknown operator: {operator}")
+    #                 result = False
+
+    #             logger.info(f"Condition result: {result}")
+    #             return result
+
+    #         except Exception as e:
+    #             logger.warning(f"Condition evaluation error: {e}")
+    #             return False
+
+    #     # Compound conditions
+    #     if 'all' in condition:
+    #         results = []
+    #         for c in condition['all']:
+    #             result = WorkflowEngine._evaluate_condition_expression(c, data)
+    #             results.append(result)
+    #         final_result = all(results)
+    #         logger.info(f"ALL condition results: {results} -> {final_result}")
+    #         return final_result
+
+    #     elif 'any' in condition:
+    #         results = []
+    #         for c in condition['any']:
+    #             result = WorkflowEngine._evaluate_condition_expression(c, data)
+    #             results.append(result)
+    #         final_result = any(results)
+    #         logger.info(f"ANY condition results: {results} -> {final_result}")
+    #         return final_result
+
+    #     # Single condition object
+    #     return evaluate_single(condition)
     
     @staticmethod
     def _execute_step(instance_id, step, definition, context):

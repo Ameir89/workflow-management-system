@@ -1,4 +1,4 @@
-// Enhanced usePropertyHandlers.js with transition support
+// Fixed usePropertyHandlers.js - Updated to handle both condition formats
 import { useCallback } from "react";
 
 export const usePropertyHandlers = ({
@@ -67,24 +67,45 @@ export const usePropertyHandlers = ({
       if (selectedTransition && onUpdateTransition) {
         const updates = { [field]: value };
 
-        // Special handling for condition updates
-        if (field === "condition" && value) {
-          // Ensure condition has proper structure
-          const processedCondition = {
-            operator: value.operator || "and",
-            rules: Array.isArray(value.rules)
-              ? value.rules.map((rule) => ({
+        // FIXED: Special handling for condition updates - handle both formats
+        if (field === "condition") {
+          if (value === null || value === undefined) {
+            // Removing condition
+            updates.condition = null;
+          } else if (value) {
+            // Ensure condition has proper structure
+            let processedCondition;
+
+            // Handle the new rules-based format
+            if (value.rules && Array.isArray(value.rules)) {
+              processedCondition = {
+                operator: value.operator || "and",
+                rules: value.rules.map((rule) => ({
                   id: rule.id || Date.now().toString(),
                   field: rule.field || "",
                   operator: rule.operator || "equals",
                   value: rule.value !== undefined ? rule.value : "",
                   ...rule,
-                }))
-              : [],
-            ...value,
-          };
+                })),
+                ...value,
+              };
+            }
+            // Handle the old direct format (field/operator/value)
+            else if (value.field && value.operator) {
+              processedCondition = {
+                field: value.field,
+                operator: value.operator,
+                value: value.value !== undefined ? value.value : "",
+                ...value,
+              };
+            }
+            // Handle mixed or unknown formats
+            else {
+              processedCondition = { ...value };
+            }
 
-          updates.condition = processedCondition;
+            updates.condition = processedCondition;
+          }
         }
 
         onUpdateTransition(selectedTransition.id, updates);
@@ -118,25 +139,58 @@ export const usePropertyHandlers = ({
     [selectedTransition, onUpdateTransition]
   );
 
-  // Validation helpers
+  // FIXED: Validation helpers - Updated to handle both condition formats
   const validateConditions = useCallback((conditions) => {
-    if (!Array.isArray(conditions)) return [];
+    if (!conditions) return [];
 
-    return conditions.filter((condition) => {
-      // Basic validation - ensure required fields exist
-      if (!condition.field || !condition.operator) return false;
+    // Handle rules-based format
+    if (conditions.rules && Array.isArray(conditions.rules)) {
+      return conditions.rules.filter((rule) => {
+        // Basic validation - ensure required fields exist
+        if (!rule.field || !rule.operator) return false;
 
-      // Check if value is required for this operator
+        // Check if value is required for this operator
+        const operatorsWithoutValue = ["is_empty", "is_not_empty"];
+        if (!operatorsWithoutValue.includes(rule.operator) && !rule.value) {
+          return false;
+        }
+
+        return true;
+      });
+    }
+
+    // Handle direct format (single condition)
+    if (conditions.field && conditions.operator) {
       const operatorsWithoutValue = ["is_empty", "is_not_empty"];
       if (
-        !operatorsWithoutValue.includes(condition.operator) &&
-        !condition.value
+        !operatorsWithoutValue.includes(conditions.operator) &&
+        !conditions.value
       ) {
-        return false;
+        return [];
       }
+      return [conditions];
+    }
 
-      return true;
-    });
+    // Handle array format (legacy)
+    if (Array.isArray(conditions)) {
+      return conditions.filter((condition) => {
+        // Basic validation - ensure required fields exist
+        if (!condition.field || !condition.operator) return false;
+
+        // Check if value is required for this operator
+        const operatorsWithoutValue = ["is_empty", "is_not_empty"];
+        if (
+          !operatorsWithoutValue.includes(condition.operator) &&
+          !condition.value
+        ) {
+          return false;
+        }
+
+        return true;
+      });
+    }
+
+    return [];
   }, []);
 
   const validateNodeProperties = useCallback(
@@ -203,13 +257,26 @@ export const usePropertyHandlers = ({
       }
 
       if (transition.condition) {
-        const validRules = validateConditions(transition.condition.rules || []);
+        const validConditions = validateConditions(transition.condition);
+
+        // Check if condition structure is valid
         if (
           transition.condition.rules &&
-          transition.condition.rules.length > 0 &&
-          validRules.length === 0
+          Array.isArray(transition.condition.rules)
         ) {
-          errors.push("All condition rules must be properly configured");
+          if (
+            transition.condition.rules.length > 0 &&
+            validConditions.length === 0
+          ) {
+            errors.push("All condition rules must be properly configured");
+          }
+        } else if (
+          transition.condition.field &&
+          transition.condition.operator
+        ) {
+          if (validConditions.length === 0) {
+            errors.push("Condition must be properly configured");
+          }
         }
       }
 
@@ -225,7 +292,7 @@ export const usePropertyHandlers = ({
     [validateConditions]
   );
 
-  // Import/Export helpers for conditions
+  // FIXED: Import/Export helpers for conditions - Updated to handle both formats
   const exportNodeConditions = useCallback((node) => {
     if (node.type !== "condition" || !node.properties?.conditions) {
       return null;
@@ -251,19 +318,39 @@ export const usePropertyHandlers = ({
       return null;
     }
 
+    let conditions = [];
+
+    // Handle rules-based format
+    if (
+      transition.condition.rules &&
+      Array.isArray(transition.condition.rules)
+    ) {
+      conditions = transition.condition.rules.map((rule) => ({
+        field: rule.field,
+        operator: rule.operator,
+        value: rule.value,
+        description: rule.description || "",
+      }));
+    }
+    // Handle direct format
+    else if (transition.condition.field && transition.condition.operator) {
+      conditions = [
+        {
+          field: transition.condition.field,
+          operator: transition.condition.operator,
+          value: transition.condition.value,
+          description: transition.condition.description || "",
+        },
+      ];
+    }
+
     return {
       type: "transition_conditions",
       transitionId: transition.id,
       transitionName:
         transition.name || `${transition.from} → ${transition.to}`,
       operator: transition.condition.operator || "and",
-      rules:
-        transition.condition.rules?.map((rule) => ({
-          field: rule.field,
-          operator: rule.operator,
-          value: rule.value,
-          description: rule.description || "",
-        })) || [],
+      rules: conditions,
       exportedAt: new Date().toISOString(),
     };
   }, []);
@@ -289,6 +376,33 @@ export const usePropertyHandlers = ({
     };
   }, []);
 
+  // FIXED: Utility function to normalize condition format
+  const normalizeConditionFormat = useCallback((condition) => {
+    if (!condition) return null;
+
+    // If it's already in the new format, return as is
+    if (condition.rules && Array.isArray(condition.rules)) {
+      return condition;
+    }
+
+    // If it's in the old format, convert to new format
+    if (condition.field && condition.operator) {
+      return {
+        operator: "and",
+        rules: [
+          {
+            id: Date.now().toString(),
+            field: condition.field,
+            operator: condition.operator,
+            value: condition.value || "",
+          },
+        ],
+      };
+    }
+
+    return null;
+  }, []);
+
   return {
     // Basic handlers
     handleWorkflowChange,
@@ -309,5 +423,8 @@ export const usePropertyHandlers = ({
     exportNodeConditions,
     exportTransitionConditions,
     importConditions,
+
+    // Utility
+    normalizeConditionFormat,
   };
 };

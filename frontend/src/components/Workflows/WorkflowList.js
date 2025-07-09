@@ -28,7 +28,11 @@ const WorkflowList = () => {
     category: "",
   });
 
-  const { data: workflowsData, isLoading } = useQuery(
+  const {
+    data: workflowsData,
+    isLoading,
+    refetch,
+  } = useQuery(
     ["workflows", page, search, filters],
     () => workflowService.getWorkflows({ page, limit: 20, search, ...filters }),
     { keepPreviousData: true }

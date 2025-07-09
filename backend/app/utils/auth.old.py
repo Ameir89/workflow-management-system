@@ -1,8 +1,9 @@
-# app/utils/auth.py - Fixed version
+### app/utils/auth.py
 """
-Authentication utilities - Fixed JWT and session handling
+Authentication utilities
 """
 import hashlib
+
 import jwt
 import bcrypt
 import pyotp
@@ -43,7 +44,6 @@ class AuthUtils:
             'username': user_data['username'],
             'email': user_data['email'],
             'permissions': user_data.get('permissions', []),
-            'roles': user_data.get('roles', []),
             'type': token_type,
             'exp': datetime.utcnow() + expires_delta,
             'iat': datetime.utcnow()
@@ -51,9 +51,26 @@ class AuthUtils:
         
         return jwt.encode(payload, current_app.config['JWT_SECRET_KEY'], algorithm='HS256')
     
+    # @staticmethod
+    # def verify_jwt_token(token):
+    #     """Verify and decode JWT token"""
+    #     try:
+    #         payload = jwt.decode(token, current_app.config['JWT_SECRET_KEY'], algorithms=['HS256'])
+    #
+    #         # Check if token is expired
+    #         if datetime.utcnow() > datetime.fromtimestamp(payload['exp']):
+    #             return None
+    #
+    #         # Verify session exists and is active
+    #         if not AuthUtils.verify_session(payload['user_id'], token):
+    #             return None
+    #
+    #         return payload
+    #     except jwt.InvalidTokenError:
+    #         return None
     @staticmethod
     def verify_jwt_token(token):
-        """Verify and decode JWT token - Fixed version"""
+        """Verify and decode JWT token"""
         try:
             payload = jwt.decode(
                 token,
@@ -61,111 +78,63 @@ class AuthUtils:
                 algorithms=['HS256']
             )
 
-            # Check if token is manually revoked (optional, can be disabled for performance)
-            if current_app.config.get('ENABLE_SESSION_VALIDATION', True):
-                if not AuthUtils.verify_session(payload['user_id'], token):
-                    logger.warning(f"Session validation failed for user {payload['user_id']}")
-                    return None
+            # Optional: verify session
+            if not AuthUtils.verify_session(payload['user_id'], token):
+                return None
 
             return payload
 
         except jwt.ExpiredSignatureError:
-            logger.info("JWT token expired")
+            logger.info("Token expired")
+            print("Token expired")
             return None
         except jwt.InvalidTokenError as e:
-            logger.warning(f"Invalid JWT token: {str(e)}")
-            return None
-        except Exception as e:
-            logger.error(f"Unexpected error verifying JWT token: {str(e)}")
+            logger.error(f"Invalid token: {str(e)}")
+            print(f"Invalid token: {str(e)}")
             return None
 
     @staticmethod
     def verify_session(user_id, token):
-        """Verify user session exists and is active - Fixed version"""
-        try:
-            token_hash = AuthUtils.hash_token(token)
-            query = """
-                SELECT id, expires_at FROM user_sessions 
-                WHERE user_id = %s AND token_hash = %s AND expires_at > NOW()
-            """
-            result = Database.execute_one(query, (user_id, token_hash))
-            
-            if result:
-                logger.debug(f"Session found for user {user_id}, expires: {result['expires_at']}")
-                return True
-            else:
-                logger.debug(f"No valid session found for user {user_id}")
-                return False
-                
-        except Exception as e:
-            logger.error(f"Session verification error: {e}")
-            # Fail open - if we can't verify session, allow the request
-            # You might want to fail closed in production
-            return True
+        """Verify user session exists and is active"""
+        token_hash = AuthUtils.hash_token(token)
+        query = """
+            SELECT id FROM user_sessions 
+            WHERE user_id = %s AND token_hash = %s AND expires_at > NOW()
+        """
+        result = Database.execute_one(query, (user_id, token_hash))
+        return result is not None
     
     @staticmethod
     def create_session(user_id, token, ip_address=None, user_agent=None):
-        """Create user session - Fixed version"""
-        try:
-            token_hash = AuthUtils.hash_token(token)
-            expires_at = datetime.utcnow() + current_app.config['SESSION_TIMEOUT']
-            
-            # First, clean up any existing sessions for this user (optional)
-            if current_app.config.get('SINGLE_SESSION_PER_USER', False):
-                Database.execute_query(
-                    "DELETE FROM user_sessions WHERE user_id = %s",
-                    (user_id,)
-                )
-            
-            query = """
-                INSERT INTO user_sessions (user_id, token_hash, ip_address, user_agent, expires_at)
-                VALUES (%s, %s, %s, %s, %s)
-            """
-            Database.execute_query(query, (user_id, token_hash, ip_address, user_agent, expires_at))
-            
-            logger.debug(f"Session created for user {user_id}, expires: {expires_at}")
-            
-        except Exception as e:
-            logger.error(f"Error creating session: {e}")
-            # Don't fail the login if session creation fails
+        """Create user session"""
+        token_hash = AuthUtils.hash_token(token)
+        expires_at = datetime.utcnow() + current_app.config['SESSION_TIMEOUT']
+        
+        query = """
+            INSERT INTO user_sessions (user_id, token_hash, ip_address, user_agent, expires_at)
+            VALUES (%s, %s, %s, %s, %s)
+        """
+        Database.execute_query(query, (user_id, token_hash, ip_address, user_agent, expires_at))
+        logger.debug(f"Token: {token}")
+        logger.debug(f"Token hash: {token_hash}")
+        logger.debug(f"User ID: {user_id}")
     
     @staticmethod
     def revoke_session(user_id, token):
         """Revoke user session"""
-        try:
-            token_hash = AuthUtils.hash_token(token)
-            query = "DELETE FROM user_sessions WHERE user_id = %s AND token_hash = %s"
-            Database.execute_query(query, (user_id, token_hash))
-            logger.debug(f"Session revoked for user {user_id}")
-        except Exception as e:
-            logger.error(f"Error revoking session: {e}")
+        token_hash = AuthUtils.hash_token(token)
+        query = "DELETE FROM user_sessions WHERE user_id = %s AND token_hash = %s"
+        Database.execute_query(query, (user_id, token_hash))
     
     @staticmethod
     def hash_token(token):
+        """Hash token for storage"""
+        # return bcrypt.hashpw(token.encode('utf-8'), bcrypt.gensalt()).decode('utf-8')
         """Deterministically hash the token for session lookup"""
         return hashlib.sha256(token.encode('utf-8')).hexdigest()
 
-    @staticmethod
-    def revoke_all_sessions(user_id):
-        """Revoke all sessions for a user"""
-        try:
-            query = "DELETE FROM user_sessions WHERE user_id = %s"
-            Database.execute_query(query, (user_id,))
-            logger.info(f"All sessions revoked for user {user_id}")
-        except Exception as e:
-            logger.error(f"Error revoking all sessions: {e}")
 
-    @staticmethod
-    def cleanup_expired_sessions():
-        """Clean up expired sessions"""
-        try:
-            query = "DELETE FROM user_sessions WHERE expires_at <= NOW()"
-            Database.execute_query(query)
-            logger.debug("Expired sessions cleaned up")
-        except Exception as e:
-            logger.error(f"Error cleaning up expired sessions: {e}")
     
-    # Keep all other existing methods...
     @staticmethod
     def generate_2fa_secret():
         """Generate 2FA secret"""

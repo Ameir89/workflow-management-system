@@ -122,7 +122,8 @@
       "isNotEmpty": "is not empty",
       "and": "and",
       "or": "or",
-      "value": "value"
+      "value": "value",
+      "approvalStatus": "Approval Status"
     },
     "transitionHelp": "Transition Help",
     "transitionHelpConditions": "Transition Help Conditions",

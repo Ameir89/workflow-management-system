@@ -1,6 +1,8 @@
+// Fixed TransitionProperties.js - Updated to handle both condition formats
 import { useState } from "react";
 import { InformationCircleIcon } from "@heroicons/react/24/outline";
 import { useTranslation } from "react-i18next";
+
 const TransitionProperties = ({ transition, workflow, onTransitionChange }) => {
   const { t } = useTranslation();
   const [showAdvanced, setShowAdvanced] = useState(false);
@@ -10,16 +12,49 @@ const TransitionProperties = ({ transition, workflow, onTransitionChange }) => {
   );
   const toStep = workflow.definition.steps.find((s) => s.id === transition.to);
 
+  // FIXED: Handle both condition formats - normalize the condition structure
+  const normalizeCondition = (condition) => {
+    if (!condition) return null;
+
+    // If it's the old format with direct field/operator/value
+    if (condition.field && condition.operator) {
+      return {
+        rules: [
+          {
+            id: "rule_1",
+            field: condition.field,
+            operator: condition.operator,
+            value: condition.value || "",
+          },
+        ],
+        operator: "and",
+      };
+    }
+
+    // If it's the new format with rules array
+    if (condition.rules && Array.isArray(condition.rules)) {
+      return {
+        ...condition,
+        operator: condition.operator || "and",
+      };
+    }
+
+    return null;
+  };
+
+  // FIXED: Get the normalized condition
+  const normalizedCondition = normalizeCondition(transition.condition);
+
   const handleConditionChange = (field, value) => {
     const updatedCondition = {
-      ...transition.condition,
+      ...normalizedCondition,
       [field]: value,
     };
     onTransitionChange("condition", updatedCondition);
   };
 
   const handleConditionRuleChange = (index, field, value) => {
-    const condition = transition.condition || { rules: [], operator: "and" };
+    const condition = normalizedCondition || { rules: [], operator: "and" };
     const updatedRules = [...(condition.rules || [])];
     updatedRules[index] = {
       ...updatedRules[index],
@@ -33,7 +68,7 @@ const TransitionProperties = ({ transition, workflow, onTransitionChange }) => {
   };
 
   const addConditionRule = () => {
-    const condition = transition.condition || { rules: [], operator: "and" };
+    const condition = normalizedCondition || { rules: [], operator: "and" };
     const newRule = {
       id: Date.now().toString(),
       field: "",
@@ -48,7 +83,7 @@ const TransitionProperties = ({ transition, workflow, onTransitionChange }) => {
   };
 
   const removeConditionRule = (index) => {
-    const condition = transition.condition || { rules: [], operator: "and" };
+    const condition = normalizedCondition || { rules: [], operator: "and" };
     const updatedRules = condition.rules.filter((_, i) => i !== index);
 
     onTransitionChange("condition", {
@@ -77,8 +112,16 @@ const TransitionProperties = ({ transition, workflow, onTransitionChange }) => {
   const fieldOptions = [
     { value: "workflow.status", label: t("designer.condition.workflowStatus") },
     { value: "task.status", label: t("designer.condition.taskStatus") },
+    {
+      value: "approval_status",
+      label: t("designer.condition.approvalStatus"),
+    },
     { value: "task.assignee", label: t("designer.condition.taskAssignee") },
     { value: "form.field", label: t("designer.condition.formField") },
+    { value: "branch_decision", label: "Branch Decision" },
+    { value: "department_decision", label: "Department Decision" },
+    { value: "division_decision", label: "Division Decision" },
+    { value: "entity_decision", label: "Entity Decision" },
     { value: "custom", label: t("designer.condition.customField") },
   ];
 
@@ -98,6 +141,23 @@ const TransitionProperties = ({ transition, workflow, onTransitionChange }) => {
           </div>
         </div>
       </div>
+
+      {/* FIXED: Debug info - Remove in production */}
+      {process.env.NODE_ENV === "development" && (
+        <div className="p-3 bg-blue-50 rounded-md">
+          <h4 className="text-sm font-medium text-blue-900 mb-2">Debug Info</h4>
+          <div className="text-xs text-blue-800 space-y-1">
+            <div>
+              <strong>Original condition:</strong>{" "}
+              {JSON.stringify(transition.condition, null, 2)}
+            </div>
+            <div>
+              <strong>Normalized condition:</strong>{" "}
+              {JSON.stringify(normalizedCondition, null, 2)}
+            </div>
+          </div>
+        </div>
+      )}
 
       {/* Basic Properties */}
       <div className="space-y-4">
@@ -148,7 +208,7 @@ const TransitionProperties = ({ transition, workflow, onTransitionChange }) => {
           <div className="flex items-center">
             <input
               type="checkbox"
-              checked={!!transition.condition}
+              checked={!!normalizedCondition}
               onChange={(e) => {
                 if (e.target.checked) {
                   onTransitionChange("condition", {
@@ -173,7 +233,7 @@ const TransitionProperties = ({ transition, workflow, onTransitionChange }) => {
             </label>
           </div>
 
-          {transition.condition && (
+          {normalizedCondition && (
             <div className="pl-6 space-y-4">
               {/* Operator Selection */}
               <div>
@@ -181,7 +241,7 @@ const TransitionProperties = ({ transition, workflow, onTransitionChange }) => {
                   {t("designer.operator")}
                 </label>
                 <select
-                  value={transition.condition.operator || "and"}
+                  value={normalizedCondition.operator || "and"}
                   onChange={(e) =>
                     handleConditionChange("operator", e.target.value)
                   }
@@ -210,7 +270,7 @@ const TransitionProperties = ({ transition, workflow, onTransitionChange }) => {
                   </button>
                 </div>
 
-                {transition.condition.rules?.map((rule, index) => (
+                {normalizedCondition.rules?.map((rule, index) => (
                   <div
                     key={rule.id || index}
                     className="p-3 border border-gray-200 rounded-md mb-3"
@@ -306,16 +366,15 @@ const TransitionProperties = ({ transition, workflow, onTransitionChange }) => {
                     {index > 0 && (
                       <div className="text-center mt-2">
                         <span className="px-2 py-1 bg-indigo-100 text-indigo-800 text-xs font-medium rounded">
-                          {transition.condition.operator?.toUpperCase() ||
-                            "AND"}
+                          {normalizedCondition.operator?.toUpperCase() || "AND"}
                         </span>
                       </div>
                     )}
                   </div>
                 ))}
 
-                {(!transition.condition.rules ||
-                  transition.condition.rules.length === 0) && (
+                {(!normalizedCondition.rules ||
+                  normalizedCondition.rules.length === 0) && (
                   <div className="text-center py-4 text-gray-500 border-2 border-dashed border-gray-300 rounded-lg">
                     <p className="text-sm">{t("designer.noConditions")}</p>
                     <button

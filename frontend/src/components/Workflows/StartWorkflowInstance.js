@@ -1,5 +1,5 @@
 // src/components/Workflows/StartWorkflowInstance.js
-import React, { useState, useEffect } from "react";
+import React, { useState } from "react";
 import { useParams, useNavigate } from "react-router-dom";
 import { useQuery, useMutation } from "react-query";
 import { useTranslation } from "react-i18next";
@@ -12,10 +12,6 @@ import {
   RocketLaunchIcon,
   ArrowLeftIcon,
   InformationCircleIcon,
-  ClockIcon,
-  UserGroupIcon,
-  CogIcon,
-  DocumentTextIcon,
   ExclamationTriangleIcon,
 } from "@heroicons/react/24/outline";
 
@@ -23,20 +19,12 @@ const StartWorkflowInstance = () => {
   const { t } = useTranslation();
   const { workflowId } = useParams();
   const navigate = useNavigate();
-  const [selectedTemplate, setSelectedTemplate] = useState(null);
   const [showAdvanced, setShowAdvanced] = useState(false);
 
   // Fetch workflow details
   const { data: workflow, isLoading: workflowLoading } = useQuery(
     ["workflow", workflowId],
     () => workflowService.getWorkflow(workflowId)
-  );
-
-  // Fetch execution templates
-  const { data: templates } = useQuery(
-    ["execution-templates", workflowId],
-    () => workflowExecutionService.getExecutionTemplates(workflowId),
-    { enabled: !!workflowId }
   );
 
   // Fetch execution recommendations
@@ -288,11 +276,6 @@ const StartWorkflowInstance = () => {
       parallel_execution: false,
     };
 
-    // Apply template if selected
-    if (selectedTemplate) {
-      return { ...defaults, ...selectedTemplate.config };
-    }
-
     // Apply recommendations if available
     if (recommendations?.recommended_config) {
       return { ...defaults, ...recommendations.recommended_config };
@@ -374,65 +357,26 @@ const StartWorkflowInstance = () => {
             <p className="text-gray-500 mt-2">{workflow.description}</p>
           </div>
         </div>
-
-        {/* Workflow Info Cards */}
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mt-6">
-          <div className="bg-blue-50 border border-blue-200 rounded-lg p-4">
-            <div className="flex items-center">
-              <CogIcon className="h-5 w-5 text-blue-600 mr-2" />
-              <span className="text-sm font-medium text-blue-900">
-                {workflow.definition?.steps?.length || 0} Steps
-              </span>
-            </div>
-            <p className="text-xs text-blue-700 mt-1">
-              Total workflow steps configured
-            </p>
-          </div>
-
-          <div className="bg-green-50 border border-green-200 rounded-lg p-4">
-            <div className="flex items-center">
-              <ClockIcon className="h-5 w-5 text-green-600 mr-2" />
-              <span className="text-sm font-medium text-green-900">
-                {workflow.avg_completion_time || "N/A"}
-              </span>
-            </div>
-            <p className="text-xs text-green-700 mt-1">
-              Average completion time
-            </p>
-          </div>
-
-          <div className="bg-purple-50 border border-purple-200 rounded-lg p-4">
-            <div className="flex items-center">
-              <UserGroupIcon className="h-5 w-5 text-purple-600 mr-2" />
-              <span className="text-sm font-medium text-purple-900">
-                {workflow.success_rate || "N/A"}%
-              </span>
-            </div>
-            <p className="text-xs text-purple-700 mt-1">
-              Historical success rate
-            </p>
-          </div>
-        </div>
       </div>
 
       {/* Recommendations */}
-      {/* {recommendations?.recommendations?.length > 0 && ( */}
-      <div className="mb-8 bg-amber-50 border border-amber-200 rounded-lg p-4">
-        <div className="flex items-start">
-          <InformationCircleIcon className="h-5 w-5 text-amber-600 mt-0.5 mr-3" />
-          <div>
-            <h3 className="text-sm font-medium text-amber-900">
-              Recommendations
-            </h3>
-            <ul className="text-sm text-amber-800 mt-1 space-y-1">
-              {recommendations?.recommendations?.map((rec, index) => (
-                <li key={index}>• {rec}</li>
-              ))}
-            </ul>
+      {recommendations?.recommendations?.length > 0 && (
+        <div className="mb-8 bg-amber-50 border border-amber-200 rounded-lg p-4">
+          <div className="flex items-start">
+            <InformationCircleIcon className="h-5 w-5 text-amber-600 mt-0.5 mr-3" />
+            <div>
+              <h3 className="text-sm font-medium text-amber-900">
+                Recommendations
+              </h3>
+              <ul className="text-sm text-amber-800 mt-1 space-y-1">
+                {recommendations?.recommendations?.map((rec, index) => (
+                  <li key={index}>• {rec}</li>
+                ))}
+              </ul>
+            </div>
           </div>
         </div>
-      </div>
-      {/* )} */}
+      )}
 
       {/* Configuration Form */}
       <div className="bg-white border border-gray-200 rounded-lg">
@@ -458,24 +402,6 @@ const StartWorkflowInstance = () => {
             onCancel={() => navigate("/workflows")}
             isSubmitting={startInstanceMutation.isLoading}
           />
-        </div>
-      </div>
-
-      {/* Footer Actions */}
-      <div className="mt-6 flex justify-between items-center text-sm text-gray-500">
-        <div>
-          <p>
-            This will create a new instance of the "{workflow.name}" workflow.
-          </p>
-        </div>
-        <div className="flex space-x-4">
-          <button
-            onClick={() => validateMutation.mutate(getDefaultValues())}
-            disabled={validateMutation.isLoading}
-            className="text-indigo-600 hover:text-indigo-800"
-          >
-            Validate Configuration
-          </button>
         </div>
       </div>
     </div>

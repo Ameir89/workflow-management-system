@@ -1,7 +1,6 @@
-### app/blueprints/auth.py
-
+# app/blueprints/auth.py - Enhanced with better error handling and permissions
 """
-Authentication blueprint - handles login, registration, 2FA
+Authentication blueprint - handles login, registration, 2FA with enhanced permissions
 """
 from flask import Blueprint, g, request, jsonify, current_app
 from app.utils.auth import AuthUtils
@@ -9,9 +8,11 @@ from app.utils.security import validate_email, validate_password_strength, sanit
 from app.utils.validators import validate_required_fields
 from app.database import Database
 from app.middleware import require_auth
+from app.services.permission_service import PermissionService
 import io
 import base64
 import logging
+import json
 
 logger = logging.getLogger(__name__)
 
@@ -84,9 +85,8 @@ def register():
 
 @auth_bp.route('/login', methods=['POST'])
 def login():
-    """User login endpoint"""
+    """Enhanced user login endpoint with full permission loading"""
     try:
-        # data = sanitize_input(request.get_json())
         data = getattr(g, 'sanitized_json', None) or request.get_json()
         if not validate_required_fields(data, ['username', 'password']):
             return jsonify({'error': 'Username and password required'}), 400
@@ -96,15 +96,9 @@ def login():
             SELECT u.id, u.tenant_id, u.username, u.email, u.password_hash, 
                    u.first_name, u.last_name, u.is_active, u.is_verified,
                    u.two_fa_enabled, u.two_fa_secret, u.failed_login_attempts,
-                   u.locked_until,
-                   ARRAY_AGG(DISTINCT r.name) as roles,
-                   ARRAY_AGG(DISTINCT p.permission) as permissions
+                   u.locked_until
             FROM users u
-            LEFT JOIN user_roles ur ON u.id = ur.user_id
-            LEFT JOIN roles r ON ur.role_id = r.id
-            LEFT JOIN LATERAL jsonb_array_elements_text(r.permissions) p(permission) ON true
             WHERE u.username = %s OR u.email = %s
-            GROUP BY u.id
         """, (data['username'], data['username']))
         
         if not user or not AuthUtils.verify_password(data['password'], user['password_hash']):
@@ -128,10 +122,32 @@ def login():
                 AuthUtils.increment_failed_attempts(user['id'])
                 return jsonify({'error': 'Invalid 2FA token'}), 401
         
+        # Get user roles and permissions
+        user_roles = Database.execute_query("""
+            SELECT r.name, r.permissions
+            FROM roles r
+            JOIN user_roles ur ON r.id = ur.role_id
+            WHERE ur.user_id = %s AND r.is_active = true
+        """, (user['id'],))
+        
+        # Aggregate permissions from all roles
+        all_permissions = set()
+        roles = []
+        
+        for role in user_roles:
+            roles.append(role['name'])
+            if role['permissions']:
+                try:
+                    permissions = json.loads(role['permissions']) if isinstance(role['permissions'], str) else role['permissions']
+                    if permissions:
+                        all_permissions.update(permissions)
+                except (json.JSONDecodeError, TypeError):
+                    continue
+        
         # Reset failed attempts on successful login
         AuthUtils.reset_failed_attempts(user['id'])
         
-        # Generate tokens
+        # Prepare user data for token
         user_data = {
             'id': user['id'],
             'tenant_id': user['tenant_id'],
@@ -139,10 +155,11 @@ def login():
             'email': user['email'],
             'first_name': user['first_name'],
             'last_name': user['last_name'],
-            'roles': user['roles'] or [],
-            'permissions': user['permissions'] or []
+            'roles': roles,
+            'permissions': list(all_permissions)
         }
         
+        # Generate tokens
         access_token = AuthUtils.generate_jwt_token(user_data, 'access')
         refresh_token = AuthUtils.generate_jwt_token(user_data, 'refresh')
         
@@ -152,6 +169,8 @@ def login():
             request.remote_addr, request.headers.get('User-Agent')
         )
         
+        logger.info(f"User {user['username']} logged in successfully")
+        
         return jsonify({
             'access_token': access_token,
             'refresh_token': refresh_token,
@@ -159,8 +178,7 @@ def login():
         }), 200
         
     except Exception as e:
-        logger.error(f"Login error: {e}")
-        logger.exception("Login error: {e}")
+        logger.error(f"Login error: {e}", exc_info=True)
         return jsonify({'error': 'Login failed'}), 500
 
 @auth_bp.route('/logout', methods=['POST'])
@@ -174,12 +192,196 @@ def logout():
         # Revoke session
         AuthUtils.revoke_session(g.current_user['user_id'], token)
         
+        logger.info(f"User {g.current_user['username']} logged out")
+        
         return jsonify({'message': 'Logged out successfully'}), 200
         
     except Exception as e:
         logger.error(f"Logout error: {e}")
         return jsonify({'error': 'Logout failed'}), 500
 
+@auth_bp.route('/profile', methods=['GET'])
+@require_auth
+def get_profile():
+    """Enhanced user profile endpoint with full permissions and roles"""
+    try:
+        user_id = g.current_user['user_id']
+        
+        # Get user details with tenant info
+        user = Database.execute_one("""
+            SELECT u.id, u.username, u.email, u.first_name, u.last_name,
+                   u.phone, u.two_fa_enabled, u.created_at, u.last_login,
+                   u.is_active, u.is_verified, u.department, 
+                   t.name as tenant_name, t.subdomain as tenant_subdomain
+            FROM users u
+            JOIN tenants t ON u.tenant_id = t.id
+            WHERE u.id = %s
+        """, (user_id,))
+        
+        if not user:
+            return jsonify({'error': 'User not found'}), 404
+        
+        # Get user roles with details
+        user_roles = Database.execute_query("""
+            SELECT r.id, r.name, r.description, r.permissions, r.is_system
+            FROM roles r
+            JOIN user_roles ur ON r.id = ur.role_id
+            WHERE ur.user_id = %s AND r.is_active = true
+            ORDER BY r.name
+        """, (user_id,))
+        
+        # Process roles and permissions
+        roles = []
+        all_permissions = set()
+        
+        for role in user_roles:
+            role_data = {
+                'id': role['id'],
+                'name': role['name'],
+                'description': role['description'],
+                'is_system': role['is_system']
+            }
+            
+            # Parse permissions
+            if role['permissions']:
+                try:
+                    permissions = json.loads(role['permissions']) if isinstance(role['permissions'], str) else role['permissions']
+                    if permissions:
+                        role_data['permissions'] = permissions
+                        all_permissions.update(permissions)
+                except (json.JSONDecodeError, TypeError):
+                    role_data['permissions'] = []
+            else:
+                role_data['permissions'] = []
+            
+            roles.append(role_data)
+        
+        # Get recent activity (optional)
+        recent_activities = Database.execute_query("""
+            SELECT action, resource_type, created_at
+            FROM audit_logs
+            WHERE user_id = %s
+            ORDER BY created_at DESC
+            LIMIT 5
+        """, (user_id,))
+        
+        # Get active sessions count
+        active_sessions = Database.execute_one("""
+            SELECT COUNT(*) as session_count
+            FROM user_sessions
+            WHERE user_id = %s AND expires_at > NOW()
+        """, (user_id,))
+        
+        # Build enhanced profile response
+        profile_data = {
+            'user': {
+                'id': user['id'],
+                'username': user['username'],
+                'email': user['email'],
+                'first_name': user['first_name'],
+                'last_name': user['last_name'],
+                'phone': user['phone'],
+                'department': user['department'],
+                # 'job_title': user['job_title'],
+                'is_active': user['is_active'],
+                'is_verified': user['is_verified'],
+                'two_fa_enabled': user['two_fa_enabled'],
+                'created_at': user['created_at'].isoformat() if user['created_at'] else None,
+                'last_login': user['last_login'].isoformat() if user['last_login'] else None
+            },
+            'tenant': {
+                'name': user['tenant_name'],
+                'subdomain': user['tenant_subdomain']
+            },
+            'roles': roles,
+            'permissions': list(all_permissions),
+            'has_super_admin': '*' in all_permissions,
+            'security': {
+                'two_fa_enabled': user['two_fa_enabled'],
+                'active_sessions': active_sessions['session_count'] if active_sessions else 0
+            },
+            'recent_activities': [
+                {
+                    'action': activity['action'],
+                    'resource_type': activity['resource_type'],
+                    'timestamp': activity['created_at'].isoformat() if activity['created_at'] else None
+                }
+                for activity in recent_activities
+            ] if recent_activities else []
+        }
+        
+        logger.debug(f"Profile retrieved for user {user['username']}")
+        
+        return jsonify(profile_data), 200
+        
+    except Exception as e:
+        logger.error(f"Profile retrieval error: {e}", exc_info=True)
+        return jsonify({'error': 'Failed to retrieve profile'}), 500
+
+@auth_bp.route('/permissions', methods=['GET'])
+@require_auth
+def get_user_permissions():
+    """Get current user's permissions"""
+    try:
+        user_id = g.current_user['user_id']
+        
+        # Get fresh permissions from database
+        permissions = PermissionService.get_user_permissions(user_id)
+        
+        # Get permission hierarchy for context
+        permission_hierarchy = PermissionService.get_permission_hierarchy()
+        
+        return jsonify({
+            'permissions': list(permissions),
+            'has_super_admin': '*' in permissions,
+            'permission_hierarchy': permission_hierarchy
+        }), 200
+        
+    except Exception as e:
+        logger.error(f"Error getting user permissions: {e}")
+        return jsonify({'error': 'Failed to retrieve permissions'}), 500
+
+@auth_bp.route('/validate-token', methods=['POST'])
+def validate_token():
+    """Validate JWT token endpoint for client-side validation"""
+    try:
+        auth_header = request.headers.get('Authorization')
+        if not auth_header or not auth_header.startswith('Bearer '):
+            return jsonify({'valid': False, 'error': 'Missing or invalid authorization header'}), 400
+
+        token = auth_header.split(' ')[1]
+        user_data = AuthUtils.verify_jwt_token(token)
+
+        if not user_data:
+            return jsonify({'valid': False, 'error': 'Invalid or expired token'}), 401
+
+        # Get fresh user permissions
+        try:
+            user_permissions = PermissionService.get_user_permissions(user_data['user_id'])
+            user_data['permissions'] = list(user_permissions)
+            user_data['has_super_admin'] = '*' in user_permissions
+        except Exception as e:
+            logger.error(f"Error getting user permissions during validation: {e}")
+            user_data['permissions'] = []
+            user_data['has_super_admin'] = False
+
+        return jsonify({
+            'valid': True,
+            'user': {
+                'user_id': user_data['user_id'],
+                'username': user_data['username'],
+                'email': user_data['email'],
+                'tenant_id': user_data['tenant_id'],
+                'permissions': user_data['permissions'],
+                'has_super_admin': user_data['has_super_admin']
+            }
+        }), 200
+        
+    except Exception as e:
+        logger.error(f"Token validation error: {e}")
+        return jsonify({'valid': False, 'error': 'Token validation failed'}), 500
+
+# Keep all other existing endpoints...
 @auth_bp.route('/setup-2fa', methods=['POST'])
 @require_auth
 def setup_2fa():
@@ -266,6 +468,27 @@ def refresh_token():
         if not user_data or user_data.get('type') != 'refresh':
             return jsonify({'error': 'Invalid refresh token'}), 401
         
+        # Get fresh user data with current permissions
+        user = Database.execute_one("""
+            SELECT u.id, u.tenant_id, u.username, u.email, 
+                   u.first_name, u.last_name, u.is_active
+            FROM users u
+            WHERE u.id = %s AND u.is_active = true
+        """, (user_data['user_id'],))
+        
+        if not user:
+            return jsonify({'error': 'User not found or inactive'}), 401
+        
+        # Get fresh permissions
+        permissions = PermissionService.get_user_permissions(user['id'])
+        
+        # Update user data
+        user_data.update({
+            'permissions': list(permissions),
+            'first_name': user['first_name'],
+            'last_name': user['last_name']
+        })
+        
         # Generate new access token
         access_token = AuthUtils.generate_jwt_token(user_data, 'access')
         
@@ -274,32 +497,3 @@ def refresh_token():
     except Exception as e:
         logger.error(f"Token refresh error: {e}")
         return jsonify({'error': 'Token refresh failed'}), 500
-
-@auth_bp.route('/profile', methods=['GET'])
-@require_auth
-def get_profile():
-    """Get user profile"""
-    try:
-        user_id = g.current_user['user_id']
-        
-        user = Database.execute_one("""
-            SELECT u.id, u.username, u.email, u.first_name, u.last_name,
-                   u.phone, u.two_fa_enabled, u.created_at, u.last_login,
-                   t.name as tenant_name,
-                   ARRAY_AGG(DISTINCT r.name) as roles
-            FROM users u
-            JOIN tenants t ON u.tenant_id = t.id
-            LEFT JOIN user_roles ur ON u.id = ur.user_id
-            LEFT JOIN roles r ON ur.role_id = r.id
-            WHERE u.id = %s
-            GROUP BY u.id, t.name
-        """, (user_id,))
-        
-        if not user:
-            return jsonify({'error': 'User not found'}), 404
-        
-        return jsonify({'user': dict(user)}), 200
-        
-    except Exception as e:
-        logger.error(f"Profile retrieval error: {e}")
-        return jsonify({'error': 'Failed to retrieve profile'}), 500

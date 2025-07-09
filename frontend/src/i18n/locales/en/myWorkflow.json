@@ -1,0 +1,42 @@
+{
+  "myWorkflows": {
+    "title": "My Workflow Instances",
+    "subtitle": "Track and manage your workflow instances",
+    "startNewWorkflow": "Start New Workflow",
+    "noInstancesFound": "No workflow instances found",
+    "noInstancesMessage": "You haven't started any workflow instances yet.",
+    "noFilterResults": "No instances match your current filters.",
+    "startFirstWorkflow": "Start Your First Workflow",
+    "viewDetails": "View Details",
+    "instancesCount": "My Workflow Instances ({{count}})",
+
+    "started": "Started: {{date}}",
+    "due": "Due: {{date}}",
+    "progress": "Progress",
+    "stepsCompleted": "{{completed}}/{{total}} steps",
+    "stats": {
+      "total": "Total",
+      "pending": "Pending",
+      "running": "Running",
+      "completed": "Completed",
+      "failed": "Failed",
+      "cancelled": "Cancelled"
+    },
+    "filters": {
+      "title": "Filters",
+      "clearAll": "Clear All",
+      "search": "Search",
+      "searchPlaceholder": "Search by title or workflow name...",
+      "status": "Status",
+      "priority": "Priority",
+      "allStatuses": "All Statuses",
+      "allPriorities": "All Priorities"
+    },
+    "duration": {
+      "notStarted": "Not started",
+      "days": "{{days}}d {{hours}}h",
+      "hours": "{{hours}}h {{minutes}}m",
+      "minutes": "{{minutes}}m"
+    }
+  }
+}

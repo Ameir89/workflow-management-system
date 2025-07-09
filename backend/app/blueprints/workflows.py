@@ -1634,3 +1634,389 @@ def force_advance_workflow(instance_id):
     except Exception as e:
         logger.error(f"Error force advancing workflow {instance_id}: {e}")
         return jsonify({'error': 'Failed to force advance workflow'}), 500
+    
+    
+    
+@workflows_bp.route('/my-instances', methods=['GET'])
+@require_auth
+def get_my_workflow_instances():
+    """Get workflow instances for the current user with filtering and pagination"""
+    try:
+        tenant_id = g.current_user['tenant_id']
+        user_id = g.current_user['user_id']
+        
+        # Get query parameters
+        page = int(request.args.get('page', 1))
+        limit = min(int(request.args.get('limit', 20)), 100)
+        offset = (page - 1) * limit
+        
+        status_filter = request.args.get('status', '').strip()
+        priority_filter = request.args.get('priority', '').strip()
+        search_filter = request.args.get('search', '').strip()
+        
+        # Build the WHERE clause dynamically
+        where_conditions = [
+            "wi.tenant_id = %s",
+            "(wi.initiated_by = %s OR EXISTS (SELECT 1 FROM tasks t WHERE t.workflow_instance_id = wi.id AND t.assigned_to = %s))"
+        ]
+        params = [tenant_id, user_id, user_id]
+        
+        # Add status filter
+        if status_filter:
+            where_conditions.append("wi.status = %s")
+            params.append(status_filter)
+        
+        # Add priority filter
+        if priority_filter:
+            where_conditions.append("wi.priority = %s")
+            params.append(priority_filter)
+        
+        # Add search filter (search in title, workflow name, or description)
+        if search_filter:
+            where_conditions.append("""
+                (wi.title ILIKE %s OR w.name ILIKE %s OR wi.description ILIKE %s)
+            """)
+            search_term = f"%{search_filter}%"
+            params.extend([search_term, search_term, search_term])
+        
+        where_clause = "WHERE " + " AND ".join(where_conditions)
+        
+        # Main query to get workflow instances
+        instances_query = f"""
+            SELECT 
+                wi.id,
+                wi.title,
+                wi.status,
+                wi.priority,
+                wi.current_step,
+                wi.created_at,
+                wi.updated_at,
+                wi.completed_at,
+                wi.due_date,
+                wi.initiated_by,
+                w.id as workflow_id,
+                w.name as workflow_name,
+                w.category as workflow_category,
+                u1.first_name || ' ' || u1.last_name as initiated_by_name,
+                u2.first_name || ' ' || u2.last_name as assigned_to_name,
+                
+                -- Task statistics
+                COUNT(DISTINCT t.id) as total_tasks,
+                COUNT(DISTINCT CASE WHEN t.status = 'completed' THEN t.id END) as completed_tasks,
+                COUNT(DISTINCT CASE WHEN t.status = 'pending' AND t.assigned_to = %s THEN t.id END) as my_pending_tasks,
+                
+                -- User role in this instance
+                CASE 
+                    WHEN wi.initiated_by = %s THEN 'initiator'
+                    WHEN EXISTS (SELECT 1 FROM tasks t2 WHERE t2.workflow_instance_id = wi.id AND t2.assigned_to = %s) THEN 'assignee'
+                    ELSE 'viewer'
+                END as user_role,
+                
+                -- Progress percentage
+                CASE 
+                    WHEN COUNT(DISTINCT t.id) = 0 THEN 0
+                    ELSE ROUND((COUNT(DISTINCT CASE WHEN t.status = 'completed' THEN t.id END) * 100.0) / COUNT(DISTINCT t.id), 2)
+                END as progress_percentage
+                
+            FROM workflow_instances wi
+            JOIN workflows w ON wi.workflow_id = w.id
+            LEFT JOIN users u1 ON wi.initiated_by = u1.id
+            LEFT JOIN users u2 ON wi.assigned_to = u2.id
+            LEFT JOIN tasks t ON wi.id = t.workflow_instance_id
+            {where_clause}
+            GROUP BY wi.id, w.id, w.name, w.category, u1.first_name, u1.last_name, u2.first_name, u2.last_name
+            ORDER BY wi.updated_at DESC
+            LIMIT %s OFFSET %s
+        """
+        
+        # Add user_id three more times for the CASE statements and pagination
+        query_params = params + [user_id, user_id, user_id, limit, offset]
+        
+        instances = Database.execute_query(instances_query, query_params)
+        
+        # Get total count for pagination
+        count_query = f"""
+            SELECT COUNT(DISTINCT wi.id) as total_count
+            FROM workflow_instances wi
+            JOIN workflows w ON wi.workflow_id = w.id
+            LEFT JOIN tasks t ON wi.id = t.workflow_instance_id
+            {where_clause}
+        """
+        
+        total_result = Database.execute_one(count_query, params)
+        total_count = total_result['total_count'] if total_result else 0
+        
+        # Get summary statistics for the user
+        summary_query = """
+            SELECT 
+                COUNT(DISTINCT wi.id) as total_instances,
+                COUNT(DISTINCT CASE WHEN wi.status = 'in_progress' THEN wi.id END) as active_instances,
+                COUNT(DISTINCT CASE WHEN wi.status = 'completed' THEN wi.id END) as completed_instances,
+                COUNT(DISTINCT CASE WHEN wi.status = 'failed' THEN wi.id END) as failed_instances,
+                COUNT(DISTINCT CASE WHEN wi.initiated_by = %s THEN wi.id END) as initiated_instances,
+                COUNT(DISTINCT CASE WHEN EXISTS (
+                    SELECT 1 FROM tasks t WHERE t.workflow_instance_id = wi.id AND t.assigned_to = %s AND t.status = 'pending'
+                ) THEN wi.id END) as instances_with_pending_tasks
+            FROM workflow_instances wi
+            WHERE wi.tenant_id = %s 
+            AND (wi.initiated_by = %s OR EXISTS (
+                SELECT 1 FROM tasks t WHERE t.workflow_instance_id = wi.id AND t.assigned_to = %s
+            ))
+        """
+        
+        summary = Database.execute_one(summary_query, [user_id, user_id, tenant_id, user_id, user_id])
+        
+        # Format the response
+        response_data = {
+            'instances': [dict(instance) for instance in instances],
+            'pagination': {
+                'page': page,
+                'limit': limit,
+                'total': total_count,
+                'pages': (total_count + limit - 1) // limit,
+                'has_next': page * limit < total_count,
+                'has_prev': page > 1
+            },
+            'summary': dict(summary) if summary else {
+                'total_instances': 0,
+                'active_instances': 0,
+                'completed_instances': 0,
+                'failed_instances': 0,
+                'initiated_instances': 0,
+                'instances_with_pending_tasks': 0
+            },
+            'filters': {
+                'status': status_filter,
+                'priority': priority_filter,
+                'search': search_filter
+            }
+        }
+        
+        return jsonify(response_data), 200
+        
+    except Exception as e:
+        logger.error(f"Error getting user workflow instances: {e}")
+        return jsonify({'error': 'Failed to retrieve workflow instances'}), 500
+
+
+@workflows_bp.route('/my-instances/summary', methods=['GET'])
+@require_auth
+def get_my_instances_summary():
+    """Get summary dashboard data for current user's workflow instances"""
+    try:
+        tenant_id = g.current_user['tenant_id']
+        user_id = g.current_user['user_id']
+        
+        # Get detailed summary with recent activity
+        summary_query = """
+            SELECT 
+                -- Basic counts
+                COUNT(DISTINCT wi.id) as total_instances,
+                COUNT(DISTINCT CASE WHEN wi.status = 'in_progress' THEN wi.id END) as active_instances,
+                COUNT(DISTINCT CASE WHEN wi.status = 'completed' THEN wi.id END) as completed_instances,
+                COUNT(DISTINCT CASE WHEN wi.status = 'failed' THEN wi.id END) as failed_instances,
+                COUNT(DISTINCT CASE WHEN wi.status = 'pending' THEN wi.id END) as pending_instances,
+                
+                -- Role-based counts
+                COUNT(DISTINCT CASE WHEN wi.initiated_by = %s THEN wi.id END) as initiated_instances,
+                
+                -- Recent activity (last 7 days)
+                COUNT(DISTINCT CASE WHEN wi.created_at >= NOW() - INTERVAL '7 days' THEN wi.id END) as recent_instances,
+                COUNT(DISTINCT CASE WHEN wi.completed_at >= NOW() - INTERVAL '7 days' THEN wi.id END) as recently_completed,
+                
+                -- Overdue instances
+                COUNT(DISTINCT CASE WHEN wi.due_date < NOW() AND wi.status = 'in_progress' THEN wi.id END) as overdue_instances
+                
+            FROM workflow_instances wi
+            WHERE wi.tenant_id = %s 
+            AND (wi.initiated_by = %s OR EXISTS (
+                SELECT 1 FROM tasks t WHERE t.workflow_instance_id = wi.id AND t.assigned_to = %s
+            ))
+        """
+        
+        summary = Database.execute_one(summary_query, [user_id, tenant_id, user_id, user_id])
+        
+        # Get pending tasks summary
+        tasks_query = """
+            SELECT 
+                COUNT(t.id) as total_pending_tasks,
+                COUNT(CASE WHEN t.due_date < NOW() THEN t.id END) as overdue_tasks,
+                COUNT(CASE WHEN t.due_date >= NOW() AND t.due_date <= NOW() + INTERVAL '24 hours' THEN t.id END) as due_soon_tasks,
+                COUNT(CASE WHEN t.priority = 'high' OR t.priority = 'urgent' THEN t.id END) as high_priority_tasks
+            FROM tasks t
+            JOIN workflow_instances wi ON t.workflow_instance_id = wi.id
+            WHERE wi.tenant_id = %s 
+            AND t.assigned_to = %s 
+            AND t.status = 'pending'
+        """
+        
+        tasks_summary = Database.execute_one(tasks_query, [tenant_id, user_id])
+        
+        # Get workflow type breakdown
+        workflow_types_query = """
+            SELECT 
+                w.category,
+                COUNT(DISTINCT wi.id) as instance_count,
+                COUNT(DISTINCT CASE WHEN wi.status = 'in_progress' THEN wi.id END) as active_count
+            FROM workflow_instances wi
+            JOIN workflows w ON wi.workflow_id = w.id
+            WHERE wi.tenant_id = %s 
+            AND (wi.initiated_by = %s OR EXISTS (
+                SELECT 1 FROM tasks t WHERE t.workflow_instance_id = wi.id AND t.assigned_to = %s
+            ))
+            GROUP BY w.category
+            ORDER BY instance_count DESC
+            LIMIT 5
+        """
+        
+        workflow_types = Database.execute_query(workflow_types_query, [tenant_id, user_id, user_id])
+        
+        # Get recent activity
+        recent_activity_query = """
+            SELECT 
+                wi.id,
+                wi.title,
+                wi.status,
+                wi.updated_at,
+                w.name as workflow_name,
+                'workflow_updated' as activity_type
+            FROM workflow_instances wi
+            JOIN workflows w ON wi.workflow_id = w.id
+            WHERE wi.tenant_id = %s 
+            AND (wi.initiated_by = %s OR EXISTS (
+                SELECT 1 FROM tasks t WHERE t.workflow_instance_id = wi.id AND t.assigned_to = %s
+            ))
+            AND wi.updated_at >= NOW() - INTERVAL '7 days'
+            
+            UNION ALL
+            
+            SELECT 
+                t.workflow_instance_id as id,
+                wi.title,
+                t.status,
+                t.updated_at,
+                t.name as workflow_name,
+                'task_updated' as activity_type
+            FROM tasks t
+            JOIN workflow_instances wi ON t.workflow_instance_id = wi.id
+            WHERE wi.tenant_id = %s 
+            AND t.assigned_to = %s
+            AND t.updated_at >= NOW() - INTERVAL '7 days'
+            
+            ORDER BY updated_at DESC
+            LIMIT 10
+        """
+        
+        recent_activity = Database.execute_query(recent_activity_query, [
+            tenant_id, user_id, user_id, tenant_id, user_id
+        ])
+        
+        response_data = {
+            'summary': dict(summary) if summary else {},
+            'tasks': dict(tasks_summary) if tasks_summary else {},
+            'workflow_types': [dict(wt) for wt in workflow_types],
+            'recent_activity': [dict(activity) for activity in recent_activity]
+        }
+        
+        return jsonify(response_data), 200
+        
+    except Exception as e:
+        logger.error(f"Error getting user instances summary: {e}")
+        return jsonify({'error': 'Failed to retrieve summary'}), 500
+
+
+@workflows_bp.route('/my-instances/<instance_id>/quick-actions', methods=['GET'])
+@require_auth
+def get_my_instance_quick_actions(instance_id):
+    """Get available quick actions for a workflow instance"""
+    try:
+        if not validate_uuid(instance_id):
+            return jsonify({'error': 'Invalid instance ID'}), 400
+            
+        tenant_id = g.current_user['tenant_id']
+        user_id = g.current_user['user_id']
+        user_permissions = g.current_user.get('permissions', [])
+        
+        # Get instance details and verify user access
+        instance = Database.execute_one("""
+            SELECT wi.*, w.name as workflow_name, w.definition
+            FROM workflow_instances wi
+            JOIN workflows w ON wi.workflow_id = w.id
+            WHERE wi.id = %s AND wi.tenant_id = %s
+            AND (wi.initiated_by = %s OR EXISTS (
+                SELECT 1 FROM tasks t WHERE t.workflow_instance_id = wi.id AND t.assigned_to = %s
+            ))
+        """, (instance_id, tenant_id, user_id, user_id))
+        
+        if not instance:
+            return jsonify({'error': 'Instance not found or access denied'}), 404
+        
+        # Get user's pending tasks for this instance
+        pending_tasks = Database.execute_query("""
+            SELECT id, name, type, due_date, priority, form_id
+            FROM tasks
+            WHERE workflow_instance_id = %s AND assigned_to = %s AND status = 'pending'
+            ORDER BY due_date ASC
+        """, (instance_id, user_id))
+        
+        actions = []
+        
+        # Task-related actions
+        for task in pending_tasks:
+            actions.append({
+                'type': 'complete_task',
+                'task_id': task['id'],
+                'label': f"Complete: {task['name']}",
+                'description': f"Complete the pending task: {task['name']}",
+                'priority': task['priority'],
+                'requires_form': task['form_id'] is not None,
+                'due_date': task['due_date'].isoformat() if task['due_date'] else None
+            })
+        
+        # Instance-level actions based on user role and permissions
+        user_role = 'assignee' if pending_tasks else 'initiator' if instance['initiated_by'] == user_id else 'viewer'
+        
+        if user_role == 'initiator' or '*' in user_permissions:
+            if instance['status'] == 'in_progress':
+                actions.append({
+                    'type': 'view_timeline',
+                    'label': 'View Timeline',
+                    'description': 'View detailed execution timeline',
+                    'url': f"/api/workflows/instances/{instance_id}/timeline"
+                })
+                
+                if 'manage_workflows' in user_permissions or '*' in user_permissions:
+                    actions.append({
+                        'type': 'manual_advance',
+                        'label': 'Manual Advance',
+                        'description': 'Manually advance workflow to next step',
+                        'requires_permission': 'manage_workflows'
+                    })
+        
+        # Common actions for all users
+        actions.append({
+            'type': 'view_details',
+            'label': 'View Details',
+            'description': 'View complete instance details',
+            'url': f"/api/workflows/instances/{instance_id}"
+        })
+        
+        if instance['status'] in ['completed', 'failed']:
+            actions.append({
+                'type': 'view_history',
+                'label': 'View History',
+                'description': 'View execution history and logs'
+            })
+        
+        return jsonify({
+            'instance_id': instance_id,
+            'instance_title': instance['title'],
+            'instance_status': instance['status'],
+            'user_role': user_role,
+            'available_actions': actions,
+            'pending_tasks_count': len(pending_tasks)
+        }), 200
+        
+    except Exception as e:
+        logger.error(f"Error getting quick actions for instance {instance_id}: {e}")
+        return jsonify({'error': 'Failed to retrieve quick actions'}), 500

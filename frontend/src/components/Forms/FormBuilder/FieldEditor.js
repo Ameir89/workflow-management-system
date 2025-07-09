@@ -1,12 +1,12 @@
+import React, { useState } from "react";
 import {
-  ArrowDownIcon,
+  TrashIcon,
   ArrowUpIcon,
+  ArrowDownIcon,
   ChevronDownIcon,
   ChevronRightIcon,
-  TrashIcon,
 } from "@heroicons/react/24/outline";
-import { useState } from "react";
-import DataSourceConfiguration from "./DataSourceConfiguration";
+import DataSourceConfiguration from "./ DataSourceConfiguration";
 
 const FieldEditor = ({
   field,

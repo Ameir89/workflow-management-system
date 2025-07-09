@@ -58,7 +58,8 @@ import Reports from "../components/Reports/Reports";
 import Profile from "../components/Auth/Profile";
 
 // Workflow Instance Detail Component (placeholder)
-import WorkflowInstanceDetail from "../components/Workflows/WorkflowInstanceDetail";
+import WorkflowInstanceDetail from "../components/Workflows/WorkflowInstanceDetail/WorkflowInstanceDetail";
+import MyWorkflowInstances from "../components/Workflows/MyWorkflowInstances";
 
 const AppRoutes = () => {
   return (
@@ -151,6 +152,14 @@ const AppRoutes = () => {
             element={
               <ProtectedRoute requiredPermissions={["view_workflow_instances"]}>
                 <WorkflowInstanceDetail />
+              </ProtectedRoute>
+            }
+          />
+          <Route
+            path="my-workflows"
+            element={
+              <ProtectedRoute>
+                <MyWorkflowInstances />
               </ProtectedRoute>
             }
           />

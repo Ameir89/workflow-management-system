@@ -146,12 +146,7 @@ const TaskList = () => {
         <ul className="divide-y divide-gray-200">
           {tasksData?.tasks?.map((task) => (
             <li key={task.id}>
-              <Link
-                to={
-                  task.form_id ? `/tasks/${task.id}/form` : `/tasks/${task.id}`
-                }
-                className="block hover:bg-gray-50"
-              >
+              <Link to={`/tasks/${task.id}`} className="block hover:bg-gray-50">
                 <div className="px-4 py-4">
                   <div className="flex items-center justify-between">
                     <div className="flex-1 min-w-0">
@@ -167,6 +162,9 @@ const TaskList = () => {
                           />
                         )}
                       </div>
+                      <p className="text-sm text-gray-500 truncate mt-1">
+                        {t("tasks.id")} : {task.id}
+                      </p>
                       <p className="text-sm text-gray-500 truncate mt-1">
                         {task.workflow_title}
                       </p>
@@ -199,7 +197,7 @@ const TaskList = () => {
                         <ClockIcon className="h-4 w-4 mr-1" />
                         <span>
                           {t("tasks.due")}{" "}
-                          {new Date(task.due_date).toLocaleDateString()}
+                          {new Date(task.due_date).toLocaleString()}
                         </span>
                       </>
                     )}

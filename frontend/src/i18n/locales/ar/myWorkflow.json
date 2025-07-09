@@ -1,0 +1,41 @@
+{
+  "myWorkflows": {
+    "title": "مثيلات سير العمل الخاصة بي",
+    "subtitle": "تتبع وإدارة مثيلات سير العمل الخاصة بك",
+    "startNewWorkflow": "بدء سير عمل جديد",
+    "noInstancesFound": "لم يتم العثور على مثيلات سير عمل",
+    "noInstancesMessage": "لم تبدأ أي مثيلات سير عمل بعد.",
+    "noFilterResults": "لا توجد مثيلات تطابق المرشحات الحالية.",
+    "startFirstWorkflow": "ابدأ سير العمل الأول الخاص بك",
+    "viewDetails": "عرض التفاصيل",
+    "instancesCount": "مثيلات سير العمل الخاصة بي ({{count}})",
+    "started": "بدأ في: {{date}}",
+    "due": "مستحق في: {{date}}",
+    "progress": "التقدم",
+    "stepsCompleted": "{{completed}}/{{total}} خطوة",
+    "stats": {
+      "total": "الإجمالي",
+      "pending": "قيد الانتظار",
+      "running": "قيد التشغيل",
+      "completed": "مكتمل",
+      "failed": "فشل",
+      "cancelled": "ملغي"
+    },
+    "filters": {
+      "title": "المرشحات",
+      "clearAll": "مسح الكل",
+      "search": "بحث",
+      "searchPlaceholder": "البحث بالعنوان أو اسم سير العمل...",
+      "status": "الحالة",
+      "priority": "الأولوية",
+      "allStatuses": "جميع الحالات",
+      "allPriorities": "جميع الأولويات"
+    },
+    "duration": {
+      "notStarted": "لم يبدأ",
+      "days": "{{days}} يوم {{hours}} ساعة",
+      "hours": "{{hours}} ساعة {{minutes}} دقيقة",
+      "minutes": "{{minutes}} دقيقة"
+    }
+  }
+}

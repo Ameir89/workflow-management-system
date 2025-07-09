@@ -1,5 +1,6 @@
 {
   "tasks": {
+    "id": "الرقم",
     "activeTasks": "المهام النشطة",
     "workflow": "سير العمل",
     "approval": "الموافقة",
@@ -74,6 +75,9 @@
     "taskCreatedAt": "تم إنشاء المهمة في",
     "taskDueDate": "الموعد النهائي للمهمة",
     "taskDuration": "مدة المهمة",
-    "taskAssignedTo": "المُكلف بالمهمة"
+    "noTasks": "لا يوجد مهام",
+    "noTasksDescription": "لا يوجد مهام لديك.",
+    "taskWithId": "المهمة {{id}}",
+    "viewTask": "عرض المهمة"
   }
 }

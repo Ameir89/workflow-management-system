@@ -1,4 +1,4 @@
-// Fixed ConnectionLine.js with proper click handling
+// Fixed ConnectionLine.js - Updated to properly handle condition display
 import React, { useState } from "react";
 import {
   InformationCircleIcon,
@@ -52,37 +52,52 @@ const ConnectionLine = ({
   const midX = (startX + endX) / 2;
   const midY = (startY + endY) / 2;
 
-  // Format condition display
+  // FIXED: Format condition display - Updated to handle the actual data structure
   const formatConditionDisplay = (condition) => {
-    if (
-      !condition ||
-      !condition.rules ||
-      !Array.isArray(condition.rules) ||
-      condition.rules.length === 0
-    ) {
+    if (!condition) {
       return null;
     }
 
-    if (condition.rules.length === 1) {
-      const rule = condition.rules[0];
-      if (!rule || !rule.field || !rule.operator) {
-        return null;
-      }
-      return `${rule.field} ${rule.operator} ${rule.value || ""}`;
+    // Handle the case where condition has a single field/operator/value (like in your data)
+    if (condition.field && condition.operator) {
+      const value = condition.value || "";
+      return `${condition.field} ${condition.operator} ${value}`;
     }
 
-    return `${condition.rules.length} conditions (${(
-      condition.operator || "AND"
-    ).toUpperCase()})`;
+    // Handle the case where condition has rules array
+    if (
+      condition.rules &&
+      Array.isArray(condition.rules) &&
+      condition.rules.length > 0
+    ) {
+      if (condition.rules.length === 1) {
+        const rule = condition.rules[0];
+        if (rule.field && rule.operator) {
+          return `${rule.field} ${rule.operator} ${rule.value || ""}`;
+        }
+      }
+      return `${condition.rules.length} conditions (${(
+        condition.operator || "AND"
+      ).toUpperCase()})`;
+    }
+
+    // Fallback - if we have a condition object but can't parse it
+    return "Has condition";
   };
 
   const conditionDisplay = formatConditionDisplay(safeTransition.condition);
+
+  // FIXED: Better condition detection
   const hasConditions = !!(
     safeTransition.condition &&
-    safeTransition.condition.rules &&
-    Array.isArray(safeTransition.condition.rules) &&
-    safeTransition.condition.rules.length > 0
+    // Direct condition with field/operator
+    ((safeTransition.condition.field && safeTransition.condition.operator) ||
+      // Rules-based condition
+      (safeTransition.condition.rules &&
+        Array.isArray(safeTransition.condition.rules) &&
+        safeTransition.condition.rules.length > 0))
   );
+
   const isDefaultTransition = safeTransition.isDefault;
 
   // Determine line style based on properties
@@ -131,9 +146,9 @@ const ConnectionLine = ({
       className="connection-line-group cursor-pointer"
       onMouseEnter={() => setIsHovered(true)}
       onMouseLeave={() => setIsHovered(false)}
-      style={{ pointerEvents: "all" }} // Enable pointer events for the entire group
+      style={{ pointerEvents: "all" }}
     >
-      {/* Invisible wider path for easier clicking - THIS IS THE KEY FIX */}
+      {/* Invisible wider path for easier clicking */}
       <path
         d={path}
         stroke="transparent"
@@ -179,7 +194,7 @@ const ConnectionLine = ({
           className="connection-line-glow"
           style={{
             filter: "blur(2px)",
-            pointerEvents: "none", // Glow shouldn't interfere with clicks
+            pointerEvents: "none",
           }}
         />
       )}
@@ -220,7 +235,7 @@ const ConnectionLine = ({
               fill: selected ? lineStyle.stroke : "#374151",
               fontFamily: "Inter, sans-serif",
               cursor: "pointer",
-              pointerEvents: "none", // Let clicks pass through to the rect
+              pointerEvents: "none",
             }}
           >
             {safeTransition.name ||
@@ -228,23 +243,23 @@ const ConnectionLine = ({
                 ? "Default"
                 : hasConditions
                 ? "Conditional"
-                : "")}
+                : "Always")}
           </text>
         </g>
       )}
 
-      {/* Condition Details Label */}
+      {/* FIXED: Condition Details Label - Updated positioning and styling */}
       {conditionDisplay && (
         <g
           transform={`translate(${midX}, ${midY + 15})`}
           onClick={handleClick}
           style={{ cursor: "pointer" }}
         >
-          {/* Condition background */}
+          {/* Condition background - made wider to accommodate text */}
           <rect
-            x="-70"
+            x="-80"
             y="-10"
-            width="140"
+            width="160"
             height="20"
             rx="10"
             fill={hasConditions ? "#EEF2FF" : "#F3F4F6"}
@@ -258,7 +273,7 @@ const ConnectionLine = ({
           />
 
           {/* Condition icon */}
-          <g transform="translate(-65, -6)" style={{ pointerEvents: "none" }}>
+          <g transform="translate(-75, -6)" style={{ pointerEvents: "none" }}>
             <InformationCircleIcon
               width="12"
               height="12"
@@ -279,10 +294,49 @@ const ConnectionLine = ({
               fill: hasConditions ? "#4338CA" : "#6B7280",
               fontFamily: "Inter, sans-serif",
               fontWeight: "400",
-              pointerEvents: "none", // Let clicks pass through
+              pointerEvents: "none",
             }}
           >
             {conditionDisplay}
+          </text>
+        </g>
+      )}
+
+      {/* Debug info - Remove this in production */}
+      {process.env.NODE_ENV === "development" && (selected || isHovered) && (
+        <g transform={`translate(${midX}, ${midY + 40})`}>
+          <rect
+            x="-100"
+            y="-15"
+            width="200"
+            height="30"
+            rx="5"
+            fill="rgba(0,0,0,0.8)"
+            style={{ pointerEvents: "none" }}
+          />
+          <text
+            textAnchor="middle"
+            dy="-5"
+            style={{
+              fontSize: "8px",
+              fill: "white",
+              fontFamily: "monospace",
+              pointerEvents: "none",
+            }}
+          >
+            Debug: {JSON.stringify(safeTransition.condition)}
+          </text>
+          <text
+            textAnchor="middle"
+            dy="5"
+            style={{
+              fontSize: "8px",
+              fill: "white",
+              fontFamily: "monospace",
+              pointerEvents: "none",
+            }}
+          >
+            hasConditions: {hasConditions.toString()}
           </text>
         </g>
       )}
@@ -317,36 +371,6 @@ const ConnectionLine = ({
       {/* Hover controls */}
       {isHovered && (
         <>
-          {/* Start point indicator */}
-          <circle
-            cx={startX}
-            cy={startY}
-            r="4"
-            fill={lineStyle.stroke}
-            stroke="white"
-            strokeWidth="2"
-            className="connection-indicator"
-            style={{
-              filter: "drop-shadow(0 1px 2px rgba(0, 0, 0, 0.1))",
-              pointerEvents: "none",
-            }}
-          />
-
-          {/* End point indicator */}
-          <circle
-            cx={endX}
-            cy={endY}
-            r="4"
-            fill={lineStyle.stroke}
-            stroke="white"
-            strokeWidth="2"
-            className="connection-indicator"
-            style={{
-              filter: "drop-shadow(0 1px 2px rgba(0, 0, 0, 0.1))",
-              pointerEvents: "none",
-            }}
-          />
-
           {/* Action buttons */}
           <g transform={`translate(${midX + 30}, ${midY - 30})`}>
             {/* Edit button */}

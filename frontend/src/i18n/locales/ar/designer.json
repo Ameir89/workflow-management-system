@@ -122,7 +122,8 @@
       "isNotEmpty": "غير فارغ",
       "and": "و",
       "or": "أو",
-      "value": "القيمة"
+      "value": "القيمة",
+      "approvalStatus": "حالة الموافقة"
     },
     "transitionHelp": "مساعدة الانتقال",
     "transitionHelpConditions": "مساعدة شروط الانتقال",

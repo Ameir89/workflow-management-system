@@ -246,4 +246,16 @@ export const workflowService = {
       );
     }
   },
+
+  async getMyWorkflowInstances(params = {}) {
+    try {
+      const queryParams = new URLSearchParams(params).toString();
+      const response = await api.get(`/workflows/my-instances?${queryParams}`);
+      return response.data;
+    } catch (error) {
+      throw new Error(
+        error.response?.data?.error || "Failed to fetch my workflow instances"
+      );
+    }
+  },
 };

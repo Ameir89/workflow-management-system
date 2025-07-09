@@ -1,3 +1,4 @@
+// WorkflowDesigner.js - Updated with condition migration support
 import React, { useState, useCallback, useRef } from "react";
 import { DndProvider } from "react-dnd";
 import { HTML5Backend } from "react-dnd-html5-backend";
@@ -10,6 +11,7 @@ import NodePalette from "./NodePalette";
 import PropertiesPanel from "./PropertiesPanel/PropertiesPanel";
 import DesignerToolbar from "./DesignerToolbar";
 import { workflowService } from "../../services/workflowService";
+import { conditionMigrationUtil } from "./utils/conditionMigrationUtil";
 import "./WorkflowDesigner.css";
 
 const workflowInitialData = {
@@ -36,6 +38,7 @@ const WorkflowDesignerContent = () => {
   const [selectedTransition, setSelectedTransition] = useState(null);
   const [zoom, setZoom] = useState(1);
   const [panOffset, setPanOffset] = useState({ x: 0, y: 0 });
+  const [migrationPerformed, setMigrationPerformed] = useState(false);
 
   // Load existing workflow if editing
   const { data: existingWorkflow, isLoading } = useQuery(
@@ -44,7 +47,27 @@ const WorkflowDesignerContent = () => {
     {
       enabled: !!id,
       onSuccess: (data) => {
-        setWorkflow(data);
+        // FIXED: Apply migration on workflow load
+        const migratedWorkflow =
+          conditionMigrationUtil.migrateWorkflowOnLoad(data);
+
+        // Check if migration was needed
+        if (conditionMigrationUtil.needsMigration(data)) {
+          setMigrationPerformed(true);
+          const report = conditionMigrationUtil.generateMigrationReport(
+            data,
+            migratedWorkflow
+          );
+          console.log("Migration report:", report);
+
+          // Show user notification about migration
+          toast.info(
+            `Workflow conditions have been updated to the new format. ${report.changes.length} items were migrated.`,
+            { autoClose: 8000 }
+          );
+        }
+
+        setWorkflow(migratedWorkflow);
       },
     }
   );
@@ -65,6 +88,7 @@ const WorkflowDesignerContent = () => {
       onSuccess: (data) => {
         toast.success(t("workflow.savedSuccessfully"));
         queryClient.invalidateQueries(["workflows"]);
+        setMigrationPerformed(false); // Reset migration flag after successful save
         if (!id) {
           navigate(`/workflows/designer/${data.id}`);
         }
@@ -75,7 +99,7 @@ const WorkflowDesignerContent = () => {
     }
   );
 
-  // Process workflow data before saving to ensure all conditions are included
+  // FIXED: Process workflow data before saving with condition normalization
   const processWorkflowForSave = useCallback((workflowData) => {
     const processedWorkflow = { ...workflowData };
 
@@ -98,19 +122,39 @@ const WorkflowDesignerContent = () => {
       })
     );
 
-    // Ensure all transitions have proper structure including conditions
+    // FIXED: Ensure all transitions have proper structure including normalized conditions
     processedWorkflow.definition.transitions =
-      processedWorkflow.definition.transitions.map((transition) => ({
-        ...transition,
-        // Ensure basic properties
-        from: transition.from,
-        to: transition.to,
-        // Process condition data
-        condition: transition.condition || null,
-        // Add metadata
-        created_at: transition.created_at || new Date().toISOString(),
-        updated_at: new Date().toISOString(),
-      }));
+      processedWorkflow.definition.transitions.map((transition) => {
+        const processedTransition = {
+          ...transition,
+          // Ensure basic properties
+          from: transition.from,
+          to: transition.to,
+          // Add metadata
+          created_at: transition.created_at || new Date().toISOString(),
+          updated_at: new Date().toISOString(),
+        };
+
+        // Process condition data - ensure it's in the correct format for storage
+        if (transition.condition) {
+          // Validate condition structure before saving
+          const validation = conditionMigrationUtil.validateConditionStructure(
+            transition.condition
+          );
+          if (!validation.valid) {
+            console.warn(
+              `Invalid condition structure in transition ${transition.id}:`,
+              validation.errors
+            );
+          }
+
+          processedTransition.condition = transition.condition;
+        } else {
+          processedTransition.condition = null;
+        }
+
+        return processedTransition;
+      });
 
     // Add workflow-level metadata
     processedWorkflow.updated_at = new Date().toISOString();
@@ -198,7 +242,7 @@ const WorkflowDesignerContent = () => {
       }
     });
 
-    // Validate transitions
+    // FIXED: Validate transitions with better condition handling
     workflow.definition.transitions.forEach((transition, index) => {
       if (!transition.from) {
         errors.push(`Transition ${index + 1} is missing a 'from' step`);
@@ -228,6 +272,21 @@ const WorkflowDesignerContent = () => {
             transition.to
           }`
         );
+      }
+
+      // Validate transition conditions
+      if (transition.condition) {
+        const conditionValidation =
+          conditionMigrationUtil.validateConditionStructure(
+            transition.condition
+          );
+        if (!conditionValidation.valid) {
+          errors.push(
+            `Transition ${
+              index + 1
+            } has invalid condition: ${conditionValidation.errors.join(", ")}`
+          );
+        }
       }
     });
 
@@ -482,6 +541,22 @@ const WorkflowDesignerContent = () => {
 
   return (
     <div className="workflow-designer h-full flex flex-col">
+      {/* Show migration notification if migration was performed */}
+      {migrationPerformed && (
+        <div className="bg-blue-50 border-l-4 border-blue-400 p-4 mb-2">
+          <div className="flex">
+            <div className="ml-3">
+              <p className="text-sm text-blue-700">
+                <strong>Workflow Updated:</strong> This workflow has been
+                automatically updated to use the new condition format. Please
+                review the conditions and save the workflow to persist these
+                changes.
+              </p>
+            </div>
+          </div>
+        </div>
+      )}
+
       <DesignerToolbar
         workflow={workflow}
         onSave={handleSaveWorkflow}
