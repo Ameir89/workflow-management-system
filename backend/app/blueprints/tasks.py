@@ -13,6 +13,7 @@ from app.services.sla_monitor import SLAMonitor
 from app.utils.json_utils import JSONUtils
 from app.services.notification_service import NotificationService
 from app.services.audit_logger import AuditLogger
+from app.utils.task import TaskUtils
 import json
 import logging
 
@@ -1340,17 +1341,29 @@ def submit_approval_decision(task_id):
                 """, (task['workflow_instance_id'],))
 
                 definition = JSONUtils.safe_parse_json(workflow_instance['definition'])
-                
+
                 # Look for rejection transition
                 rejection_handled = False
                 transitions = definition.get('transitions', [])
-                
+
                 for transition in transitions:
-                    if (transition['from'] == task['step_id'] and 
-                        transition.get('condition', {}).get('field') == 'approval_status' and
-                        transition.get('condition', {}).get('value') == 'rejected'):
-                        
-                        # Found rejection transition - continue workflow
+                    if transition.get('from') != task['step_id']:
+                        continue
+
+                    condition = transition.get('condition')
+                    if not condition:
+                        continue
+
+                    rules = condition.get('rules', [])
+                    condition_operator = condition.get('operator')  # may be None
+
+                    matched_rules = [TaskUtils.is_rejection_rule(rule) for rule in rules]
+
+                    if (
+                        (condition_operator is None and any(matched_rules)) or
+                        (condition_operator == 'any' and any(matched_rules)) or
+                        (condition_operator == 'all' and all(matched_rules))
+                    ):
                         WorkflowEngine.complete_task(task_id, result_data, user_id)
                         rejection_handled = True
                         break
@@ -1366,6 +1379,41 @@ def submit_approval_decision(task_id):
                 logger.info(f"✓ Task {task_id} rejected")
             except Exception as workflow_error:
                 logger.error(f"Error handling rejection: {workflow_error}")
+            # try:
+            #     workflow_instance = Database.execute_one("""
+            #         SELECT wi.*, w.definition
+            #         FROM workflow_instances wi
+            #         JOIN workflows w ON wi.workflow_id = w.id
+            #         WHERE wi.id = %s
+            #     """, (task['workflow_instance_id'],))
+
+            #     definition = JSONUtils.safe_parse_json(workflow_instance['definition'])
+                
+            #     # Look for rejection transition
+            #     rejection_handled = False
+            #     transitions = definition.get('transitions', [])
+                
+            #     for transition in transitions:
+            #         if (transition['from'] == task['step_id'] and 
+            #             transition.get('condition', {}).get('field') == 'approval_status' and
+            #             transition.get('condition', {}).get('value') == 'rejected'):
+                        
+            #             # Found rejection transition - continue workflow
+            #             WorkflowEngine.complete_task(task_id, result_data, user_id)
+            #             rejection_handled = True
+            #             break
+
+            #     if not rejection_handled:
+            #         # No rejection handling - mark workflow as failed/rejected
+            #         Database.execute_query("""
+            #             UPDATE workflow_instances 
+            #             SET status = %s, completed_at = NOW(), updated_at = NOW()
+            #             WHERE id = %s
+            #         """, ('rejected', task['workflow_instance_id']))
+
+            #     logger.info(f"✓ Task {task_id} rejected")
+            # except Exception as workflow_error:
+            #     logger.error(f"Error handling rejection: {workflow_error}")
 
             # Send rejection notification to workflow initiator
             try:
