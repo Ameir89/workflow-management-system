@@ -303,7 +303,7 @@ INSERT INTO tenants (id, name, subdomain) VALUES
 
 INSERT INTO roles (id, tenant_id, name, description, permissions, is_system) VALUES
 ('00000000-0000-0000-0000-000000000001', '00000000-0000-0000-0000-000000000001', 'Super Admin', 'System administrator with full access', '["*"]', true),
-('00000000-0000-0000-0000-000000000002', '00000000-0000-0000-0000-000000000001', 'Admin', 'Organization administrator', '["manage_workflows", "manage_users", "view_reports", "manage_sla"]', false),
+('00000000-0000-0000-0000-000000000002', '00000000-0000-0000-0000-000000000001', 'Admin', 'Organization administrator', '["manage_workflows","manage_users","view_reports","manage_sla","manage_lookups","view_all_lookups","view_automation","manage_automation","execute_automation","manage_tasks","test_automation","manage_notifications","view_admin_dashboard"]', false),
 ('00000000-0000-0000-0000-000000000003', '00000000-0000-0000-0000-000000000001', 'User', 'Regular user', '["create_workflows", "execute_tasks", "view_reports"]', false);
 
 -- Default admin user (password: admin123!)
