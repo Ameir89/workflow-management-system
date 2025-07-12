@@ -194,153 +194,153 @@ def create_app(config_class=Config):
     # API Documentation Endpoint (Basic)
     # ---------------------------
    # Enhanced API documentation to include notification management endpoints
-@app.route('/api/docs')
-def api_documentation():
-    """Basic API documentation"""
-    return jsonify({
-        'title': 'Workflow Management API Documentation',
-        'version': '1.0.0',
-        'base_url': request.base_url.replace('/api/docs', ''),
-        'authentication': {
-            'type': 'Bearer Token',
-            'header': 'Authorization: Bearer <token>',
-            'login_endpoint': '/api/auth/login'
-        },
-        'endpoints': {
+    @app.route('/api/docs')
+    def api_documentation():
+        """Basic API documentation"""
+        return jsonify({
+            'title': 'Workflow Management API Documentation',
+            'version': '1.0.0',
+            'base_url': request.base_url.replace('/api/docs', ''),
             'authentication': {
-                'POST /api/auth/login': 'User login',
-                'POST /api/auth/register': 'User registration',
-                'POST /api/auth/logout': 'User logout',
-                'GET /api/auth/profile': 'Get user profile',
-                'POST /api/auth/setup-2fa': 'Setup two-factor authentication'
+                'type': 'Bearer Token',
+                'header': 'Authorization: Bearer <token>',
+                'login_endpoint': '/api/auth/login'
             },
-            'workflows': {
-                'GET /api/workflows': 'List workflows',
-                'POST /api/workflows': 'Create workflow',
-                'GET /api/workflows/{id}': 'Get workflow details',
-                'PUT /api/workflows/{id}': 'Update workflow',
-                'POST /api/workflows/{id}/execute': 'Execute workflow',
-                'DELETE /api/workflows/{id}': 'Delete workflow'
-            },
-            'tasks': {
-                'GET /api/tasks': 'List tasks with advanced filtering',
-                'GET /api/tasks/{id}': 'Get task details',
-                'POST /api/tasks/{id}/complete': 'Complete task',
-                'POST /api/tasks/{id}/assign': 'Assign task',
-                'POST /api/tasks/{id}/form-response': 'Submit form response'
-            },
-            'notifications': {
-                'GET /api/notifications': 'Get user notifications',
-                'PUT /api/notifications/{id}/read': 'Mark notification as read',
-                'PUT /api/notifications/mark-all-read': 'Mark all notifications as read',
-                'GET /api/notifications/stats': 'Get notification statistics'
-            },
-            'scripts': {  # NEW SECTION
-                    'GET /api/scripts': 'List scripts with filtering and pagination',
-                    'POST /api/scripts': 'Create new script',
-                    'GET /api/scripts/{id}': 'Get script details with execution history',
-                    'PUT /api/scripts/{id}': 'Update script',
-                    'DELETE /api/scripts/{id}': 'Delete script',
-                    'POST /api/scripts/{id}/test': 'Test script execution',
-                    'POST /api/scripts/validate': 'Validate script syntax',
-                    'GET /api/scripts/categories': 'Get script categories',
-                    'POST /api/scripts/{id}/duplicate': 'Duplicate script',
-                    'GET /api/scripts/{id}/executions': 'Get script execution history',
-                    'GET /api/scripts/templates': 'Get script templates',
-                    'GET /api/scripts/analytics': 'Get script analytics'
+            'endpoints': {
+                'authentication': {
+                    'POST /api/auth/login': 'User login',
+                    'POST /api/auth/register': 'User registration',
+                    'POST /api/auth/logout': 'User logout',
+                    'GET /api/auth/profile': 'Get user profile',
+                    'POST /api/auth/setup-2fa': 'Setup two-factor authentication'
                 },
-            'notification_management': {
-                'GET /api/admin/notification-templates': 'List notification templates',
-                'POST /api/admin/notification-templates': 'Create notification template',
-                'GET /api/admin/notification-templates/{id}': 'Get notification template',
-                'PUT /api/admin/notification-templates/{id}': 'Update notification template',
-                'DELETE /api/admin/notification-templates/{id}': 'Delete notification template',
-                'POST /api/admin/notification-templates/{id}/test': 'Test notification template',
-                'GET /api/admin/notifications/history': 'Get notification history',
-                'GET /api/admin/notifications/analytics': 'Get notification analytics',
-                'POST /api/admin/notification-templates/bulk': 'Bulk operations on templates',
-                'GET /api/admin/notification-templates/variables': 'Get available template variables',
-                'POST /api/admin/notification-templates/{id}/validate': 'Validate template syntax'
+                'workflows': {
+                    'GET /api/workflows': 'List workflows',
+                    'POST /api/workflows': 'Create workflow',
+                    'GET /api/workflows/{id}': 'Get workflow details',
+                    'PUT /api/workflows/{id}': 'Update workflow',
+                    'POST /api/workflows/{id}/execute': 'Execute workflow',
+                    'DELETE /api/workflows/{id}': 'Delete workflow'
+                },
+                'tasks': {
+                    'GET /api/tasks': 'List tasks with advanced filtering',
+                    'GET /api/tasks/{id}': 'Get task details',
+                    'POST /api/tasks/{id}/complete': 'Complete task',
+                    'POST /api/tasks/{id}/assign': 'Assign task',
+                    'POST /api/tasks/{id}/form-response': 'Submit form response'
+                },
+                'notifications': {
+                    'GET /api/notifications': 'Get user notifications',
+                    'PUT /api/notifications/{id}/read': 'Mark notification as read',
+                    'PUT /api/notifications/mark-all-read': 'Mark all notifications as read',
+                    'GET /api/notifications/stats': 'Get notification statistics'
+                },
+                'scripts': {  # NEW SECTION
+                        'GET /api/scripts': 'List scripts with filtering and pagination',
+                        'POST /api/scripts': 'Create new script',
+                        'GET /api/scripts/{id}': 'Get script details with execution history',
+                        'PUT /api/scripts/{id}': 'Update script',
+                        'DELETE /api/scripts/{id}': 'Delete script',
+                        'POST /api/scripts/{id}/test': 'Test script execution',
+                        'POST /api/scripts/validate': 'Validate script syntax',
+                        'GET /api/scripts/categories': 'Get script categories',
+                        'POST /api/scripts/{id}/duplicate': 'Duplicate script',
+                        'GET /api/scripts/{id}/executions': 'Get script execution history',
+                        'GET /api/scripts/templates': 'Get script templates',
+                        'GET /api/scripts/analytics': 'Get script analytics'
+                    },
+                'notification_management': {
+                    'GET /api/admin/notification-templates': 'List notification templates',
+                    'POST /api/admin/notification-templates': 'Create notification template',
+                    'GET /api/admin/notification-templates/{id}': 'Get notification template',
+                    'PUT /api/admin/notification-templates/{id}': 'Update notification template',
+                    'DELETE /api/admin/notification-templates/{id}': 'Delete notification template',
+                    'POST /api/admin/notification-templates/{id}/test': 'Test notification template',
+                    'GET /api/admin/notifications/history': 'Get notification history',
+                    'GET /api/admin/notifications/analytics': 'Get notification analytics',
+                    'POST /api/admin/notification-templates/bulk': 'Bulk operations on templates',
+                    'GET /api/admin/notification-templates/variables': 'Get available template variables',
+                    'POST /api/admin/notification-templates/{id}/validate': 'Validate template syntax'
+                },
+                'admin': {
+                    'GET /api/admin/users': 'List users',
+                    'POST /api/admin/users': 'Create user',
+                    'GET /api/admin/roles': 'List roles',
+                    'POST /api/admin/roles': 'Create role',
+                    'GET /api/admin/permissions': 'List permissions',
+                    'GET /api/admin/permission-matrix': 'Get permission matrix',
+                    'GET /api/admin/health': 'System health status'
+                },
+                'admin_dashboard': {
+                    'GET /api/admin/dashboard/overview': 'Dashboard overview',
+                    'GET /api/admin/dashboard/analytics/trends': 'Analytics trends',
+                    'GET /api/admin/dashboard/security/overview': 'Security overview',
+                    'GET /api/admin/dashboard/system-status': 'System status'
+                },
+                'lookups': {
+                    'GET /api/lookups/tables': 'List lookup tables',
+                    'POST /api/lookups/tables': 'Create lookup table',
+                    'GET /api/lookups/tables/{id}/data': 'Get lookup data',
+                    'POST /api/lookups/tables/{id}/data': 'Add lookup record',
+                    'GET /api/lookups/tables/{id}/options': 'Get form options'
+                }
             },
-            'admin': {
-                'GET /api/admin/users': 'List users',
-                'POST /api/admin/users': 'Create user',
-                'GET /api/admin/roles': 'List roles',
-                'POST /api/admin/roles': 'Create role',
-                'GET /api/admin/permissions': 'List permissions',
-                'GET /api/admin/permission-matrix': 'Get permission matrix',
-                'GET /api/admin/health': 'System health status'
+            'models': {
+                'User': {
+                    'id': 'UUID',
+                    'username': 'string',
+                    'email': 'string',
+                    'first_name': 'string',
+                    'last_name': 'string',
+                    'is_active': 'boolean'
+                },
+                'Workflow': {
+                    'id': 'UUID',
+                    'name': 'string',
+                    'description': 'string',
+                    'definition': 'object',
+                    'is_active': 'boolean'
+                },
+                'Task': {
+                    'id': 'UUID',
+                    'name': 'string',
+                    'type': 'string',
+                    'status': 'string',
+                    'assigned_to': 'UUID',
+                    'due_date': 'datetime'
+                },
+                'NotificationTemplate': {
+                    'id': 'UUID',
+                    'name': 'string',
+                    'type': 'string',
+                    'title_template': 'string',
+                    'message_template': 'string',
+                    'channels': 'array',
+                    'is_active': 'boolean'
+                },
+                'Notification': {
+                    'id': 'UUID',
+                    'user_id': 'UUID',
+                    'type': 'string',
+                    'title': 'string',
+                    'message': 'string',
+                    'data': 'object',
+                    'is_read': 'boolean',
+                    'created_at': 'datetime'
+                }
             },
-            'admin_dashboard': {
-                'GET /api/admin/dashboard/overview': 'Dashboard overview',
-                'GET /api/admin/dashboard/analytics/trends': 'Analytics trends',
-                'GET /api/admin/dashboard/security/overview': 'Security overview',
-                'GET /api/admin/dashboard/system-status': 'System status'
-            },
-            'lookups': {
-                'GET /api/lookups/tables': 'List lookup tables',
-                'POST /api/lookups/tables': 'Create lookup table',
-                'GET /api/lookups/tables/{id}/data': 'Get lookup data',
-                'POST /api/lookups/tables/{id}/data': 'Add lookup record',
-                'GET /api/lookups/tables/{id}/options': 'Get form options'
+            'response_codes': {
+                '200': 'Success',
+                '201': 'Created',
+                '400': 'Bad Request',
+                '401': 'Unauthorized',
+                '403': 'Forbidden',
+                '404': 'Not Found',
+                '409': 'Conflict',
+                '429': 'Rate Limited',
+                '500': 'Internal Server Error'
             }
-        },
-        'models': {
-            'User': {
-                'id': 'UUID',
-                'username': 'string',
-                'email': 'string',
-                'first_name': 'string',
-                'last_name': 'string',
-                'is_active': 'boolean'
-            },
-            'Workflow': {
-                'id': 'UUID',
-                'name': 'string',
-                'description': 'string',
-                'definition': 'object',
-                'is_active': 'boolean'
-            },
-            'Task': {
-                'id': 'UUID',
-                'name': 'string',
-                'type': 'string',
-                'status': 'string',
-                'assigned_to': 'UUID',
-                'due_date': 'datetime'
-            },
-            'NotificationTemplate': {
-                'id': 'UUID',
-                'name': 'string',
-                'type': 'string',
-                'title_template': 'string',
-                'message_template': 'string',
-                'channels': 'array',
-                'is_active': 'boolean'
-            },
-            'Notification': {
-                'id': 'UUID',
-                'user_id': 'UUID',
-                'type': 'string',
-                'title': 'string',
-                'message': 'string',
-                'data': 'object',
-                'is_read': 'boolean',
-                'created_at': 'datetime'
-            }
-        },
-        'response_codes': {
-            '200': 'Success',
-            '201': 'Created',
-            '400': 'Bad Request',
-            '401': 'Unauthorized',
-            '403': 'Forbidden',
-            '404': 'Not Found',
-            '409': 'Conflict',
-            '429': 'Rate Limited',
-            '500': 'Internal Server Error'
-        }
-    })
+        })
     # ---------------------------
     # Development Tools (only in development)
     # ---------------------------
