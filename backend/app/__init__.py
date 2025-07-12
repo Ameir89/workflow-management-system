@@ -93,6 +93,9 @@ def create_app(config_class=Config):
     # Notification Management (Admin)
     from app.blueprints.notification_management import notification_mgmt_bp
     app.register_blueprint(notification_mgmt_bp, url_prefix='/api/admin')
+    # Scripts Management (NEW)
+    from app.blueprints.scripts import scripts_bp
+    app.register_blueprint(scripts_bp, url_prefix='/api/scripts')
 
     # ---------------------------
     # Health Check Endpoints
@@ -164,6 +167,7 @@ def create_app(config_class=Config):
                 'Reporting & Analytics',
                 'Webhook Integration',
                 'Admin Dashboard',
+                'Script Management',
                 'Notification Management' 
             ],
             'endpoints': {
@@ -179,6 +183,7 @@ def create_app(config_class=Config):
                 'automation': '/api/automation',
                 'webhooks': '/api/webhooks',
                 'notifications': '/api/notifications',
+                'scripts': '/api/scripts',
                 'notification_management': '/api/admin/notification-templates'
             },
             'documentation': '/api/docs',
@@ -230,6 +235,20 @@ def api_documentation():
                 'PUT /api/notifications/mark-all-read': 'Mark all notifications as read',
                 'GET /api/notifications/stats': 'Get notification statistics'
             },
+            'scripts': {  # NEW SECTION
+                    'GET /api/scripts': 'List scripts with filtering and pagination',
+                    'POST /api/scripts': 'Create new script',
+                    'GET /api/scripts/{id}': 'Get script details with execution history',
+                    'PUT /api/scripts/{id}': 'Update script',
+                    'DELETE /api/scripts/{id}': 'Delete script',
+                    'POST /api/scripts/{id}/test': 'Test script execution',
+                    'POST /api/scripts/validate': 'Validate script syntax',
+                    'GET /api/scripts/categories': 'Get script categories',
+                    'POST /api/scripts/{id}/duplicate': 'Duplicate script',
+                    'GET /api/scripts/{id}/executions': 'Get script execution history',
+                    'GET /api/scripts/templates': 'Get script templates',
+                    'GET /api/scripts/analytics': 'Get script analytics'
+                },
             'notification_management': {
                 'GET /api/admin/notification-templates': 'List notification templates',
                 'POST /api/admin/notification-templates': 'Create notification template',
