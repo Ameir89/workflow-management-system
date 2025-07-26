@@ -1,5 +1,10 @@
 {
   "workflows": {
+    "title": "Workflows",
+    "subtitle": "Manage your workflows and instances",
+    "search": "Search workflows...",
+    "viewAllInstances": "View All Instances",
+    "createNew": "Create New Workflow",
     "instancePaused": "Workflow instance paused successfully",
     "instanceResumed": "Workflow instance resumed successfully",
     "instanceCancelled": "Workflow instance cancelled successfully",
@@ -59,14 +64,46 @@
     "variables": "Variables",
     "metadata": "Metadata",
     "noDataAvailable": "No data available",
-    "noDataAvailableDescription": "This workflow instance doesn't have any associated data yet."
+    "noDataAvailableDescription": "This workflow instance doesn't have any associated data yet.",
+    "approved": "Approved",
+    "rejected": "Rejected",
+    "pendingApproval": "Pending Approval",
+    "approvalRequired": "Approval Required",
+    "approvalStatus": "Approval Status",
+    "approvalInformation": "Approval Information",
+    "available": "Available",
+    "approvedBy": "Approved by",
+    "rejectedBy": "Rejected by",
+    "approvedAt": "Approved At",
+    "rejectedAt": "Rejected At",
+    "rejectionReason": "Rejection Reason",
+    "comments": "Comments",
+    "instances": "Instances",
+    "instanceApproved": "This workflow instance has been approved",
+    "instanceRejected": "This workflow instance has been rejected",
+    "instancePendingApproval": "This workflow instance is pending approval",
+    "categories": {
+      "all": "All Categories",
+      "approval": "Approval",
+      "automation": "Automation",
+      "notification": "Notification",
+      "condition": "Condition",
+      "integration": "Integration"
+    },
+    "noDescriptionProvided": "No description provided"
   },
 
   "workflow": {
     "form": "Form",
+    "editWorkflow": "Edit Workflow",
     "status": "Status",
     "name": "Workflow Name",
     "category": "Workflow Category",
+    "deactivateWorkflow": "Deactivate Workflow",
+    "activateWorkflow": "Activate Workflow",
+    "deleteWorkflow": "Delete Workflow",
+    "inactive": "Inactive",
+    "inactiveDescription": "This workflow cannot start new instances until activated.",
     "description": "Workflow Description",
     "selectCategory": "Select a category",
     "active": "Active",
@@ -78,13 +115,7 @@
     "atLeastOneStepRequired": "At least one step is required",
     "startStepRequired": "A start step is required",
     "transitionAlreadyExists": "Transition already exists",
-    "categories": {
-      "approval": "Approval",
-      "automation": "Automation",
-      "notification": "Notification",
-      "condition": "Condition",
-      "integration": "Integration"
-    },
+
     "nodes": {
       "task": "Task",
       "approval": "Approval",
@@ -112,8 +143,11 @@
     "instances": {
       "allCategories": "All Categories",
       "approval": "Approval",
+      "startInstance": "Start Instance",
       "startInstancesHubTitle": "Start Workflow Instances",
-      "startInstancesHubDescription": "Choose a workflow to start a new instance and begin processing"
+      "startInstancesHubDescription": "Choose a workflow to start a new instance and begin processing",
+      "viewInstances": "View Instances",
+      "activeInstances": "Active Instance(s)"
     }
   }
 }

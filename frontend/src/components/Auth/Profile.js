@@ -19,7 +19,6 @@ import {
   GlobeAltIcon,
   DevicePhoneMobileIcon,
   EnvelopeIcon,
-  CalendarIcon,
   MapPinIcon,
   BriefcaseIcon,
 } from "@heroicons/react/24/outline";
@@ -42,7 +41,6 @@ const Profile = () => {
     handleSubmit,
     formState: { errors },
     reset,
-    watch,
   } = useForm({
     defaultValues: {
       first_name: user?.first_name || "",

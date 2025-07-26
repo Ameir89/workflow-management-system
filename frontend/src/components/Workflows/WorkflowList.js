@@ -13,7 +13,6 @@ import {
   CogIcon,
   ClipboardDocumentListIcon,
   RocketLaunchIcon,
-  DocumentDuplicateIcon,
   ArchiveBoxIcon,
   PowerIcon,
 } from "@heroicons/react/24/outline";
@@ -28,11 +27,7 @@ const WorkflowList = () => {
     category: "",
   });
 
-  const {
-    data: workflowsData,
-    isLoading,
-    refetch,
-  } = useQuery(
+  const { data: workflowsData, isLoading } = useQuery(
     ["workflows", page, search, filters],
     () => workflowService.getWorkflows({ page, limit: 20, search, ...filters }),
     { keepPreviousData: true }
@@ -68,24 +63,6 @@ const WorkflowList = () => {
     }
   );
 
-  const duplicateWorkflowMutation = useMutation(
-    (workflow) =>
-      workflowService.createWorkflow({
-        ...workflow,
-        name: `${workflow.name} (Copy)`,
-        is_active: false,
-      }),
-    {
-      onSuccess: () => {
-        toast.success("Workflow duplicated successfully");
-        queryClient.invalidateQueries(["workflows"]);
-      },
-      onError: (error) => {
-        toast.error(error.message);
-      },
-    }
-  );
-
   const handleDeleteWorkflow = (id, name) => {
     if (window.confirm(`Are you sure you want to delete "${name}"?`)) {
       deleteWorkflowMutation.mutate(id);
@@ -101,10 +78,6 @@ const WorkflowList = () => {
     if (window.confirm(confirmMessage)) {
       toggleWorkflowMutation.mutate({ id, action });
     }
-  };
-
-  const handleDuplicateWorkflow = (workflow) => {
-    duplicateWorkflowMutation.mutate(workflow);
   };
 
   const getStatusColor = (workflow) => {
@@ -143,14 +116,14 @@ const WorkflowList = () => {
             className="inline-flex items-center px-4 py-2 border border-gray-300 rounded-md shadow-sm text-sm font-medium text-gray-700 bg-white hover:bg-gray-50"
           >
             <EyeIcon className="h-4 w-4 mr-2" />
-            View All Instances
+            {t("workflows.viewAllInstances")}
           </Link>
           <Link
             to="/workflows/designer"
             className="inline-flex items-center px-4 py-2 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-indigo-600 hover:bg-indigo-700"
           >
             <PlusIcon className="h-4 w-4 mr-2" />
-            Create New Workflow
+            {t("workflows.createNew")}
           </Link>
         </div>
       </div>
@@ -175,9 +148,9 @@ const WorkflowList = () => {
               }
               className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-indigo-500"
             >
-              <option value="">All Status</option>
-              <option value="active">Active</option>
-              <option value="inactive">Inactive</option>
+              <option value="">{t("common.all")}</option>
+              <option value="active">{t("common.active")}</option>
+              <option value="inactive">{t("common.inactive")}</option>
             </select>
           </div>
           <div>
@@ -188,11 +161,19 @@ const WorkflowList = () => {
               }
               className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-indigo-500"
             >
-              <option value="">All Categories</option>
-              <option value="approval">Approval</option>
-              <option value="automation">Automation</option>
-              <option value="notification">Notification</option>
-              <option value="integration">Integration</option>
+              <option value="">{t("workflows.categories.all")}</option>
+              <option value="approval">
+                {t("workflows.categories.approval")}
+              </option>
+              <option value="automation">
+                {t("workflows.categories.automation")}
+              </option>
+              <option value="notification">
+                {t("workflows.categories.notification")}
+              </option>
+              <option value="integration">
+                {t("workflows.categories.integration")}
+              </option>
             </select>
           </div>
         </div>
@@ -222,7 +203,8 @@ const WorkflowList = () => {
                     </span>
                   </div>
                   <p className="text-sm text-gray-600 mt-1 line-clamp-2">
-                    {workflow.description || "No description provided"}
+                    {workflow.description ||
+                      t("workflows.noDescriptionProvided")}
                   </p>
                 </div>
               </div>
@@ -231,14 +213,19 @@ const WorkflowList = () => {
               <div className="mt-4 space-y-2">
                 <div className="flex items-center text-sm text-gray-500">
                   <CogIcon className="h-4 w-4 mr-2" />
-                  <span>{workflow.definition?.steps?.length || 0} steps</span>
+                  <span>
+                    {workflow.definition?.steps?.length || 0}{" "}
+                    {t("common.steps")}
+                  </span>
                   <span className="mx-2">•</span>
                   <span>v{workflow.version}</span>
                 </div>
 
                 <div className="flex items-center text-sm text-gray-500">
                   <ClipboardDocumentListIcon className="h-4 w-4 mr-2" />
-                  <span>{workflow.instance_count || 0} instances</span>
+                  <span>
+                    {workflow.instance_count || 0} {t("workflows.instances")}
+                  </span>
                   {workflow.category && (
                     <>
                       <span className="mx-2">•</span>
@@ -248,7 +235,7 @@ const WorkflowList = () => {
                 </div>
 
                 <div className="text-xs text-gray-400">
-                  Created by {workflow.created_by_name} on{" "}
+                  {t("common.createdBy")} {workflow.created_by_name} on{" "}
                   {new Date(workflow.created_at).toLocaleDateString()}
                 </div>
               </div>
@@ -273,7 +260,7 @@ const WorkflowList = () => {
                   }}
                 >
                   <RocketLaunchIcon className="h-4 w-4 mr-2" />
-                  Start Instance
+                  {t("workflow.instances.startInstance")}
                 </Link>
 
                 {/* Secondary Actions */}
@@ -282,7 +269,7 @@ const WorkflowList = () => {
                   <Link
                     to={`/workflows/${workflow.id}/instances`}
                     className="text-gray-400 hover:text-gray-600"
-                    title="View instances"
+                    title={t("workflow.instances.viewInstances")}
                   >
                     <EyeIcon className="h-5 w-5" />
                   </Link>
@@ -291,7 +278,7 @@ const WorkflowList = () => {
                   <Link
                     to={`/workflows/designer/${workflow.id}`}
                     className="text-indigo-400 hover:text-indigo-600"
-                    title="Edit workflow"
+                    title={t("workflow.editWorkflow")}
                   >
                     <PencilIcon className="h-5 w-5" />
                   </Link>
@@ -308,20 +295,11 @@ const WorkflowList = () => {
                     }`}
                     title={
                       workflow.is_active
-                        ? "Deactivate workflow"
-                        : "Activate workflow"
+                        ? t("workflow.deactivateWorkflow")
+                        : t("workflow.activateWorkflow")
                     }
                   >
                     <PowerIcon className="h-5 w-5" />
-                  </button>
-
-                  {/* Duplicate */}
-                  <button
-                    onClick={() => handleDuplicateWorkflow(workflow)}
-                    className="text-blue-400 hover:text-blue-600"
-                    title="Duplicate workflow"
-                  >
-                    <DocumentDuplicateIcon className="h-5 w-5" />
                   </button>
 
                   {/* Delete */}
@@ -330,7 +308,7 @@ const WorkflowList = () => {
                       handleDeleteWorkflow(workflow.id, workflow.name)
                     }
                     className="text-red-400 hover:text-red-600"
-                    title="Delete workflow"
+                    title={t("workflow.deleteWorkflow")}
                     disabled={workflow.instance_count > 0}
                   >
                     <TrashIcon className="h-5 w-5" />
@@ -344,11 +322,8 @@ const WorkflowList = () => {
                   <div className="flex">
                     <ArchiveBoxIcon className="h-5 w-5 text-yellow-400 mr-2" />
                     <div className="text-sm text-yellow-800">
-                      <p className="font-medium">Workflow Inactive</p>
-                      <p>
-                        This workflow cannot start new instances until
-                        activated.
-                      </p>
+                      <p className="font-medium">{t("workflow.inactive")}</p>
+                      <p>{t("workflow.inactiveDescription")}</p>
                     </div>
                   </div>
                 </div>
@@ -360,10 +335,10 @@ const WorkflowList = () => {
                   <div className="flex items-center">
                     <ClipboardDocumentListIcon className="h-5 w-5 text-blue-400 mr-2" />
                     <div className="text-sm text-blue-800">
+                      {t("workflow.instances.activeInstances")}{" "}
                       <span className="font-medium">
                         {workflow.instance_count}
-                      </span>{" "}
-                      active instance(s)
+                      </span>
                     </div>
                   </div>
                 </div>
@@ -451,36 +426,6 @@ const WorkflowList = () => {
           </div>
         </div>
       )}
-
-      {/* Quick Stats Footer */}
-      <div className="bg-gray-50 border border-gray-200 rounded-lg p-4">
-        <div className="grid grid-cols-2 md:grid-cols-4 gap-4 text-center">
-          <div>
-            <div className="text-2xl font-bold text-gray-900">
-              {workflowsData?.summary?.total || 0}
-            </div>
-            <div className="text-sm text-gray-500">Total Workflows</div>
-          </div>
-          <div>
-            <div className="text-2xl font-bold text-green-600">
-              {workflowsData?.summary?.active || 0}
-            </div>
-            <div className="text-sm text-gray-500">Active</div>
-          </div>
-          <div>
-            <div className="text-2xl font-bold text-blue-600">
-              {workflowsData?.summary?.running_instances || 0}
-            </div>
-            <div className="text-sm text-gray-500">Running Instances</div>
-          </div>
-          <div>
-            <div className="text-2xl font-bold text-gray-600">
-              {workflowsData?.summary?.completed_today || 0}
-            </div>
-            <div className="text-sm text-gray-500">Completed Today</div>
-          </div>
-        </div>
-      </div>
     </div>
   );
 };

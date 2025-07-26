@@ -1,9 +1,9 @@
 import React, { useState } from "react";
 import { useQuery, useMutation, useQueryClient } from "react-query";
-import { useTranslation } from "react-i18next";
 import { Link } from "react-router-dom";
 import { toast } from "react-toastify";
 import { scriptsService } from "../../services/scriptsService";
+import Pagination from "../Common/Pagination";
 import {
   PlusIcon,
   PencilIcon,
@@ -11,14 +11,12 @@ import {
   PlayIcon,
   DocumentDuplicateIcon,
   MagnifyingGlassIcon,
-  FunnelIcon,
   CodeBracketIcon,
 } from "@heroicons/react/24/outline";
 
 const ScriptsList = () => {
-  const { t } = useTranslation();
   const queryClient = useQueryClient();
-  const [page, setPage] = useState(1);
+  const [currentPage, setCurrentPage] = useState(1);
   const [search, setSearch] = useState("");
   const [filters, setFilters] = useState({
     category: "",
@@ -26,15 +24,22 @@ const ScriptsList = () => {
     status: "",
   });
 
-  // Fetch scripts
-  const {
-    data: scriptsData,
-    isLoading,
-    error,
-  } = useQuery(
-    ["scripts", page, search, filters],
-    () => scriptsService.getScripts({ page, limit: 20, search, ...filters }),
-    { keepPreviousData: true }
+  const limit = 12; // Number of scripts per page
+
+  // Fetch scripts with pagination
+  const { data: scriptsData, isLoading } = useQuery(
+    ["scripts", currentPage, search, filters],
+    () =>
+      scriptsService.getScripts({
+        page: currentPage,
+        limit,
+        search,
+        ...filters,
+      }),
+    {
+      keepPreviousData: true,
+      staleTime: 30000, // Keep data fresh for 30 seconds
+    }
   );
 
   // Fetch categories for filter
@@ -50,6 +55,12 @@ const ScriptsList = () => {
       onSuccess: () => {
         toast.success("Script deleted successfully");
         queryClient.invalidateQueries(["scripts"]);
+
+        // If we deleted the last item on current page and we're not on page 1,
+        // go back to previous page
+        if (scriptsData?.scripts?.length === 1 && currentPage > 1) {
+          setCurrentPage(currentPage - 1);
+        }
       },
       onError: (error) => {
         toast.error(error.message);
@@ -84,6 +95,25 @@ const ScriptsList = () => {
       },
     }
   );
+
+  // Handle page change
+  const handlePageChange = (page) => {
+    setCurrentPage(page);
+    // Scroll to top when changing pages
+    window.scrollTo({ top: 0, behavior: "smooth" });
+  };
+
+  // Handle search change
+  const handleSearchChange = (newSearch) => {
+    setSearch(newSearch);
+    setCurrentPage(1); // Reset to first page when searching
+  };
+
+  // Handle filter change
+  const handleFilterChange = (newFilters) => {
+    setFilters(newFilters);
+    setCurrentPage(1); // Reset to first page when filtering
+  };
 
   const handleDeleteScript = (script) => {
     if (window.confirm(`Are you sure you want to delete "${script.name}"?`)) {
@@ -121,7 +151,7 @@ const ScriptsList = () => {
     return colors[category] || "bg-gray-100 text-gray-800";
   };
 
-  if (isLoading) {
+  if (isLoading && !scriptsData) {
     return (
       <div className="flex items-center justify-center h-64">
         <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-indigo-600"></div>
@@ -129,13 +159,8 @@ const ScriptsList = () => {
     );
   }
 
-  // if (error) {
-  //   return (
-  //     <div className="text-center py-12">
-  //       <p className="text-red-600">{error.message}</p>
-  //     </div>
-  //   );
-  // }
+  const scripts = scriptsData?.scripts || [];
+  const pagination = scriptsData?.pagination || {};
 
   return (
     <div className="space-y-6">
@@ -167,7 +192,7 @@ const ScriptsList = () => {
               type="text"
               placeholder="Search scripts..."
               value={search}
-              onChange={(e) => setSearch(e.target.value)}
+              onChange={(e) => handleSearchChange(e.target.value)}
               className="pl-10 w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-indigo-500"
             />
           </div>
@@ -175,7 +200,7 @@ const ScriptsList = () => {
           <select
             value={filters.category}
             onChange={(e) =>
-              setFilters({ ...filters, category: e.target.value })
+              handleFilterChange({ ...filters, category: e.target.value })
             }
             className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-indigo-500"
           >
@@ -190,7 +215,7 @@ const ScriptsList = () => {
           <select
             value={filters.language}
             onChange={(e) =>
-              setFilters({ ...filters, language: e.target.value })
+              handleFilterChange({ ...filters, language: e.target.value })
             }
             className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-indigo-500"
           >
@@ -203,7 +228,9 @@ const ScriptsList = () => {
 
           <select
             value={filters.status}
-            onChange={(e) => setFilters({ ...filters, status: e.target.value })}
+            onChange={(e) =>
+              handleFilterChange({ ...filters, status: e.target.value })
+            }
             className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-indigo-500"
           >
             <option value="">All Status</option>
@@ -212,11 +239,29 @@ const ScriptsList = () => {
             <option value="draft">Draft</option>
           </select>
         </div>
+
+        {/* Results summary */}
+        {pagination.total > 0 && (
+          <div className="mt-4 text-sm text-gray-500">
+            Showing {scripts.length} of {pagination.total} scripts
+            {search && ` matching "${search}"`}
+          </div>
+        )}
       </div>
+
+      {/* Loading overlay for pagination */}
+      {isLoading && scriptsData && (
+        <div className="fixed inset-0 bg-black bg-opacity-20 flex items-center justify-center z-50">
+          <div className="bg-white p-4 rounded-lg shadow-lg">
+            <div className="animate-spin rounded-full h-6 w-6 border-b-2 border-indigo-600 mx-auto"></div>
+            <p className="mt-2 text-sm text-gray-600">Loading scripts...</p>
+          </div>
+        </div>
+      )}
 
       {/* Scripts Grid */}
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-        {scriptsData?.scripts?.map((script) => (
+        {scripts.map((script) => (
           <div
             key={script.id}
             className="bg-white border border-gray-200 rounded-lg shadow-sm hover:shadow-md transition-shadow"
@@ -236,10 +281,10 @@ const ScriptsList = () => {
               <div className="flex flex-wrap gap-2 mb-4">
                 <span
                   className={`inline-flex items-center px-2 py-1 rounded text-xs font-medium ${getLanguageColor(
-                    script.language
+                    script.script_type
                   )}`}
                 >
-                  {script.language}
+                  {script.script_type}
                 </span>
                 <span
                   className={`inline-flex items-center px-2 py-1 rounded text-xs font-medium ${getCategoryColor(
@@ -273,7 +318,7 @@ const ScriptsList = () => {
                   <button
                     onClick={() => testScriptMutation.mutate(script.id)}
                     disabled={testScriptMutation.isLoading}
-                    className="text-green-400 hover:text-green-600"
+                    className="text-green-400 hover:text-green-600 disabled:opacity-50"
                     title="Test script"
                   >
                     <PlayIcon className="h-5 w-5" />
@@ -289,7 +334,8 @@ const ScriptsList = () => {
 
                   <button
                     onClick={() => handleDuplicateScript(script)}
-                    className="text-blue-400 hover:text-blue-600"
+                    disabled={duplicateScriptMutation.isLoading}
+                    className="text-blue-400 hover:text-blue-600 disabled:opacity-50"
                     title="Duplicate script"
                   >
                     <DocumentDuplicateIcon className="h-5 w-5" />
@@ -297,7 +343,8 @@ const ScriptsList = () => {
 
                   <button
                     onClick={() => handleDeleteScript(script)}
-                    className="text-red-400 hover:text-red-600"
+                    disabled={deleteScriptMutation.isLoading}
+                    className="text-red-400 hover:text-red-600 disabled:opacity-50"
                     title="Delete script"
                   >
                     <TrashIcon className="h-5 w-5" />
@@ -310,14 +357,14 @@ const ScriptsList = () => {
       </div>
 
       {/* Empty State */}
-      {scriptsData?.scripts?.length === 0 && (
+      {scripts.length === 0 && !isLoading && (
         <div className="text-center py-12">
           <CodeBracketIcon className="mx-auto h-12 w-12 text-gray-400" />
           <h3 className="mt-2 text-sm font-medium text-gray-900">
             No scripts found
           </h3>
           <p className="mt-1 text-sm text-gray-500">
-            {search || filters.category || filters.language
+            {search || filters.category || filters.language || filters.status
               ? "No scripts match your current filters."
               : "Get started by creating your first script."}
           </p>
@@ -330,6 +377,17 @@ const ScriptsList = () => {
               Create Your First Script
             </Link>
           </div>
+        </div>
+      )}
+
+      {/* Pagination */}
+      {pagination && pagination.pages > 1 && (
+        <div className="mt-8">
+          <Pagination
+            pagination={pagination}
+            currentPage={currentPage}
+            onPageChange={handlePageChange}
+          />
         </div>
       )}
     </div>

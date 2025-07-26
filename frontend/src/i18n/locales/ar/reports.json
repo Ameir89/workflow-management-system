@@ -1,6 +1,39 @@
 {
   "reports": {
     "title": "التقارير",
-    "subtitle": "التحليلات والرؤى"
+    "subtitle": "التحليلات والرؤى",
+    "export": {
+      "workflows": "تصدير سير العمل",
+      "tasks": "تصدير المهام"
+    },
+    "dateRange": {
+      "from": "من",
+      "to": "إلى"
+    },
+    "charts": {
+      "workflowPerformance": "أداء سير العمل",
+      "slaCompliance": "الامتثال لاتفاقية مستوى الخدمة",
+      "dailyActivity": "اتجاه النشاط اليومي",
+      "totalInstances": "إجمالي المثيلات",
+      "completed": "مكتمل",
+      "complianceRate": "معدل الامتثال (%)",
+      "workflowsStarted": "سير العمل المبدوء",
+      "workflowsCompleted": "سير العمل المكتمل"
+    },
+    "stats": {
+      "totalWorkflows": "إجمالي سير العمل",
+      "avgCompletionRate": "متوسط معدل الإنجاز",
+      "avgSlaCompliance": "متوسط الامتثال لاتفاقية مستوى الخدمة"
+    },
+    "slaBreaches": {
+      "title": "انتهاكات اتفاقية مستوى الخدمة الأخيرة",
+      "description": "آخر انتهاكات اتفاقية مستوى الخدمة التي تتطلب اهتماماً",
+      "level": "المستوى"
+    },
+    "error": {
+      "fetchPerformance": "فشل في جلب تقرير الأداء",
+      "fetchSLA": "فشل في جلب بيانات الامتثال لاتفاقية مستوى الخدمة",
+      "exportFailed": "فشل التصدير"
+    }
   }
 }

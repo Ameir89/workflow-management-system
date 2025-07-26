@@ -1,5 +1,10 @@
 {
   "workflows": {
+    "title": "سير العمل",
+    "subtitle": "إدارة سير العمل والمثيلات الخاصة بك",
+    "search": "البحث في سير العمل...",
+    "viewAllInstances": "عرض جميع المثيلات",
+    "createNew": "إنشاء سير عمل جديد",
     "instancePaused": "تم إيقاف مثيل سير العمل مؤقتاً بنجاح",
     "instanceResumed": "تم استئناف مثيل سير العمل بنجاح",
     "instanceCancelled": "تم إلغاء مثيل سير العمل بنجاح",
@@ -59,13 +64,49 @@
     "variables": "المتغيرات",
     "metadata": "البيانات الوصفية",
     "noDataAvailable": "لا توجد بيانات متاحة",
-    "noDataAvailableDescription": "مثيل سير العمل هذا لا يحتوي على أي بيانات مرتبطة بعد."
+    "noDataAvailableDescription": "مثيل سير العمل هذا لا يحتوي على أي بيانات مرتبطة بعد.",
+    "approved": "موافق عليه",
+    "rejected": "مرفوض",
+    "pendingApproval": "في انتظار الموافقة",
+    "approvalRequired": "يتطلب موافقة",
+    "approvalStatus": "حالة الموافقة",
+    "approvalInformation": "معلومات الموافقة",
+    "approvedBy": "تمت الموافقة من قبل",
+    "rejectedBy": "تم الرفض من قبل",
+    "approvedAt": "تاريخ الموافقة",
+    "rejectedAt": "تاريخ الرفض",
+    "rejectionReason": "سبب الرفض",
+    "comments": "التعليقات",
+    "instanceApproved": "تمت الموافقة على هذا المثيل للمسار",
+    "instanceRejected": "تم رفض هذا المثيل للمسار",
+    "instancePendingApproval": "هذا المثيل للمسار في انتظار الموافقة",
+    "available": "متوفر",
+    "instances": "المثيلات",
+    "notAvailable": "غير متوفر",
+    "approvedByUser": "تمت الموافقة على هذا المثيل من قبل المستخدم",
+    "rejectedByUser": "تم رفض هذا المثيل من قبل المستخدم",
+    "categories": {
+      "all": "جميع الفئات",
+      "approval": "موافقة",
+      "automation": "أتمتة",
+      "notification": "إشعار",
+      "condition": "شرط",
+      "integration": "تكامل"
+    },
+    "noDescriptionProvided": "لم يتم توفير وصف"
   },
   "tasks": {},
+
   "workflow": {
     "form": "نموذج",
+    "editWorkflow": "تحرير سير العمل",
     "status": "الحالة",
     "name": "اسم سير العمل",
+    "deactivateWorkflow": "تعطيل سير العمل",
+    "activateWorkflow": "تفعيل سير العمل",
+    "deleteWorkflow": "حذف سير العمل",
+    "inactive": "غير نشط",
+    "inactiveDescription": "لا يمكن بدء مثيلات جديدة لهذا سير العمل حتى يتم تفعيله.",
     "category": "فئة سير العمل",
     "description": "وصف سير العمل",
     "selectCategory": "اختر فئة",
@@ -112,8 +153,11 @@
     "instances": {
       "allCategories": "جميع الفئات",
       "approval": "موافقة",
+      "startInstance": "بدء المثيل",
       "startInstancesHubTitle": "بدء مثيلات سير العمل",
-      "startInstancesHubDescription": "اختر سير عمل لبدء مثيل جديد والبدء في المعالجة"
+      "startInstancesHubDescription": "اختر سير عمل لبدء مثيل جديد والبدء في المعالجة",
+      "viewInstances": "عرض المثيلات",
+      "activeInstances": "المثيلات النشطة"
     }
   }
 }

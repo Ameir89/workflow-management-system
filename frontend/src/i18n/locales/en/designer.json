@@ -6,6 +6,7 @@
     "approvalTypeInfo": "Approval Type Info",
     "any": "Any",
     "all": "All",
+    "selectForm": "Select Form",
     "notificationPriority": "Notification Priority",
     "templateHelp": "Template Help",
     "notificationMode": "Notification Mode",
@@ -91,6 +92,7 @@
     "defaultTransition": "Default Transition",
     "delayHelp": "Delay Help",
     "executionDelay": "Execution Delay",
+    "selectTemplate": "Select Template",
     "priority": {
       "title": "Priority",
       "low": "Low",
@@ -99,7 +101,10 @@
       "high": "High",
       "urgent": "Urgent"
     },
+    "always": "Always",
     "condition": {
+      "title": "Condition",
+      "description": "Condition Description",
       "selectField": "Select Field",
       "workflowStatus": "Workflow Status",
       "taskStatus": "Task Status",
@@ -123,7 +128,10 @@
       "and": "and",
       "or": "or",
       "value": "value",
-      "approvalStatus": "Approval Status"
+      "approvalStatus": "Approval Status",
+      "all": "All",
+      "any": "Any",
+      "singleOperator": "Single Operator"
     },
     "transitionHelp": "Transition Help",
     "transitionHelpConditions": "Transition Help Conditions",

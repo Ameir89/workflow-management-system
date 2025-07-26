@@ -6,6 +6,7 @@
     "approvalTypeInfo": "معلومات نوع الموافقة",
     "any": "أي",
     "all": "الكل",
+    "selectForm": "اختر نموذج",
     "notificationPriority": "أولوية الإشعار",
     "templateHelp": "مساعدة القالب",
     "notificationMode": "وضع الإشعار",
@@ -91,6 +92,7 @@
     "defaultTransition": "الانتقال الافتراضي",
     "delayHelp": "مساعدة التأخير",
     "executionDelay": "تأخير التنفيذ",
+    "selectTemplate": "اختر قالبًا",
     "priority": {
       "title": "الأولوية",
       "low": "منخفضة",
@@ -99,7 +101,10 @@
       "high": "عالية",
       "urgent": "عاجلة"
     },
+    "always": "دائمًا",
     "condition": {
+      "title": "الشرط",
+      "description": "وصف الشرط",
       "selectField": "اختر الحقل",
       "workflowStatus": "حالة سير العمل",
       "taskStatus": "حالة المهمة",
@@ -123,7 +128,10 @@
       "and": "و",
       "or": "أو",
       "value": "القيمة",
-      "approvalStatus": "حالة الموافقة"
+      "approvalStatus": "حالة الموافقة",
+      "all": "كل",
+      "any": "اي",
+      "singleOperator": "شرط واحد"
     },
     "transitionHelp": "مساعدة الانتقال",
     "transitionHelpConditions": "مساعدة شروط الانتقال",

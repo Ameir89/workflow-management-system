@@ -5,6 +5,9 @@ Input validation utilities
 import re
 from datetime import datetime
 from typing import Dict, List, Any, Optional
+import logging
+
+logger = logging.getLogger(__name__)
 
 def validate_required_fields(data: Dict[str, Any], required_fields: List[str]) -> bool:
     """Validate that all required fields are present and not empty"""
@@ -16,6 +19,98 @@ def validate_required_fields(data: Dict[str, Any], required_fields: List[str]) -
             return False
     
     return True
+
+def validate_form_data(form_data, form_schema):
+    """Validate form data against schema"""
+    errors = []
+
+    if not form_schema or 'fields' not in form_schema:
+        return errors
+
+    for field in form_schema.get('fields', []):
+        field_name = field.get('name')
+        field_type = field.get('type', 'text')
+        required = field.get('required', False)
+        options = field.get('options') or []
+
+        # Optional constraints
+        min_length = field.get('minLength')
+        max_length = field.get('maxLength')
+        pattern = field.get('pattern')
+        allowed_extensions = field.get('allowed_extensions', [])
+        
+        value = form_data.get(field_name)
+
+        # === [1] Required Field Check ===
+        if required and (value is None or (isinstance(value, str) and value.strip() == "")):
+            errors.append(f"Field '{field_name}' is required")
+            continue
+
+        # === [2] Skip empty optional fields ===
+        if value in [None, ""]:
+            continue
+
+        try:
+            # === [3] Field Type Specific Validation ===
+            if field_type == 'email':
+                email_pattern = r'^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$'
+                if not re.match(email_pattern, str(value)):
+                    errors.append(f"Field '{field_name}' must be a valid email")
+
+            elif field_type == 'number':
+                try:
+                    float(value)
+                except (ValueError, TypeError):
+                    errors.append(f"Field '{field_name}' must be a valid number")
+
+            elif field_type == 'date':
+                try:
+                    datetime.strptime(value, '%Y-%m-%d')
+                except ValueError:
+                    errors.append(f"Field '{field_name}' must be a valid date (YYYY-MM-DD)")
+
+            elif field_type in ['select', 'radio']:
+                valid_values = [opt.get('value') for opt in options if opt.get('value') is not None]
+                if valid_values and value not in valid_values:
+                    errors.append(f"Field '{field_name}' has invalid value. Allowed: {valid_values}")
+
+            elif field_type == 'boolean':
+                if str(value).lower() not in ['true', 'false', '1', '0']:
+                    errors.append(f"Field '{field_name}' must be a boolean (true/false)")
+
+            elif field_type in ['text', 'textarea', 'password']:
+                if not isinstance(value, str):
+                    errors.append(f"Field '{field_name}' must be a string")
+                else:
+                    if min_length is not None and len(value) < min_length:
+                        errors.append(f"Field '{field_name}' must be at least {min_length} characters long")
+                    if max_length is not None and len(value) > max_length:
+                        errors.append(f"Field '{field_name}' must be at most {max_length} characters long")
+                    if pattern:
+                        if not re.match(pattern, value):
+                            errors.append(f"Field '{field_name}' does not match the required pattern")
+
+            elif field_type == 'file':
+                # Expected: value is a filename or object with 'name'
+                filename = value.get('name') if isinstance(value, dict) else value
+                if not isinstance(filename, str) or '.' not in filename:
+                    errors.append(f"Field '{field_name}' must be a valid file name")
+                elif allowed_extensions:
+                    ext = filename.rsplit('.', 1)[-1].lower()
+                    if ext not in allowed_extensions:
+                        errors.append(f"Field '{field_name}' must be one of: {allowed_extensions}")
+
+            elif field_type == 'checkbox':
+                if not isinstance(value, bool):
+                    errors.append(f"Field '{field_name}' must be a boolean")
+
+        except Exception as e:
+            logger.warning(f"Validation error for field '{field_name}': {e}")
+            errors.append(f"Error validating field '{field_name}'")
+
+    return errors
+
+
 
 def validate_email_format(email: str) -> bool:
     """Validate email format using regex"""

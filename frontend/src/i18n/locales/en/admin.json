@@ -60,7 +60,8 @@
       "basicInfo": "Basic Information",
       "oldValues": "Old Values",
       "newValues": "New Values",
-      "userAgent": "User Agent"
+      "userAgent": "User Agent",
+      "resource": "Resource"
     },
     "roles": {
       "title": "Roles & Permissions",

@@ -203,9 +203,11 @@ export const workflowValidationUtils = {
       return errors;
     }
 
-    const validOperators = ["and", "or"];
+    const validOperators = ["any", "all", "null"];
     if (properties.operator && !validOperators.includes(properties.operator)) {
-      errors.push(`${stepLabel}: Invalid operator. Must be 'and' or 'or'`);
+      errors.push(
+        `${stepLabel}: Invalid operator.  Must be 'any' , 'all' or 'null'`
+      );
     }
 
     properties.conditions.forEach((condition, condIndex) => {

@@ -5,7 +5,7 @@ import {
   PencilIcon,
   TrashIcon,
 } from "@heroicons/react/24/outline";
-
+import { useTranslation } from "react-i18next";
 const ConnectionLine = ({
   id,
   transition = {},
@@ -14,8 +14,8 @@ const ConnectionLine = ({
   selected,
   onDelete,
   onSelect,
-  zoom,
 }) => {
+  const { t } = useTranslation();
   const [isHovered, setIsHovered] = useState(false);
 
   // Ensure transition has default values
@@ -242,8 +242,8 @@ const ConnectionLine = ({
               (isDefaultTransition
                 ? "Default"
                 : hasConditions
-                ? "Conditional"
-                : "Always")}
+                ? t("designer.condition.title")
+                : t("designer.always"))}
           </text>
         </g>
       )}

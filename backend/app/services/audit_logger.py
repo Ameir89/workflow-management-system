@@ -50,7 +50,7 @@ class AuditLogger:
     def get_audit_logs(tenant_id, filters=None, page=1, limit=50):
         """Get audit logs with optional filters"""
         try:
-            where_conditions = ["tenant_id = %s"]
+            where_conditions = ["al.tenant_id = %s"]
             params = [tenant_id]
             
             if filters:

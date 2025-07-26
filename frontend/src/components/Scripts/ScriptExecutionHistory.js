@@ -2,7 +2,6 @@
 import React, { useState } from "react";
 import { useQuery } from "react-query";
 import { useParams } from "react-router-dom";
-import { useTranslation } from "react-i18next";
 import { scriptsService } from "../../services/scriptsService";
 import {
   ClockIcon,
@@ -20,7 +19,6 @@ import {
 } from "@heroicons/react/24/outline";
 
 const ScriptExecutionHistory = () => {
-  const { t } = useTranslation();
   const { id } = useParams();
   const [page, setPage] = useState(1);
   const [filters, setFilters] = useState({

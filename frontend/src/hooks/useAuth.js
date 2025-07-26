@@ -1,5 +1,6 @@
 import React, { createContext, useContext, useState, useEffect } from "react";
 import { authService } from "../services/authService";
+import { set } from "lodash";
 
 const AuthContext = createContext();
 
@@ -13,6 +14,7 @@ export const useAuth = () => {
 
 export const AuthProvider = ({ children }) => {
   const [user, setUser] = useState(null);
+  const [permissions, setPermissions] = useState([]);
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
@@ -21,7 +23,8 @@ export const AuthProvider = ({ children }) => {
         const token = localStorage.getItem("access_token");
         if (token) {
           const profile = await authService.getProfile();
-          setUser(profile);
+          setUser(profile.user);
+          setPermissions(profile.permissions);
         }
       } catch (error) {
         console.error("Auth initialization failed:", error);
@@ -46,7 +49,7 @@ export const AuthProvider = ({ children }) => {
       localStorage.setItem("access_token", response.access_token);
       localStorage.setItem("refresh_token", response.refresh_token);
       setUser(response.user);
-
+      setPermissions(response.user.permissions);
       return response;
     } catch (error) {
       throw error;
@@ -62,6 +65,7 @@ export const AuthProvider = ({ children }) => {
       localStorage.removeItem("access_token");
       localStorage.removeItem("refresh_token");
       setUser(null);
+      setPermissions([]);
     }
   };
 
@@ -85,6 +89,7 @@ export const AuthProvider = ({ children }) => {
   const value = {
     user,
     loading,
+    permissions,
     login,
     logout,
     refreshToken,

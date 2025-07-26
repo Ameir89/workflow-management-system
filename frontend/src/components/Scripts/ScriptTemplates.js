@@ -1,7 +1,6 @@
 // src/components/Scripts/ScriptTemplates.js
 import React, { useState } from "react";
 import { useQuery, useMutation, useQueryClient } from "react-query";
-import { useTranslation } from "react-i18next";
 import { toast } from "react-toastify";
 import { scriptsService } from "../../services/scriptsService";
 import {
@@ -15,12 +14,10 @@ import {
   TagIcon,
   XMarkIcon,
   MagnifyingGlassIcon,
-  FunnelIcon,
   ChevronRightIcon,
 } from "@heroicons/react/24/outline";
 
 const ScriptTemplates = () => {
-  const { t } = useTranslation();
   const queryClient = useQueryClient();
   const [selectedTemplate, setSelectedTemplate] = useState(null);
   const [showCreateModal, setShowCreateModal] = useState(false);

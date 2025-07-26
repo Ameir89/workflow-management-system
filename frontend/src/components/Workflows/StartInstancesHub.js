@@ -303,7 +303,7 @@ const StartInstancesHub = () => {
                       className="w-full inline-flex items-center justify-center px-4 py-2 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-indigo-600 hover:bg-indigo-700 transition-colors"
                     >
                       <RocketLaunchIcon className="h-4 w-4 mr-2" />
-                      Start Instance
+                      {t("workflow.instances.startInstance")}
                     </Link>
                   </div>
                 </div>

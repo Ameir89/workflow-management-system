@@ -120,13 +120,6 @@ const WorkflowInstanceDetail = () => {
 
   // Tab content renderer
   const renderTabContent = () => {
-    const commonProps = {
-      instance,
-      tasks,
-      instanceId,
-      onRefresh: refetch,
-    };
-
     switch (activeTab) {
       case "overview":
         return <OverviewTab instance={instance} />;

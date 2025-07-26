@@ -10,7 +10,11 @@ import {
   ExclamationTriangleIcon,
   UserIcon,
   DocumentTextIcon,
+  ChartBarIcon,
+  PlayIcon,
 } from "@heroicons/react/24/outline";
+import Pagination from "../Common/Pagination";
+import StatsCard from "../Common/StatsCard";
 
 const TaskList = () => {
   const { t } = useTranslation();
@@ -30,7 +34,7 @@ const TaskList = () => {
       case "pending":
         return <ClockIcon className="h-5 w-5 text-yellow-500" />;
       case "in_progress":
-        return <ClipboardDocumentListIcon className="h-5 w-5 text-blue-500" />;
+        return <PlayIcon className="h-5 w-5 text-blue-500" />;
       case "overdue":
         return <ExclamationTriangleIcon className="h-5 w-5 text-red-500" />;
       default:
@@ -66,6 +70,48 @@ const TaskList = () => {
     }
   };
 
+  // Statistics cards configuration
+  const getStatsCards = (statistics) => {
+    if (!statistics) return [];
+
+    return [
+      {
+        title: t("tasks.totalTasks"),
+        value: statistics.total_tasks || 0,
+        icon: "clipboard-list",
+        color: "blue",
+      },
+      {
+        title: t("tasks.pendingTasks"),
+        value: statistics.pending_count || 0,
+        icon: "clock",
+        color: "yellow",
+      },
+      {
+        title: t("tasks.inProgressTasks"),
+        value: statistics.in_progress_count || 0,
+        icon: "chart-pie",
+        color: "blue",
+      },
+      {
+        title: t("tasks.completedTasks"),
+        value: statistics.completed_count || 0,
+        icon: "clipboard-list",
+        color: "green",
+      },
+      {
+        title: t("tasks.overdueTasks"),
+        value: statistics.overdue_count || 0,
+        icon: "exclamation-triangle",
+        color: "red",
+      },
+    ];
+  };
+
+  const handlePageChange = (newPage) => {
+    setPage(newPage);
+  };
+
   if (isLoading) {
     return (
       <div className="flex items-center justify-center h-64">
@@ -74,6 +120,8 @@ const TaskList = () => {
     );
   }
 
+  const statsCards = getStatsCards(tasksData?.statistics);
+
   return (
     <div className="space-y-6">
       {/* Header */}
@@ -81,6 +129,21 @@ const TaskList = () => {
         <h1 className="text-2xl font-bold text-gray-900">{t("tasks.title")}</h1>
         <p className="text-gray-600">{t("tasks.subtitle")}</p>
       </div>
+
+      {/* Statistics Cards */}
+      {statsCards.length > 0 && (
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-5 gap-4">
+          {statsCards.map((card, index) => (
+            <StatsCard
+              key={index}
+              title={card.title}
+              value={card.value}
+              icon={card.icon}
+              color={card.color}
+            />
+          ))}
+        </div>
+      )}
 
       {/* Filters */}
       <div className="bg-white p-4 rounded-lg shadow">
@@ -116,9 +179,9 @@ const TaskList = () => {
               className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-indigo-500"
             >
               <option value="">{t("common.all")}</option>
-              <option value="high">{t("tasks.high")}</option>
-              <option value="medium">{t("tasks.medium")}</option>
-              <option value="low">{t("tasks.low")}</option>
+              <option value="high">{t("tasks.priorityLevels.high")}</option>
+              <option value="medium">{t("tasks.priorityLevels.medium")}</option>
+              <option value="low">{t("tasks.priorityLevels.low")}</option>
             </select>
           </div>
 
@@ -136,6 +199,22 @@ const TaskList = () => {
               <option value="">{t("common.all")}</option>
               <option value="me">{t("tasks.assignedToMe")}</option>
               <option value="unassigned">{t("tasks.unassigned")}</option>
+            </select>
+          </div>
+
+          <div>
+            <label className="block text-sm font-medium text-gray-700 mb-1">
+              {t("tasks.type")}
+            </label>
+            <select
+              value={filters.type || ""}
+              onChange={(e) => setFilters({ ...filters, type: e.target.value })}
+              className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-indigo-500"
+            >
+              <option value="">{t("common.all")}</option>
+              <option value="approval">{t("tasks.approvalTasks")}</option>
+              <option value="form">{t("tasks.formTasks")}</option>
+              <option value="manual">{t("tasks.manualTasks")}</option>
             </select>
           </div>
         </div>
@@ -161,9 +240,15 @@ const TaskList = () => {
                             title={t("tasks.hasForm")}
                           />
                         )}
+                        {task.type === "approval" && (
+                          <ChartBarIcon
+                            className="ml-2 h-4 w-4 text-purple-400"
+                            title={t("tasks.approvalTask")}
+                          />
+                        )}
                       </div>
                       <p className="text-sm text-gray-500 truncate mt-1">
-                        {t("tasks.id")} : {task.id}
+                        {t("tasks.id")}: {task.id}
                       </p>
                       <p className="text-sm text-gray-500 truncate mt-1">
                         {task.workflow_title}
@@ -222,59 +307,13 @@ const TaskList = () => {
         </div>
       )}
 
-      {/* Pagination */}
-      {tasksData?.pagination && tasksData.pagination.pages > 1 && (
-        <div className="flex items-center justify-between border-t border-gray-200 bg-white px-4 py-3 sm:px-6">
-          <div className="flex-1 flex justify-between sm:hidden">
-            <button
-              onClick={() => setPage(Math.max(1, page - 1))}
-              disabled={page === 1}
-              className="relative inline-flex items-center px-4 py-2 border border-gray-300 text-sm font-medium rounded-md text-gray-700 bg-white hover:bg-gray-50"
-            >
-              {t("common.previous")}
-            </button>
-            <button
-              onClick={() =>
-                setPage(Math.min(tasksData.pagination.pages, page + 1))
-              }
-              disabled={page === tasksData.pagination.pages}
-              className="ml-3 relative inline-flex items-center px-4 py-2 border border-gray-300 text-sm font-medium rounded-md text-gray-700 bg-white hover:bg-gray-50"
-            >
-              {t("common.next")}
-            </button>
-          </div>
-          <div className="hidden sm:flex-1 sm:flex sm:items-center sm:justify-between">
-            <div>
-              <p className="text-sm text-gray-700">
-                {t("common.showingResults", {
-                  from: (page - 1) * 20 + 1,
-                  to: Math.min(page * 20, tasksData.pagination.total),
-                  total: tasksData.pagination.total,
-                })}
-              </p>
-            </div>
-            <div>
-              <nav className="relative z-0 inline-flex rounded-md shadow-sm -space-x-px">
-                <button
-                  onClick={() => setPage(Math.max(1, page - 1))}
-                  disabled={page === 1}
-                  className="relative inline-flex items-center px-2 py-2 rounded-l-md border border-gray-300 bg-white text-sm font-medium text-gray-500 hover:bg-gray-50"
-                >
-                  {t("common.previous")}
-                </button>
-                <button
-                  onClick={() =>
-                    setPage(Math.min(tasksData.pagination.pages, page + 1))
-                  }
-                  disabled={page === tasksData.pagination.pages}
-                  className="relative inline-flex items-center px-2 py-2 rounded-r-md border border-gray-300 bg-white text-sm font-medium text-gray-500 hover:bg-gray-50"
-                >
-                  {t("common.next")}
-                </button>
-              </nav>
-            </div>
-          </div>
-        </div>
+      {/* Pagination using Common Component */}
+      {tasksData?.pagination && (
+        <Pagination
+          pagination={tasksData.pagination}
+          currentPage={page}
+          onPageChange={handlePageChange}
+        />
       )}
     </div>
   );

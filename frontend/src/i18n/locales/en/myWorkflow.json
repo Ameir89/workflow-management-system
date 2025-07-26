@@ -33,6 +33,7 @@
       "allPriorities": "All Priorities"
     },
     "duration": {
+      "duration": "Duration {{duration}}",
       "notStarted": "Not started",
       "days": "{{days}}d {{hours}}h",
       "hours": "{{hours}}h {{minutes}}m",

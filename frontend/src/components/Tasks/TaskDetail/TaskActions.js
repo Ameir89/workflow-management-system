@@ -1,10 +1,6 @@
 import React from "react";
 import { useTranslation } from "react-i18next";
-import {
-  PlayIcon,
-  CheckCircleIcon,
-  DocumentTextIcon,
-} from "@heroicons/react/24/outline";
+import { CheckCircleIcon, DocumentTextIcon } from "@heroicons/react/24/outline";
 import TaskApprovalActions from "./TaskApprovalActions";
 
 const TaskActions = ({
@@ -42,17 +38,6 @@ const TaskActions = ({
   // Regular task actions for non-approval tasks
   return (
     <div className="flex flex-col space-y-2">
-      {task.status === "pending" && (
-        <button
-          onClick={() => onStatusChange("in_progress")}
-          disabled={submitting}
-          className="inline-flex items-center px-4 py-2 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-blue-600 hover:bg-blue-700 disabled:opacity-50"
-        >
-          <PlayIcon className="h-4 w-4 mr-2" />
-          {t("tasks.startTask")}
-        </button>
-      )}
-
       {task.form_id ? (
         <button
           onClick={() => onShowForm(true)}

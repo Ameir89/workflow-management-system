@@ -5,6 +5,8 @@
     },
     "languageToggle": "العربية",
     "all": "All",
+    "arabic": "العربية",
+    "english": "English",
     "back": "Back",
     "create": "Create",
     "update": "Update",
@@ -100,6 +102,8 @@
     "lastModified": "Last Modified",
     "fileSize": "File Size",
     "uploadedBy": "Uploaded By",
-    "downloadCount": "Download Count"
+    "downloadCount": "Download Count",
+    "steps": "Steps",
+    "step": "Step"
   }
 }

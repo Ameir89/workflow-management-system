@@ -11,21 +11,20 @@ import {
   ArchiveBoxIcon,
   TrashIcon,
   ArrowDownTrayIcon,
-  EyeIcon,
   FolderIcon,
 } from "@heroicons/react/24/outline";
 
 const FileManager = () => {
   const { t } = useTranslation();
   const queryClient = useQueryClient();
-  const [page, setPage] = useState(1);
+
   const [filters, setFilters] = useState({});
   const [viewMode, setViewMode] = useState("grid"); // 'grid' or 'list'
   const [selectedFiles, setSelectedFiles] = useState(new Set());
 
   const { data: filesData, isLoading } = useQuery(
-    ["files", page, filters],
-    () => filesService.getFiles({ page, limit: 24, ...filters }),
+    ["files", 0, filters],
+    () => filesService.getFiles({ page: 1, limit: 24, ...filters }),
     { keepPreviousData: true }
   );
 
@@ -90,7 +89,14 @@ const FileManager = () => {
   };
 
   const formatFileSize = (bytes) => {
+    if (bytes === null || bytes === undefined) return "0 Bytes";
+    if (typeof bytes !== "number") {
+      return "0 Bytes";
+    }
+    if (bytes < 0) return "0 Bytes";
     if (bytes === 0) return "0 Bytes";
+    if (bytes < 1024) return bytes + " Bytes";
+
     const k = 1024;
     const sizes = ["Bytes", "KB", "MB", "GB"];
     const i = Math.floor(Math.log(bytes) / Math.log(k));
@@ -174,7 +180,7 @@ const FileManager = () => {
                   {t("files.totalFiles")}
                 </p>
                 <p className="text-2xl font-semibold text-gray-900">
-                  {fileStats.user_stats.total_files}
+                  {fileStats?.user_stats?.total_files || 0}
                 </p>
               </div>
             </div>

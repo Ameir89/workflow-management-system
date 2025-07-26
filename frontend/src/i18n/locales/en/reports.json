@@ -1,6 +1,39 @@
 {
   "reports": {
     "title": "Reports",
-    "subtitle": "Analytics and insights"
+    "subtitle": "Analytics and insights",
+    "export": {
+      "workflows": "Export Workflows",
+      "tasks": "Export Tasks"
+    },
+    "dateRange": {
+      "from": "From",
+      "to": "To"
+    },
+    "charts": {
+      "workflowPerformance": "Workflow Performance",
+      "slaCompliance": "SLA Compliance",
+      "dailyActivity": "Daily Activity Trend",
+      "totalInstances": "Total Instances",
+      "completed": "Completed",
+      "complianceRate": "Compliance Rate (%)",
+      "workflowsStarted": "Workflows Started",
+      "workflowsCompleted": "Workflows Completed"
+    },
+    "stats": {
+      "totalWorkflows": "Total Workflows",
+      "avgCompletionRate": "Avg Completion Rate",
+      "avgSlaCompliance": "Avg SLA Compliance"
+    },
+    "slaBreaches": {
+      "title": "Recent SLA Breaches",
+      "description": "Latest SLA violations requiring attention",
+      "level": "Level"
+    },
+    "error": {
+      "fetchPerformance": "Failed to fetch performance report",
+      "fetchSLA": "Failed to fetch SLA compliance data",
+      "exportFailed": "Export failed"
+    }
   }
 }

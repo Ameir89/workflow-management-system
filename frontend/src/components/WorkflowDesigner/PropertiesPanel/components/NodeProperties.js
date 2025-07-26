@@ -9,7 +9,7 @@ import LoadingSpinner from "../../../Common/LoadingSpinner";
 // Type-specific property components
 import TaskProperties from "./node-types/TaskProperties";
 import ApprovalProperties from "./node-types/ApprovalProperties";
-import NotificationProperties from "./node-types/NotificationProperties";
+import NotificationProperties from "./node-types/NotificationProperties/NotificationProperties";
 import ConditionProperties from "./node-types/ConditionProperties";
 import AutomationProperties from "./node-types/AutomationProperties";
 

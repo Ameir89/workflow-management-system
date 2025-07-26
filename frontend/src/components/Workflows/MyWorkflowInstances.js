@@ -5,6 +5,7 @@ import { Link } from "react-router-dom";
 import { workflowService } from "../../services/workflowService";
 import {
   RocketLaunchIcon,
+  ClipboardDocumentListIcon,
   ClockIcon,
   EyeIcon,
   CalendarIcon,
@@ -38,6 +39,15 @@ const MyWorkflowInstances = () => {
     {
       keepPreviousData: true,
       refetchInterval: 30000, // Auto-refresh every 30 seconds
+    }
+  );
+
+  // Fetch user's instance stats
+  const { data: instanceSummary } = useQuery(
+    ["my-instance-summary"],
+    () => workflowService.getMyInstancesSummary(),
+    {
+      refetchInterval: 60000,
     }
   );
 
@@ -75,14 +85,13 @@ const MyWorkflowInstances = () => {
   };
 
   const getDuration = (instance) => {
-    if (!instance.started_at) return t("myWorkflows.duration.notStarted");
+    if (!instance.created_at) return t("myWorkflows.duration.notStarted");
 
-    const start = new Date(instance.started_at);
+    const start = new Date(instance.created_at);
     const end = instance.completed_at
       ? new Date(instance.completed_at)
       : new Date();
     const diffMs = end - start;
-
     const days = Math.floor(diffMs / (1000 * 60 * 60 * 24));
     const hours = Math.floor(
       (diffMs % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60)
@@ -99,6 +108,30 @@ const MyWorkflowInstances = () => {
     return Math.round((instance.completed_steps / instance.total_steps) * 100);
   };
 
+  const getStatusCounts = () => {
+    const defaultCounts = {
+      pending: 0,
+      running: 0,
+      completed: 0,
+      failed: 0,
+
+      total: 0,
+    };
+
+    if (!instanceSummary?.summary) {
+      return defaultCounts;
+    }
+
+    return {
+      pending: instanceSummary?.summary?.pending_instances,
+      running: instanceSummary?.summary?.active_instances,
+      completed: instanceSummary?.summary?.completed_instances,
+      failed: instanceSummary?.summary?.failed_instances,
+
+      total: instanceSummary?.summary?.total_instances,
+    };
+  };
+
   if (isLoading) {
     return (
       <div className="flex items-center justify-center h-64">
@@ -106,6 +139,8 @@ const MyWorkflowInstances = () => {
       </div>
     );
   }
+
+  const statusCounts = getStatusCounts();
 
   return (
     <div className="space-y-6">
@@ -127,6 +162,42 @@ const MyWorkflowInstances = () => {
             {t("myWorkflows.startNewWorkflow")}
           </Link>
         </div>
+      </div>
+
+      {/* Stats Cards */}
+      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-5 gap-4">
+        <div className="bg-white p-4 rounded-lg shadow-sm border border-gray-200">
+          <div className="flex items-center justify-between">
+            <div>
+              <p className="text-sm font-medium text-gray-600">
+                {t("myWorkflows.stats.total")}
+              </p>
+              <p className="text-2xl font-semibold text-gray-900">
+                {statusCounts.total}
+              </p>
+            </div>
+            <ClipboardDocumentListIcon className="h-8 w-8 text-gray-400" />
+          </div>
+        </div>
+
+        {["pending", "running", "completed", "failed"].map((status) => (
+          <div
+            key={status}
+            className="bg-white p-4 rounded-lg shadow-sm border border-gray-200"
+          >
+            <div className="flex items-center justify-between">
+              <div>
+                <p className="text-sm font-medium text-gray-600">
+                  {t(`myWorkflows.stats.${status}`)}
+                </p>
+                <p className="text-2xl font-semibold text-gray-900">
+                  {statusCounts[status]}
+                </p>
+              </div>
+              <StatusBadge status={status} size="sm" />
+            </div>
+          </div>
+        ))}
       </div>
 
       {/* Filters */}
@@ -275,7 +346,7 @@ const MyWorkflowInstances = () => {
                       <div className="flex items-center">
                         <ClockIcon className="h-4 w-4 mr-1" />
                         <span>
-                          {t("myWorkflows.duration", {
+                          {t("myWorkflows.duration.duration", {
                             duration: getDuration(instance),
                           })}
                         </span>
@@ -287,7 +358,7 @@ const MyWorkflowInstances = () => {
                           {t("myWorkflows.started", {
                             date: new Date(
                               instance.created_at
-                            ).toLocaleDateString(),
+                            ).toLocaleString(),
                           })}
                         </span>
                       </div>

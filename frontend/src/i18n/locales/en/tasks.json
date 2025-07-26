@@ -79,6 +79,24 @@
     "noTasks": "No tasks found",
     "noTasksDescription": "You don't have any tasks assigned to you.",
     "taskWithId": "Task {{id}}",
-    "viewTask": "View task"
+    "viewTask": "View task",
+    "totalTasks": "Total Tasks",
+    "pendingTasks": "Pending Tasks",
+    "inProgressTasks": "In Progress Tasks",
+    "completedTasks": "Completed Tasks",
+    "overdueTasks": "Overdue Tasks",
+    "type": "Type",
+    "approvalTasks": "Approval Tasks",
+    "formTasks": "Form Tasks",
+    "manualTasks": "Manual Tasks",
+    "unassigned": "Unassigned",
+    "assignedToMe": "Assigned to Me",
+    "inProgress": "In Progress",
+    "priorityLevels": {
+      "low": "Low",
+      "medium": "Medium",
+      "high": "High",
+      "urgent": "Urgent"
+    }
   }
 }

@@ -33,7 +33,8 @@
       "users": "User Management",
       "health": "System Health",
       "lookupsManagement": "Lookups Management",
-      "auditLogs": "Audit Logs"
+      "auditLogs": "Audit Logs",
+      "rolesAndPermissions": "Roles & Permissions"
     },
     "configuration": {
       "title": "Configuration",

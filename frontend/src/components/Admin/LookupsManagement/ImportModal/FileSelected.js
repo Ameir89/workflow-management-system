@@ -1,5 +1,4 @@
 import { DocumentTextIcon, CheckCircleIcon } from "@heroicons/react/24/outline";
-import { de } from "date-fns/locale";
 
 const FileSelected = ({ file, onRemove, validationResults }) => {
   return (

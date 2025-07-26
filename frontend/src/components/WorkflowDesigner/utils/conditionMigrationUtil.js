@@ -165,10 +165,10 @@ export const conditionMigrationUtil = {
         }
       });
 
-      const validOperators = ["and", "or"];
+      const validOperators = ["any", "all", "null"];
       if (condition.operator && !validOperators.includes(condition.operator)) {
         errors.push(
-          `Invalid operator '${condition.operator}'. Must be 'and' or 'or'`
+          `Invalid operator '${condition.operator}'. Must be 'any' , 'all' or 'null',`
         );
       }
     }

@@ -1,4 +1,4 @@
-/* src/components/Layout/Sidebar.css */
+/* src/components/Layout/Sidebar.css - Enhanced RTL support */
 
 /* Sidebar backdrop blur effect */
 .sidebar-backdrop {
@@ -53,6 +53,21 @@
 
 .nav-link-enhanced:hover::before {
   left: 100%;
+}
+
+/* RTL specific hover effects */
+[dir="rtl"] .nav-link-enhanced::before {
+  left: 100%;
+  background: linear-gradient(
+    -90deg,
+    transparent,
+    rgba(255, 255, 255, 0.1),
+    transparent
+  );
+}
+
+[dir="rtl"] .nav-link-enhanced:hover::before {
+  left: -100%;
 }
 
 /* Active nav link glow effect */
@@ -129,7 +144,7 @@
   transition: all 0.3s ease-in;
 }
 
-/* Mobile sidebar slide animation */
+/* Mobile sidebar slide animation - Enhanced RTL support */
 @media (max-width: 1024px) {
   .sidebar-slide-enter {
     transform: translateX(-100%);
@@ -147,6 +162,23 @@
   .sidebar-slide-exit-active {
     transform: translateX(-100%);
     transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  }
+
+  /* RTL specific mobile animations */
+  [dir="rtl"] .sidebar-slide-enter {
+    transform: translateX(100%);
+  }
+
+  [dir="rtl"] .sidebar-slide-enter-active {
+    transform: translateX(0);
+  }
+
+  [dir="rtl"] .sidebar-slide-exit {
+    transform: translateX(0);
+  }
+
+  [dir="rtl"] .sidebar-slide-exit-active {
+    transform: translateX(100%);
   }
 }
 
@@ -180,6 +212,15 @@
   transform: rotate(180deg);
 }
 
+/* RTL specific icon rotations */
+[dir="rtl"] .icon-rotate {
+  transform: rotate(180deg);
+}
+
+[dir="rtl"] .icon-rotate.expanded {
+  transform: rotate(0deg);
+}
+
 /* Navigation focus states */
 .nav-focus:focus {
   outline: none;
@@ -195,6 +236,15 @@
   .nav-link-enhanced::before {
     background: linear-gradient(
       90deg,
+      transparent,
+      rgba(255, 255, 255, 0.05),
+      transparent
+    );
+  }
+
+  [dir="rtl"] .nav-link-enhanced::before {
+    background: linear-gradient(
+      -90deg,
       transparent,
       rgba(255, 255, 255, 0.05),
       transparent
@@ -251,7 +301,7 @@
   }
 }
 
-/* Custom utility classes */
+/* Custom utility classes for RTL */
 .backdrop-blur-xs {
   backdrop-filter: blur(2px);
   -webkit-backdrop-filter: blur(2px);
@@ -297,19 +347,72 @@
   mask-composite: xor;
   -webkit-mask-composite: xor;
 }
-/* RTL Support */
-[dir="rtl"] .sidebar-slide-enter {
-  transform: translateX(100%);
+
+/* RTL Sidebar specific positioning */
+[dir="rtl"] .sidebar-right {
+  right: 0;
+  left: auto;
 }
 
-[dir="rtl"] .sidebar-slide-enter-active {
-  transform: translateX(0);
+[dir="rtl"] .sidebar-border-right {
+  border-right: none;
+  border-left: 1px solid rgb(229, 231, 235);
 }
 
-[dir="rtl"] .sidebar-slide-exit {
-  transform: translateX(0);
+/* Sidebar shadow adjustments for RTL */
+[dir="rtl"] .sidebar-shadow {
+  box-shadow: -4px 0 6px -1px rgba(0, 0, 0, 0.1),
+    -2px 0 4px -1px rgba(0, 0, 0, 0.06);
 }
 
-[dir="rtl"] .sidebar-slide-exit-active {
-  transform: translateX(100%);
+/* Navigation item spacing adjustments for RTL */
+[dir="rtl"] .nav-item-spacing {
+  margin-right: 0;
+  margin-left: 1rem;
+}
+
+/* Badge positioning for RTL */
+[dir="rtl"] .badge-position {
+  right: auto;
+  left: 0.5rem;
+}
+
+/* Chevron icon adjustments for RTL */
+[dir="rtl"] .chevron-rtl {
+  transform: rotate(180deg);
+}
+
+/* Logo spacing for RTL */
+[dir="rtl"] .logo-spacing {
+  flex-direction: row-reverse;
+}
+
+/* Section header icon spacing for RTL */
+[dir="rtl"] .section-header-icon {
+  margin-right: 0;
+  margin-left: 0.5rem;
+}
+
+/* Quick stats layout for RTL */
+[dir="rtl"] .stats-layout {
+  direction: rtl;
+}
+
+[dir="rtl"] .stats-icon-position {
+  margin-right: auto;
+  margin-left: 0;
+}
+
+/* Mobile overlay positioning for RTL */
+[dir="rtl"] .mobile-overlay {
+  right: 0;
+  left: auto;
+}
+
+/* Notification badge positioning for RTL */
+[dir="rtl"] .notification-badge {
+  right: -0.25rem;
+  left: auto;
+  bottom: -0.25rem;
+  top: auto;
 }

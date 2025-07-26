@@ -29,7 +29,7 @@ import FormResponses from "../components/Forms/FormResponses";
 
 // Scripts components
 import ScriptsList from "../components/Scripts/ScriptsList";
-import ScriptEditor from "../components/Scripts/ScriptEditor";
+import ScriptEditor from "../components/Scripts/ScriptEditor/ScriptEditor";
 import ScriptExecutionHistory from "../components/Scripts/ScriptExecutionHistory";
 import ScriptTemplates from "../components/Scripts/ScriptTemplates";
 import ScriptAnalytics from "../components/Scripts/ScriptAnalytics";
@@ -43,8 +43,7 @@ import WebhookDeliveries from "../components/Webhooks/WebhookDeliveries";
 import FileManager from "../components/Files/FileManager";
 
 // Notification components
-import NotificationManagement from "../components/Notifications/NotificationManagement";
-import NotificationTemplateForm from "../components/Notifications/Templates/NotificationTemplateForm";
+import NotificationTemplateForm from "../components/Admin/NotificationManagement/components/Templates/NotificationTemplateForm";
 
 // Admin components
 import UserManagement from "../components/Admin/UserManagement/UserManagement";
@@ -52,6 +51,7 @@ import SystemHealth from "../components/Admin/SystemHealth";
 import AuditLogs from "../components/Admin/AuditLogs";
 import LookupsManagement from "../components/Admin/LookupsManagement/LookupsManagement";
 import RolesManagement from "../components/Admin/RolesManagement/RolesManagement";
+import NotificationManagement from "../components/Admin/NotificationManagement/NotificationManagement";
 
 // Other components
 import Reports from "../components/Reports/Reports";

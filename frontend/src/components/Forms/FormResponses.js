@@ -8,12 +8,12 @@ import { EyeIcon, ArrowDownTrayIcon } from "@heroicons/react/24/outline";
 const FormResponses = () => {
   const { t } = useTranslation();
   const { id } = useParams();
-  const [page, setPage] = useState(1);
+
   const [selectedResponse, setSelectedResponse] = useState(null);
 
   const { data: responsesData, isLoading } = useQuery(
-    ["form-responses", id, page],
-    () => formsService.getFormResponses(id, { page, limit: 20 }),
+    ["form-responses", id, 1],
+    () => formsService.getFormResponses(id, { page: 1, limit: 20 }),
     { keepPreviousData: true }
   );
 

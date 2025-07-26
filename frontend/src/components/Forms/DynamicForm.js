@@ -39,8 +39,6 @@ const DynamicForm = ({
     handleSubmit,
     control,
     formState: { errors },
-    setValue,
-    watch,
     reset,
   } = useForm({
     defaultValues: memoizedDefaultValues,

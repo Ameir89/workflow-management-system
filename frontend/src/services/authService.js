@@ -1,7 +1,7 @@
 import axios from "axios";
 
 const API_BASE_URL =
-  process.env.REACT_APP_API_URL || "http://188.34.167.110:5000";
+  process.env.REACT_APP_API_URL || "http://127.0.0.1:5000";
 
 // Create axios instance with interceptors
 const api = axios.create({
@@ -85,7 +85,7 @@ export const authService = {
   async getProfile() {
     try {
       const response = await api.get("/auth/profile");
-      return response.data.user;
+      return response.data;
     } catch (error) {
       throw new Error(error.response?.data?.error || "Failed to get profile");
     }
@@ -171,3 +171,4 @@ export const formsService = {
 };
 
 export { api };
+

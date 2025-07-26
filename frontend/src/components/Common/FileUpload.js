@@ -3,7 +3,6 @@ import {
   CloudArrowUpIcon,
   DocumentIcon,
   TrashIcon,
-  PaperClipIcon,
 } from "@heroicons/react/24/outline";
 
 const FileUpload = forwardRef(

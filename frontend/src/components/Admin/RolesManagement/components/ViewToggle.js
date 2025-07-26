@@ -10,13 +10,13 @@ const ViewToggle = ({ viewMode, onViewModeChange }) => {
     {
       id: "grid",
       icon: Squares2X2Icon,
-      label: t("common.gridView", "Grid View"),
+      label: t("common.gridView"),
       title: t("admin.roles.gridViewTooltip", "Display roles as cards"),
     },
     {
       id: "list",
       icon: ListBulletIcon,
-      label: t("common.listView", "List View"),
+      label: t("common.listView"),
       title: t("admin.roles.listViewTooltip", "Display roles as table"),
     },
   ];

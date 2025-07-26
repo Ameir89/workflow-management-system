@@ -18,23 +18,6 @@ const ImportModal = ({ isOpen, onClose, selectedTable }) => {
       handleClose();
     },
   });
-
-  // File handling
-  const handleFileSelect = useCallback(
-    (file) => {
-      if (file) {
-        if (file.type === "text/csv" || file.name.endsWith(".csv")) {
-          setCsvFile(file);
-          setValidationResults(null);
-          validateCSV(file);
-        } else {
-          alert(t("admin.lookups.selectValidCSV"));
-        }
-      }
-    },
-    [t]
-  );
-
   const validateCSV = useCallback((file) => {
     const reader = new FileReader();
     reader.onload = (e) => {
@@ -53,6 +36,22 @@ const ImportModal = ({ isOpen, onClose, selectedTable }) => {
     };
     reader.readAsText(file);
   }, []);
+
+  // File handling
+  const handleFileSelect = useCallback(
+    (file) => {
+      if (file) {
+        if (file.type === "text/csv" || file.name.endsWith(".csv")) {
+          setCsvFile(file);
+          setValidationResults(null);
+          validateCSV(file);
+        } else {
+          alert(t("admin.lookups.selectValidCSV"));
+        }
+      }
+    },
+    [t, validateCSV]
+  );
 
   // Drag and drop handlers
   const handleDrop = useCallback(

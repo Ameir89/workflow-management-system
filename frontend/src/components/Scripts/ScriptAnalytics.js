@@ -1,7 +1,6 @@
 // src/components/Scripts/ScriptAnalytics.js
 import React, { useState } from "react";
 import { useQuery } from "react-query";
-import { useTranslation } from "react-i18next";
 import { scriptsService } from "../../services/scriptsService";
 import {
   ChartBarIcon,
@@ -13,7 +12,6 @@ import {
 } from "@heroicons/react/24/outline";
 
 const ScriptAnalytics = () => {
-  const { t } = useTranslation();
   const [timeRange, setTimeRange] = useState("30d");
   const [selectedScript, setSelectedScript] = useState("");
   const [selectedCategory, setSelectedCategory] = useState("");

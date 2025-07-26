@@ -92,7 +92,7 @@ const Login = () => {
 
     try {
       // Complete 2FA verification with the auth service
-      const response = await login({
+      await login({
         username: loginData.username || username,
         password: loginData.password || password,
         two_factor_token: token,

@@ -6,4 +6,5 @@ export { default as TasksTab } from "./TasksTab";
 export { default as TimelineTab } from "./TimelineTab";
 export { default as DataTab } from "./DataTab";
 export { default as StatusBadge } from "./StatusBadge";
+export { default as ApprovalBadge } from "./ApprovalBadge";
 export { PriorityBadge } from "./PriorityBadge";

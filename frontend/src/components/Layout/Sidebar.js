@@ -1,4 +1,4 @@
-// src/components/Layout/Sidebar.js - Updated with RTL support
+// src/components/Layout/Sidebar.js - Fixed RTL positioning
 import React, { useState } from "react";
 import { Link, useLocation } from "react-router-dom";
 import { useTranslation } from "react-i18next";
@@ -169,7 +169,7 @@ const Sidebar = ({ isOpen, onClose, userPermissions = [] }) => {
     },
 
     {
-      name: "Roles & Permissions",
+      name: t("nav.admin.rolesAndPermissions"),
       href: "/admin/roles",
       icon: KeyIcon,
       iconSolid: KeyIconSolid,
@@ -281,11 +281,10 @@ const Sidebar = ({ isOpen, onClose, userPermissions = [] }) => {
         />
       )}
 
-      {/* Sidebar */}
+      {/* Sidebar - Fixed RTL positioning */}
       <div
         className={`
-          fixed inset-y-0 z-50 flex w-72 flex-col transition-transform duration-300 ease-in-out lg:translate-x-0
-          ${isRTL ? "right-0" : "left-0"}
+          fixed inset-y-0 z-50 flex w-72 flex-col transition-transform duration-300 ease-in-out lg:translate-x-0 left-0
           ${
             isOpen
               ? "translate-x-0"
@@ -296,13 +295,19 @@ const Sidebar = ({ isOpen, onClose, userPermissions = [] }) => {
         `}
       >
         <div
-          className={`flex grow flex-col gap-y-5 overflow-y-auto bg-white border-gray-200 px-6 pb-4 shadow-xl ${
-            isRTL ? "border-l" : "border-r"
+          className={`flex grow flex-col gap-y-5 overflow-y-auto bg-white px-6 pb-4 shadow-xl ${
+            isRTL
+              ? "border-l border-gray-200 shadow-[-4px_0_6px_-1px_rgba(0,0,0,0.1),-2px_0_4px_-1px_rgba(0,0,0,0.06)]"
+              : "border-r border-gray-200"
           }`}
         >
           {/* Logo/Brand */}
           <div className="flex h-16 shrink-0 items-center border-b border-gray-100">
-            <div className="flex items-center space-x-3">
+            <div
+              className={`flex items-center ${
+                isRTL ? "space-x-reverse space-x-3" : "space-x-3"
+              }`}
+            >
               <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-gradient-to-br from-indigo-500 to-purple-600 shadow-lg">
                 <SparklesIcon className="h-6 w-6 text-white" />
               </div>
@@ -418,10 +423,17 @@ const Sidebar = ({ isOpen, onClose, userPermissions = [] }) => {
                     <ClipboardDocumentListIcon className="h-6 w-6 text-indigo-600" />
                   </div>
                 </div>
-                <div className="mt-2 flex items-center text-xs text-indigo-600">
+                <div
+                  className={`mt-2 flex items-center text-xs text-indigo-600 ${
+                    isRTL ? "space-x-reverse space-x-1" : "space-x-1"
+                  }`}
+                >
                   <span className="inline-flex items-center">
-                    <span className="w-2 h-2 bg-green-400 rounded-full mr-1 animate-pulse"></span>
-
+                    <span
+                      className={`w-2 h-2 bg-green-400 rounded-full ${
+                        isRTL ? "ml-1" : "mr-1"
+                      } animate-pulse`}
+                    ></span>
                     {t("nav.dueCount", {
                       count: taskStats?.stats?.overdue_tasks || 0,
                     })}

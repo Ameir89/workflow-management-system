@@ -32,6 +32,7 @@
       "allPriorities": "جميع الأولويات"
     },
     "duration": {
+      "duration": "المدة الزمنية {{duration}}",
       "notStarted": "لم يبدأ",
       "days": "{{days}} يوم {{hours}} ساعة",
       "hours": "{{hours}} ساعة {{minutes}} دقيقة",

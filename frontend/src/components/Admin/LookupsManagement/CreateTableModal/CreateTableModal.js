@@ -1,3 +1,4 @@
+/* eslint-disable react-hooks/exhaustive-deps */
 // src/components/Admin/LookupsManagement/CreateTableModal/CreateTableModal.js - Simplified for API structure
 import React, { useState, useEffect, useCallback } from "react";
 import { useLookups } from "../../../../hooks/useLookups";

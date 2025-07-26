@@ -3,6 +3,8 @@
     "title": "Workflow Management System"
   },
   "common": {
+    "arabic": "العربية",
+    "english": "English",
     "previous": "السابق",
     "next": "التالي",
     "showingResults": "عرض {{from}} إلى {{to}} من {{total}} نتيجة",
@@ -60,6 +62,16 @@
     "draft": "مسودة",
     "published": "منشور",
     "archived": "مؤرشف",
-    "scheduled": "مجدول"
+    "scheduled": "مجدول",
+    "gridView": "عرض الشبكة",
+    "listView": "عرض القائمة",
+    "allStatuses": "جميع الحالات",
+    "all": "الكل",
+    "steps": "الخطوات",
+    "step": "خطوة",
+    "createdBy": "تم الإنشاء بواسطة",
+    "showAdvanced": "إظهار الخيارات المتقدمة",
+    "from": "من",
+    "to": "إلى"
   }
 }

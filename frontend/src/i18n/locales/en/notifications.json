@@ -27,6 +27,7 @@
     "channelSMS": "📱 SMS",
     "channelInApp": "💻 In-App",
     "category": "Category",
+    "allCategories": "All Categories",
     "categoryTask": "Task",
     "categoryWorkflow": "Workflow",
     "categorySystem": "System",
@@ -136,6 +137,17 @@
     "hoursAgo_plural": "{{count}} hours ago",
     "daysAgo": "{{count}} day ago",
     "daysAgo_plural": "{{count}} days ago",
-    "noNotifications": "No notifications found"
+    "noNotifications": "No notifications found",
+    "status": "Status",
+    "lastModified": "Last Modified",
+    "usage": "Usage",
+    "times": "{{count}} times",
+    "allChannels": "All Channels",
+    "email": "Email",
+    "push": "Push",
+    "sms": "SMS",
+    "webhook": "Webhook",
+    "slack": "Slack",
+    "telegram": "Telegram"
   }
 }

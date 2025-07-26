@@ -93,8 +93,9 @@ const TransitionProperties = ({ transition, workflow, onTransitionChange }) => {
   };
 
   const operatorOptions = [
-    { value: "and", label: t("designer.condition.and") },
-    { value: "or", label: t("designer.condition.or") },
+    { value: "null", label: t("designer.condition.singleOperator") },
+    { value: "any", label: t("designer.condition.any") },
+    { value: "all", label: t("designer.condition.all") },
   ];
 
   const comparisonOperators = [
@@ -111,17 +112,17 @@ const TransitionProperties = ({ transition, workflow, onTransitionChange }) => {
 
   const fieldOptions = [
     { value: "workflow.status", label: t("designer.condition.workflowStatus") },
-    { value: "task.status", label: t("designer.condition.taskStatus") },
+    // { value: "task.status", label: t("designer.condition.taskStatus") },
     {
       value: "approval_status",
       label: t("designer.condition.approvalStatus"),
     },
     { value: "task.assignee", label: t("designer.condition.taskAssignee") },
     { value: "form.field", label: t("designer.condition.formField") },
-    { value: "branch_decision", label: "Branch Decision" },
-    { value: "department_decision", label: "Department Decision" },
-    { value: "division_decision", label: "Division Decision" },
-    { value: "entity_decision", label: "Entity Decision" },
+    // { value: "branch_decision", label: "Branch Decision" },
+    // { value: "department_decision", label: "Department Decision" },
+    // { value: "division_decision", label: "Division Decision" },
+    // { value: "entity_decision", label: "Entity Decision" },
     { value: "custom", label: t("designer.condition.customField") },
   ];
 

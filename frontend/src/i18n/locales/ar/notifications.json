@@ -27,6 +27,8 @@
     "channelSMS": "📱 رسائل نصية",
     "channelInApp": "💻 داخل التطبيق",
     "category": "الفئة",
+    "allCategories": "جميع الفئات",
+
     "categoryTask": "مهمة",
     "categoryWorkflow": "سير عمل",
     "categorySystem": "النظام",
@@ -136,6 +138,15 @@
     "hoursAgo_plural": "منذ {{count}} ساعة",
     "daysAgo": "منذ {{count}} يوم",
     "daysAgo_plural": "منذ {{count}} يوم",
-    "noNotifications": "لا توجد إشعارات"
+    "noNotifications": "لا توجد إشعارات",
+    "status": "حالة",
+    "lastModified": "اخر تعديل",
+    "usage": "استخدام",
+    "times": "{{count}} مرة",
+    "allChannels": "جميع القنوات",
+    "email": "البريد الألكتروني",
+    "push": "Push",
+    "sms": "SMS",
+    "webhook": "Webhook"
   }
 }

@@ -78,6 +78,24 @@
     "noTasks": "لا يوجد مهام",
     "noTasksDescription": "لا يوجد مهام لديك.",
     "taskWithId": "المهمة {{id}}",
-    "viewTask": "عرض المهمة"
+    "viewTask": "عرض المهمة",
+    "totalTasks": "المهام الكلية",
+    "pendingTasks": "المهام المعلقة",
+    "inProgressTasks": "المهام المتابعة",
+    "completedTasks": "المهام المكتملة",
+    "overdueTasks": "المهام المتاخرة",
+    "type": "النوع",
+    "approvalTasks": "مهام الموافقة",
+    "formTasks": "مهام النموذج",
+    "manualTasks": "مهام يدوية",
+    "assignedToMe": "مُسند إلي",
+    "unassigned": "غير مُسند",
+    "inProgress": "قيد التقدم",
+    "priorityLevels": {
+      "low": "منخفض",
+      "medium": "متوسط",
+      "high": "عالي",
+      "urgent": "عاجل"
+    }
   }
 }

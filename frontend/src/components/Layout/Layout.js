@@ -1,3 +1,4 @@
+// src/components/Layout/Layout.js
 import React, { useState } from "react";
 import { Outlet, useNavigate, useLocation } from "react-router-dom";
 import { useTranslation } from "react-i18next";
@@ -18,7 +19,7 @@ const Layout = () => {
   const { t, i18n } = useTranslation();
   const navigate = useNavigate();
   const location = useLocation();
-  const { user, logout } = useAuth();
+  const { user, permissions, logout } = useAuth();
   const [sidebarOpen, setSidebarOpen] = useState(false);
   const [notificationCenterOpen, setNotificationCenterOpen] = useState(false);
   const [userMenuOpen, setUserMenuOpen] = useState(false);
@@ -47,12 +48,12 @@ const Layout = () => {
   };
 
   return (
-    <div className="h-screen flex bg-gray-50">
+    <div className="h-screen flex bg-gray-50" dir={isRTL ? "rtl" : "ltr"}>
       {/* Sidebar */}
       <Sidebar
         isOpen={sidebarOpen}
         onClose={() => setSidebarOpen(false)}
-        userPermissions={user?.permissions || []}
+        userPermissions={permissions || []}
       />
 
       {/* Main content area */}
@@ -72,7 +73,7 @@ const Layout = () => {
             <button
               onClick={() => setSidebarOpen(true)}
               className={`lg:hidden inline-flex items-center justify-center p-2 rounded-md text-gray-500 hover:text-gray-900 hover:bg-gray-100 transition-colors duration-200 ${
-                isDesignerRoute ? "ml-4" : ""
+                isDesignerRoute ? (isRTL ? "mr-4" : "ml-4") : ""
               }`}
             >
               <Bars3Icon className="h-6 w-6" />
@@ -89,7 +90,7 @@ const Layout = () => {
             <div
               className={`flex items-center ${
                 isRTL ? "space-x-reverse space-x-4" : "space-x-4"
-              } ${isDesignerRoute ? "mr-4" : ""}`}
+              } ${isDesignerRoute ? (isRTL ? "ml-4" : "mr-4") : ""}`}
             >
               {/* Notifications */}
               <button
@@ -116,7 +117,9 @@ const Layout = () => {
                 className="p-2 text-gray-500 hover:text-gray-900 hover:bg-gray-100 rounded-lg transition-colors duration-200"
               >
                 <span className="text-sm font-medium">
-                  {i18n.language === "en" ? "عر" : "EN"}
+                  {i18n.language === "en"
+                    ? t("common.arabic")
+                    : t("common.english")}
                 </span>
               </button>
 

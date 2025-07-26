@@ -35,6 +35,7 @@ ChartJS.register(
 
 const Reports = () => {
   const { t } = useTranslation();
+
   const [dateRange, setDateRange] = useState({
     start: new Date(Date.now() - 30 * 24 * 60 * 60 * 1000)
       .toISOString()
@@ -64,7 +65,7 @@ const Reports = () => {
       });
       return response.data;
     } catch (error) {
-      throw new Error("Failed to fetch performance report");
+      throw new Error(t("reports.error.fetchPerformance"));
     }
   };
 
@@ -73,7 +74,7 @@ const Reports = () => {
       const response = await api.get("/reports/sla-compliance");
       return response.data;
     } catch (error) {
-      throw new Error("Failed to fetch SLA compliance data");
+      throw new Error(t("reports.error.fetchSLA"));
     }
   };
 
@@ -92,7 +93,7 @@ const Reports = () => {
       link.remove();
       window.URL.revokeObjectURL(url);
     } catch (error) {
-      console.error("Export failed:", error);
+      console.error(t("reports.error.exportFailed"), error);
     }
   };
 
@@ -102,7 +103,7 @@ const Reports = () => {
       performanceData?.workflow_performance?.map((w) => w.workflow_name) || [],
     datasets: [
       {
-        label: "Total Instances",
+        label: t("reports.charts.totalInstances"),
         data:
           performanceData?.workflow_performance?.map(
             (w) => w.total_instances
@@ -112,7 +113,7 @@ const Reports = () => {
         borderWidth: 1,
       },
       {
-        label: "Completed",
+        label: t("reports.charts.completed"),
         data:
           performanceData?.workflow_performance?.map(
             (w) => w.completed_instances
@@ -128,7 +129,7 @@ const Reports = () => {
     labels: slaData?.compliance_by_workflow?.map((w) => w.workflow_name) || [],
     datasets: [
       {
-        label: "Compliance Rate (%)",
+        label: t("reports.charts.complianceRate"),
         data:
           slaData?.compliance_by_workflow?.map((w) => w.compliance_rate) || [],
         backgroundColor:
@@ -156,7 +157,7 @@ const Reports = () => {
     labels: performanceData?.daily_activity?.map((d) => d.date) || [],
     datasets: [
       {
-        label: "Workflows Started",
+        label: t("reports.charts.workflowsStarted"),
         data:
           performanceData?.daily_activity?.map((d) => d.workflows_started) ||
           [],
@@ -165,7 +166,7 @@ const Reports = () => {
         tension: 0.1,
       },
       {
-        label: "Workflows Completed",
+        label: t("reports.charts.workflowsCompleted"),
         data:
           performanceData?.daily_activity?.map((d) => d.workflows_completed) ||
           [],
@@ -206,8 +207,10 @@ const Reports = () => {
       {/* Header */}
       <div className="flex justify-between items-center">
         <div>
-          <h1 className="text-2xl font-bold text-gray-900">Reports</h1>
-          <p className="text-gray-600">Analytics and insights</p>
+          <h1 className="text-2xl font-bold text-gray-900">
+            {t("reports.title")}
+          </h1>
+          <p className="text-gray-600">{t("reports.subtitle")}</p>
         </div>
         <div className="flex items-center space-x-3">
           <button
@@ -215,14 +218,14 @@ const Reports = () => {
             className="inline-flex items-center px-4 py-2 border border-gray-300 rounded-md shadow-sm text-sm font-medium text-gray-700 bg-white hover:bg-gray-50"
           >
             <DocumentArrowDownIcon className="h-4 w-4 mr-2" />
-            Export Workflows
+            {t("reports.export.workflows")}
           </button>
           <button
             onClick={() => exportReport("tasks")}
             className="inline-flex items-center px-4 py-2 border border-gray-300 rounded-md shadow-sm text-sm font-medium text-gray-700 bg-white hover:bg-gray-50"
           >
             <DocumentArrowDownIcon className="h-4 w-4 mr-2" />
-            Export Tasks
+            {t("reports.export.tasks")}
           </button>
         </div>
       </div>
@@ -232,7 +235,9 @@ const Reports = () => {
         <div className="flex items-center space-x-4">
           <CalendarIcon className="h-5 w-5 text-gray-400" />
           <div className="flex items-center space-x-2">
-            <label className="text-sm font-medium text-gray-700">From:</label>
+            <label className="text-sm font-medium text-gray-700">
+              {t("reports.dateRange.from")}:
+            </label>
             <input
               type="date"
               value={dateRange.start}
@@ -243,7 +248,9 @@ const Reports = () => {
             />
           </div>
           <div className="flex items-center space-x-2">
-            <label className="text-sm font-medium text-gray-700">To:</label>
+            <label className="text-sm font-medium text-gray-700">
+              {t("reports.dateRange.to")}:
+            </label>
             <input
               type="date"
               value={dateRange.end}
@@ -261,7 +268,7 @@ const Reports = () => {
         {/* Workflow Performance */}
         <div className="bg-white p-6 rounded-lg shadow">
           <h3 className="text-lg font-semibold text-gray-900 mb-4">
-            Workflow Performance
+            {t("reports.charts.workflowPerformance")}
           </h3>
           <div className="h-64">
             <Bar data={workflowPerformanceChart} options={chartOptions} />
@@ -271,7 +278,7 @@ const Reports = () => {
         {/* SLA Compliance */}
         <div className="bg-white p-6 rounded-lg shadow">
           <h3 className="text-lg font-semibold text-gray-900 mb-4">
-            SLA Compliance
+            {t("reports.charts.slaCompliance")}
           </h3>
           <div className="h-64">
             <Bar data={slaComplianceChart} options={chartOptions} />
@@ -281,7 +288,7 @@ const Reports = () => {
         {/* Daily Activity */}
         <div className="bg-white p-6 rounded-lg shadow lg:col-span-2">
           <h3 className="text-lg font-semibold text-gray-900 mb-4">
-            Daily Activity Trend
+            {t("reports.charts.dailyActivity")}
           </h3>
           <div className="h-64">
             <Line data={dailyActivityChart} options={chartOptions} />
@@ -296,7 +303,7 @@ const Reports = () => {
             <ChartBarIcon className="h-8 w-8 text-blue-500" />
             <div className="ml-3">
               <p className="text-sm font-medium text-gray-500">
-                Total Workflows
+                {t("reports.stats.totalWorkflows")}
               </p>
               <p className="text-2xl font-semibold text-gray-900">
                 {performanceData?.workflow_performance?.length || 0}
@@ -310,7 +317,7 @@ const Reports = () => {
             <ChartBarIcon className="h-8 w-8 text-green-500" />
             <div className="ml-3">
               <p className="text-sm font-medium text-gray-500">
-                Avg Completion Rate
+                {t("reports.stats.avgCompletionRate")}
               </p>
               <p className="text-2xl font-semibold text-gray-900">
                 {performanceData?.workflow_performance?.length > 0
@@ -334,7 +341,7 @@ const Reports = () => {
             <ChartBarIcon className="h-8 w-8 text-yellow-500" />
             <div className="ml-3">
               <p className="text-sm font-medium text-gray-500">
-                Avg SLA Compliance
+                {t("reports.stats.avgSlaCompliance")}
               </p>
               <p className="text-2xl font-semibold text-gray-900">
                 {slaData?.compliance_by_workflow?.length > 0
@@ -357,10 +364,10 @@ const Reports = () => {
         <div className="bg-white shadow overflow-hidden sm:rounded-md">
           <div className="px-4 py-5 sm:px-6">
             <h3 className="text-lg leading-6 font-medium text-gray-900">
-              Recent SLA Breaches
+              {t("reports.slaBreaches.title")}
             </h3>
             <p className="mt-1 max-w-2xl text-sm text-gray-500">
-              Latest SLA violations requiring attention
+              {t("reports.slaBreaches.description")}
             </p>
           </div>
           <ul className="divide-y divide-gray-200">
@@ -385,7 +392,7 @@ const Reports = () => {
                           : "bg-gray-100 text-gray-800"
                       }`}
                     >
-                      Level {breach.escalation_level}
+                      {t("reports.slaBreaches.level")} {breach.escalation_level}
                     </span>
                     <span className="text-sm text-gray-500">
                       {new Date(breach.breach_time).toLocaleDateString()}

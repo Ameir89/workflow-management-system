@@ -33,7 +33,8 @@
       "users": "إدارة المستخدمين",
       "health": "صحة النظام",
       "lookupsManagement": "إدارة القوائم المرجعية",
-      "auditLogs": "سجلات التدقيق"
+      "auditLogs": "سجلات التدقيق",
+      "rolesAndPermissions": "الأدوار والصلاحيات"
     },
     "configuration": {
       "title": "الإعدادات",

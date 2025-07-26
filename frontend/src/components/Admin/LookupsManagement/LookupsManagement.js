@@ -33,8 +33,7 @@ const LookupsManagement = () => {
   const [editingRecord, setEditingRecord] = useState(null);
 
   // Custom hooks
-  const { useLookupsQuery, useDeleteTableMutation, exportTableData } =
-    useLookups();
+  const { useDeleteTableMutation, exportTableData } = useLookups();
 
   // Mutations
   const deleteTableMutation = useDeleteTableMutation({

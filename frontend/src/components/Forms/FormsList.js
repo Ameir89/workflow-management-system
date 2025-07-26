@@ -1,9 +1,10 @@
-import React, { useState, useEffect } from "react";
+import React, { useState } from "react";
 import { useQuery, useMutation, useQueryClient } from "react-query";
 import { useTranslation } from "react-i18next";
 import { Link } from "react-router-dom";
 import { toast } from "react-toastify";
 import { formsService } from "../../services/formsService";
+import Pagination from "../Common/Pagination";
 import {
   PlusIcon,
   PencilIcon,
@@ -42,6 +43,10 @@ const FormsList = () => {
     if (window.confirm(t("forms.confirmDelete", { name }))) {
       deleteFormMutation.mutate(id);
     }
+  };
+
+  const handlePageChange = (newPage) => {
+    setPage(newPage);
   };
 
   if (isLoading) {
@@ -192,59 +197,13 @@ const FormsList = () => {
         </ul>
       </div>
 
-      {/* Pagination */}
+      {/* Replace custom pagination with common Pagination component */}
       {formsData?.pagination && (
-        <div className="flex items-center justify-between border-t border-gray-200 bg-white px-4 py-3 sm:px-6">
-          <div className="flex-1 flex justify-between sm:hidden">
-            <button
-              onClick={() => setPage(Math.max(1, page - 1))}
-              disabled={page === 1}
-              className="relative inline-flex items-center px-4 py-2 border border-gray-300 text-sm font-medium rounded-md text-gray-700 bg-white hover:bg-gray-50"
-            >
-              {t("common.previous")}
-            </button>
-            <button
-              onClick={() =>
-                setPage(Math.min(formsData.pagination.pages, page + 1))
-              }
-              disabled={page === formsData.pagination.pages}
-              className="ml-3 relative inline-flex items-center px-4 py-2 border border-gray-300 text-sm font-medium rounded-md text-gray-700 bg-white hover:bg-gray-50"
-            >
-              {t("common.next")}
-            </button>
-          </div>
-          <div className="hidden sm:flex-1 sm:flex sm:items-center sm:justify-between">
-            <div>
-              <p className="text-sm text-gray-700">
-                {t("common.showingResults", {
-                  from: (page - 1) * 20 + 1,
-                  to: Math.min(page * 20, formsData.pagination.total),
-                  total: formsData.pagination.total,
-                })}
-              </p>
-            </div>
-            <div>
-              <nav className="relative z-0 inline-flex rounded-md shadow-sm -space-x-px">
-                <button
-                  onClick={() => setPage(Math.max(1, page - 1))}
-                  disabled={page === 1}
-                  className="relative inline-flex items-center px-2 py-2 rounded-l-md border border-gray-300 bg-white text-sm font-medium text-gray-500 hover:bg-gray-50"
-                >
-                  {t("common.previous")}
-                </button>
-                <button
-                  onClick={() =>
-                    setPage(Math.min(formsData.pagination.pages, page + 1))
-                  }
-                  disabled={page === formsData.pagination.pages}
-                  className="relative inline-flex items-center px-2 py-2 rounded-r-md border border-gray-300 bg-white text-sm font-medium text-gray-500 hover:bg-gray-50"
-                >
-                  {t("common.next")}
-                </button>
-              </nav>
-            </div>
-          </div>
-        </div>
+        <Pagination
+          pagination={formsData.pagination}
+          currentPage={page}
+          onPageChange={handlePageChange}
+        />
       )}
     </div>
   );

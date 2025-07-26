@@ -3,7 +3,6 @@ import {
   InformationCircleIcon,
   DocumentTextIcon,
   ClockIcon,
-  ChatBubbleLeftRightIcon,
 } from "@heroicons/react/24/outline";
 
 const TaskTabs = ({ activeTab, setActiveTab, hasForm }) => {
