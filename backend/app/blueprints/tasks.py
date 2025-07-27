@@ -1007,417 +1007,417 @@ def get_dashboard_stats():
 
 # Add this endpoint to app/blueprints/tasks.py
 
-@tasks_bp.route('/<task_id>/approval', methods=['POST'])
-@require_auth
-@audit_log('submit_approval_decision', 'task')
-def submit_approval_decision(task_id):
-    """Submit approval decision (approve, reject, or return for edit) - FIXED VERSION"""
-    try:
-        if not validate_uuid(task_id):
-            return jsonify({'error': 'Invalid task ID'}), 400
+# @tasks_bp.route('/<task_id>/approval', methods=['POST'])
+# @require_auth
+# @audit_log('submit_approval_decision', 'task')
+# def submit_approval_decision(task_id):
+#     """Submit approval decision (approve, reject, or return for edit) - FIXED VERSION"""
+#     try:
+#         if not validate_uuid(task_id):
+#             return jsonify({'error': 'Invalid task ID'}), 400
 
-        data = sanitize_input(request.get_json())
-        user_id = g.current_user['user_id']
-        tenant_id = g.current_user['tenant_id']
+#         data = sanitize_input(request.get_json())
+#         user_id = g.current_user['user_id']
+#         tenant_id = g.current_user['tenant_id']
 
-        logger.info(f"=== PROCESSING APPROVAL DECISION ===")
-        logger.info(f"Task ID: {task_id}, User: {user_id}")
-        logger.info(f"Request data: {data}")
+#         logger.info(f"=== PROCESSING APPROVAL DECISION ===")
+#         logger.info(f"Task ID: {task_id}, User: {user_id}")
+#         logger.info(f"Request data: {data}")
 
-        # Validate required fields
-        required_fields = ['decision']
-        if not validate_required_fields(data, required_fields):
-            return jsonify({'error': 'Missing required fields'}), 400
+#         # Validate required fields
+#         required_fields = ['decision']
+#         if not validate_required_fields(data, required_fields):
+#             return jsonify({'error': 'Missing required fields'}), 400
 
-        decision = data['decision'].lower()
-        valid_decisions = ['approve', 'reject', 'return_for_edit']
+#         decision = data['decision'].lower()
+#         valid_decisions = ['approve', 'reject', 'return_for_edit']
         
-        if decision not in valid_decisions:
-            return jsonify({
-                'error': f'Invalid decision. Must be one of: {valid_decisions}'
-            }), 400
+#         if decision not in valid_decisions:
+#             return jsonify({
+#                 'error': f'Invalid decision. Must be one of: {valid_decisions}'
+#             }), 400
 
-        # Get task details with security checks
-        task = Database.execute_one("""
-            SELECT t.id, t.name, t.type, t.status, t.assigned_to, t.workflow_instance_id,
-                   t.step_id, t.form_id, wi.tenant_id, wi.title as workflow_title,
-                   w.name as workflow_name, fd.name as form_name
-            FROM tasks t
-            JOIN workflow_instances wi ON t.workflow_instance_id = wi.id
-            JOIN workflows w ON wi.workflow_id = w.id
-            LEFT JOIN form_definitions fd ON t.form_id = fd.id
-            WHERE t.id = %s
-        """, (task_id,))
+#         # Get task details with security checks
+#         task = Database.execute_one("""
+#             SELECT t.id, t.name, t.type, t.status, t.assigned_to, t.workflow_instance_id,
+#                    t.step_id, t.form_id, wi.tenant_id, wi.title as workflow_title,
+#                    w.name as workflow_name, fd.name as form_name
+#             FROM tasks t
+#             JOIN workflow_instances wi ON t.workflow_instance_id = wi.id
+#             JOIN workflows w ON wi.workflow_id = w.id
+#             LEFT JOIN form_definitions fd ON t.form_id = fd.id
+#             WHERE t.id = %s
+#         """, (task_id,))
 
-        if not task:
-            return jsonify({'error': 'Task not found'}), 404
+#         if not task:
+#             return jsonify({'error': 'Task not found'}), 404
 
-        if task['tenant_id'] != tenant_id:
-            return jsonify({'error': 'Unauthorized'}), 403
+#         if task['tenant_id'] != tenant_id:
+#             return jsonify({'error': 'Unauthorized'}), 403
 
-        if task['status'] != 'pending':
-            return jsonify({'error': f'Task is not in pending status: {task["status"]}'}), 400
+#         if task['status'] != 'pending':
+#             return jsonify({'error': f'Task is not in pending status: {task["status"]}'}), 400
 
-        # Check if user has permission to make approval decisions
-        user_permissions = g.current_user.get('permissions', [])
-        if (task['assigned_to'] != user_id and 
-            'manage_tasks' not in user_permissions and 
-            '*' not in user_permissions):
-            return jsonify({'error': 'Not authorized to make approval decisions for this task'}), 403
+#         # Check if user has permission to make approval decisions
+#         user_permissions = g.current_user.get('permissions', [])
+#         if (task['assigned_to'] != user_id and 
+#             'manage_tasks' not in user_permissions and 
+#             '*' not in user_permissions):
+#             return jsonify({'error': 'Not authorized to make approval decisions for this task'}), 403
 
-        # Extract comments and reason
-        comments = data.get('comment', '').strip()
-        reason = data.get('reason', '').strip()
+#         # Extract comments and reason
+#         comments = data.get('comment', '').strip()
+#         reason = data.get('reason', '').strip()
         
-        # Use reason as comments if comments is empty but reason is provided
-        if not comments and reason:
-            comments = reason
+#         # Use reason as comments if comments is empty but reason is provided
+#         if not comments and reason:
+#             comments = reason
 
-        logger.info(f"Decision: {decision}, Comments: '{comments}', Reason: '{reason}'")
+#         logger.info(f"Decision: {decision}, Comments: '{comments}', Reason: '{reason}'")
 
-        # Prepare approval data
-        approval_data = {
-            'decision': decision,
-            'comments': comments,
-            'reason': reason,
-            'approved_by': user_id,
-            'approved_at': datetime.now().isoformat(),
-            'form_data': data.get('form_data', {}),
-            'user_name': g.current_user.get('username', 'Unknown')
-        }
+#         # Prepare approval data
+#         approval_data = {
+#             'decision': decision,
+#             'comments': comments,
+#             'reason': reason,
+#             'approved_by': user_id,
+#             'approved_at': datetime.now().isoformat(),
+#             'form_data': data.get('form_data', {}),
+#             'user_name': g.current_user.get('username', 'Unknown')
+#         }
 
-        # Handle form data if provided
-        form_response_id = None
-        if task['form_id'] and approval_data['form_data']:
-            try:
-                form_response_id = Database.execute_insert("""
-                    INSERT INTO form_responses 
-                    (form_definition_id, task_id, workflow_instance_id, data, submitted_by)
-                    VALUES (%s, %s, %s, %s, %s)
-                """, (
-                    task['form_id'],
-                    task_id,
-                    task['workflow_instance_id'],
-                    JSONUtils.safe_json_dumps(approval_data['form_data']),
-                    user_id
-                ))
-                logger.info(f"Created form response {form_response_id} for approval task {task_id}")
-            except Exception as form_error:
-                logger.error(f"Error saving approval form response: {form_error}")
-                return jsonify({'error': 'Failed to save form response'}), 500
+#         # Handle form data if provided
+#         form_response_id = None
+#         if task['form_id'] and approval_data['form_data']:
+#             try:
+#                 form_response_id = Database.execute_insert("""
+#                     INSERT INTO form_responses 
+#                     (form_definition_id, task_id, workflow_instance_id, data, submitted_by)
+#                     VALUES (%s, %s, %s, %s, %s)
+#                 """, (
+#                     task['form_id'],
+#                     task_id,
+#                     task['workflow_instance_id'],
+#                     JSONUtils.safe_json_dumps(approval_data['form_data']),
+#                     user_id
+#                 ))
+#                 logger.info(f"Created form response {form_response_id} for approval task {task_id}")
+#             except Exception as form_error:
+#                 logger.error(f"Error saving approval form response: {form_error}")
+#                 return jsonify({'error': 'Failed to save form response'}), 500
 
-        # Save approval comment as task comment (FIXED: Always save if there are comments)
-        approval_comment_id = None
-        if comments:
-            try:
-                # Create a structured comment for approval
-                comment_text = f"**{decision.upper()}** decision by {approval_data['user_name']}"
-                if comments:
-                    comment_text += f"\n\nComments: {comments}"
-                if reason and reason != comments:
-                    comment_text += f"\nReason: {reason}"
+#         # Save approval comment as task comment (FIXED: Always save if there are comments)
+#         approval_comment_id = None
+#         if comments:
+#             try:
+#                 # Create a structured comment for approval
+#                 comment_text = f"**{decision.upper()}** decision by {approval_data['user_name']}"
+#                 if comments:
+#                     comment_text += f"\n\nComments: {comments}"
+#                 if reason and reason != comments:
+#                     comment_text += f"\nReason: {reason}"
                 
-                approval_comment_id = Database.execute_insert("""
-                    INSERT INTO task_comments 
-                    (task_id, comment, is_internal, created_by)
-                    VALUES (%s, %s, %s, %s)
-                """, (
-                    task_id, 
-                    comment_text,
-                    False,  # Make approval comments visible to all
-                    user_id
-                ))
-                logger.info(f"Created approval comment {approval_comment_id}")
-            except Exception as comment_error:
-                logger.error(f"Error saving approval comment: {comment_error}")
-                # Don't fail the request if comment save fails
+#                 approval_comment_id = Database.execute_insert("""
+#                     INSERT INTO task_comments 
+#                     (task_id, comment, is_internal, created_by)
+#                     VALUES (%s, %s, %s, %s)
+#                 """, (
+#                     task_id, 
+#                     comment_text,
+#                     False,  # Make approval comments visible to all
+#                     user_id
+#                 ))
+#                 logger.info(f"Created approval comment {approval_comment_id}")
+#             except Exception as comment_error:
+#                 logger.error(f"Error saving approval comment: {comment_error}")
+#                 # Don't fail the request if comment save fails
 
-        # Handle different approval decisions
-        message = ""
-        response_extras = {}
+#         # Handle different approval decisions
+#         message = ""
+#         response_extras = {}
         
-        if decision == 'approve':
-            # Approve the task and continue workflow
-            result_data = {
-                'approval_status': 'approved',
-                'approval_decision': decision,
-                'approved_by': user_id,
-                'approved_by_name': approval_data['user_name'],
-                'comments': comments,
-                'reason': reason,
-                'approved_at': approval_data['approved_at'],
-                'form_data': approval_data['form_data']
-            }
+#         if decision == 'approve':
+#             # Approve the task and continue workflow
+#             result_data = {
+#                 'approval_status': 'approved',
+#                 'approval_decision': decision,
+#                 'approved_by': user_id,
+#                 'approved_by_name': approval_data['user_name'],
+#                 'comments': comments,
+#                 'reason': reason,
+#                 'approved_at': approval_data['approved_at'],
+#                 'form_data': approval_data['form_data']
+#             }
 
-            # Update task status
-            Database.execute_query("""
-                UPDATE tasks 
-                SET status = %s, completed_by = %s, completed_at = NOW(), 
-                    result = %s, updated_at = NOW()
-                WHERE id = %s
-            """, ('completed', user_id, JSONUtils.safe_json_dumps(result_data), task_id))
+#             # Update task status
+#             Database.execute_query("""
+#                 UPDATE tasks 
+#                 SET status = %s, completed_by = %s, completed_at = NOW(), 
+#                     result = %s, updated_at = NOW()
+#                 WHERE id = %s
+#             """, ('completed', user_id, JSONUtils.safe_json_dumps(result_data), task_id))
 
-            # Advance workflow
-            try:
-                WorkflowEngine.complete_task(task_id, result_data, user_id)
-                logger.info(f"✓ Task {task_id} approved and workflow advanced")
-            except Exception as workflow_error:
-                logger.error(f"Workflow advancement failed after approval: {workflow_error}")
+#             # Advance workflow
+#             try:
+#                 WorkflowEngine.complete_task(task_id, result_data, user_id)
+#                 logger.info(f"✓ Task {task_id} approved and workflow advanced")
+#             except Exception as workflow_error:
+#                 logger.error(f"Workflow advancement failed after approval: {workflow_error}")
 
-            # Send approval notification
-            try:
-                NotificationService.send_notification(
-                    task.get('assigned_to') or user_id,
-                    'task_approved',
-                    {
-                        'task_id': str(task_id),
-                        'task_name': task['name'],
-                        'workflow_title': task['workflow_title'],
-                        'approved_by_name': approval_data['user_name'],
-                        'comments': comments
-                    }
-                )
-            except Exception as notification_error:
-                logger.error(f"Failed to send approval notification: {notification_error}")
+#             # Send approval notification
+#             try:
+#                 NotificationService.send_notification(
+#                     task.get('assigned_to') or user_id,
+#                     'task_approved',
+#                     {
+#                         'task_id': str(task_id),
+#                         'task_name': task['name'],
+#                         'workflow_title': task['workflow_title'],
+#                         'approved_by_name': approval_data['user_name'],
+#                         'comments': comments
+#                     }
+#                 )
+#             except Exception as notification_error:
+#                 logger.error(f"Failed to send approval notification: {notification_error}")
 
-            message = 'Task approved successfully'
+#             message = 'Task approved successfully'
 
-        elif decision == 'reject':
-            # Reject the task and handle rejection workflow
-            result_data = {
-                'approval_status': 'rejected',
-                'approval_decision': decision,
-                'rejected_by': user_id,
-                'rejected_by_name': approval_data['user_name'],
-                'rejection_reason': reason or comments,
-                'comments': comments,
-                'rejected_at': approval_data['approved_at'],
-                'form_data': approval_data['form_data']
-            }
+#         elif decision == 'reject':
+#             # Reject the task and handle rejection workflow
+#             result_data = {
+#                 'approval_status': 'rejected',
+#                 'approval_decision': decision,
+#                 'rejected_by': user_id,
+#                 'rejected_by_name': approval_data['user_name'],
+#                 'rejection_reason': reason or comments,
+#                 'comments': comments,
+#                 'rejected_at': approval_data['approved_at'],
+#                 'form_data': approval_data['form_data']
+#             }
 
-            # Update task status
-            Database.execute_query("""
-                UPDATE tasks 
-                SET status = %s, completed_by = %s, completed_at = NOW(), 
-                    result = %s, updated_at = NOW()
-                WHERE id = %s
-            """, ('completed', user_id, JSONUtils.safe_json_dumps(result_data), task_id))
+#             # Update task status
+#             Database.execute_query("""
+#                 UPDATE tasks 
+#                 SET status = %s, completed_by = %s, completed_at = NOW(), 
+#                     result = %s, updated_at = NOW()
+#                 WHERE id = %s
+#             """, ('completed', user_id, JSONUtils.safe_json_dumps(result_data), task_id))
 
-            # Handle rejection - check if workflow has rejection handling
-            try:
-                workflow_instance = Database.execute_one("""
-                    SELECT wi.*, w.definition
-                    FROM workflow_instances wi
-                    JOIN workflows w ON wi.workflow_id = w.id
-                    WHERE wi.id = %s
-                """, (task['workflow_instance_id'],))
+#             # Handle rejection - check if workflow has rejection handling
+#             try:
+#                 workflow_instance = Database.execute_one("""
+#                     SELECT wi.*, w.definition
+#                     FROM workflow_instances wi
+#                     JOIN workflows w ON wi.workflow_id = w.id
+#                     WHERE wi.id = %s
+#                 """, (task['workflow_instance_id'],))
 
-                definition = JSONUtils.safe_parse_json(workflow_instance['definition'])
+#                 definition = JSONUtils.safe_parse_json(workflow_instance['definition'])
 
-                # Look for rejection transition
-                rejection_handled = False
-                transitions = definition.get('transitions', [])
+#                 # Look for rejection transition
+#                 rejection_handled = False
+#                 transitions = definition.get('transitions', [])
 
-                for transition in transitions:
-                    if transition.get('from') != task['step_id']:
-                        continue
+#                 for transition in transitions:
+#                     if transition.get('from') != task['step_id']:
+#                         continue
 
-                    condition = transition.get('condition')
-                    if not condition:
-                        continue
+#                     condition = transition.get('condition')
+#                     if not condition:
+#                         continue
 
-                    rules = condition.get('rules', [])
-                    condition_operator = condition.get('operator')  # may be None
+#                     rules = condition.get('rules', [])
+#                     condition_operator = condition.get('operator')  # may be None
 
-                    matched_rules = [TaskUtils.is_rejection_rule(rule) for rule in rules]
+#                     matched_rules = [TaskUtils.is_rejection_rule(rule) for rule in rules]
 
-                    if (
-                        (condition_operator is None and any(matched_rules)) or
-                        (condition_operator == 'any' and any(matched_rules)) or
-                        (condition_operator == 'all' and all(matched_rules))
-                    ):
-                        WorkflowEngine.complete_task(task_id, result_data, user_id)
-                        rejection_handled = True
-                        break
+#                     if (
+#                         (condition_operator is None and any(matched_rules)) or
+#                         (condition_operator == 'any' and any(matched_rules)) or
+#                         (condition_operator == 'all' and all(matched_rules))
+#                     ):
+#                         WorkflowEngine.complete_task(task_id, result_data, user_id)
+#                         rejection_handled = True
+#                         break
 
-                if not rejection_handled:
-                    # No rejection handling - mark workflow as failed/rejected
-                    Database.execute_query("""
-                        UPDATE workflow_instances 
-                        SET status = %s, completed_at = NOW(), updated_at = NOW()
-                        WHERE id = %s
-                    """, ('rejected', task['workflow_instance_id']))
+#                 if not rejection_handled:
+#                     # No rejection handling - mark workflow as failed/rejected
+#                     Database.execute_query("""
+#                         UPDATE workflow_instances 
+#                         SET status = %s, completed_at = NOW(), updated_at = NOW()
+#                         WHERE id = %s
+#                     """, ('rejected', task['workflow_instance_id']))
 
-                logger.info(f"✓ Task {task_id} rejected")
-            except Exception as workflow_error:
-                logger.error(f"Error handling rejection: {workflow_error}")
-            # try:
-            #     workflow_instance = Database.execute_one("""
-            #         SELECT wi.*, w.definition
-            #         FROM workflow_instances wi
-            #         JOIN workflows w ON wi.workflow_id = w.id
-            #         WHERE wi.id = %s
-            #     """, (task['workflow_instance_id'],))
+#                 logger.info(f"✓ Task {task_id} rejected")
+#             except Exception as workflow_error:
+#                 logger.error(f"Error handling rejection: {workflow_error}")
+#             # try:
+#             #     workflow_instance = Database.execute_one("""
+#             #         SELECT wi.*, w.definition
+#             #         FROM workflow_instances wi
+#             #         JOIN workflows w ON wi.workflow_id = w.id
+#             #         WHERE wi.id = %s
+#             #     """, (task['workflow_instance_id'],))
 
-            #     definition = JSONUtils.safe_parse_json(workflow_instance['definition'])
+#             #     definition = JSONUtils.safe_parse_json(workflow_instance['definition'])
                 
-            #     # Look for rejection transition
-            #     rejection_handled = False
-            #     transitions = definition.get('transitions', [])
+#             #     # Look for rejection transition
+#             #     rejection_handled = False
+#             #     transitions = definition.get('transitions', [])
                 
-            #     for transition in transitions:
-            #         if (transition['from'] == task['step_id'] and 
-            #             transition.get('condition', {}).get('field') == 'approval_status' and
-            #             transition.get('condition', {}).get('value') == 'rejected'):
+#             #     for transition in transitions:
+#             #         if (transition['from'] == task['step_id'] and 
+#             #             transition.get('condition', {}).get('field') == 'approval_status' and
+#             #             transition.get('condition', {}).get('value') == 'rejected'):
                         
-            #             # Found rejection transition - continue workflow
-            #             WorkflowEngine.complete_task(task_id, result_data, user_id)
-            #             rejection_handled = True
-            #             break
+#             #             # Found rejection transition - continue workflow
+#             #             WorkflowEngine.complete_task(task_id, result_data, user_id)
+#             #             rejection_handled = True
+#             #             break
 
-            #     if not rejection_handled:
-            #         # No rejection handling - mark workflow as failed/rejected
-            #         Database.execute_query("""
-            #             UPDATE workflow_instances 
-            #             SET status = %s, completed_at = NOW(), updated_at = NOW()
-            #             WHERE id = %s
-            #         """, ('rejected', task['workflow_instance_id']))
+#             #     if not rejection_handled:
+#             #         # No rejection handling - mark workflow as failed/rejected
+#             #         Database.execute_query("""
+#             #             UPDATE workflow_instances 
+#             #             SET status = %s, completed_at = NOW(), updated_at = NOW()
+#             #             WHERE id = %s
+#             #         """, ('rejected', task['workflow_instance_id']))
 
-            #     logger.info(f"✓ Task {task_id} rejected")
-            # except Exception as workflow_error:
-            #     logger.error(f"Error handling rejection: {workflow_error}")
+#             #     logger.info(f"✓ Task {task_id} rejected")
+#             # except Exception as workflow_error:
+#             #     logger.error(f"Error handling rejection: {workflow_error}")
 
-            # Send rejection notification to workflow initiator
-            try:
-                if workflow_instance.get('initiated_by'):
-                    NotificationService.send_notification(
-                        workflow_instance['initiated_by'],
-                        'task_rejected',
-                        {
-                            'task_id': str(task_id),
-                            'task_name': task['name'],
-                            'workflow_title': task['workflow_title'],
-                            'rejected_by_name': approval_data['user_name'],
-                            'rejection_reason': result_data['rejection_reason']
-                        }
-                    )
-            except Exception as notification_error:
-                logger.error(f"Failed to send rejection notification: {notification_error}")
+#             # Send rejection notification to workflow initiator
+#             try:
+#                 if workflow_instance.get('initiated_by'):
+#                     NotificationService.send_notification(
+#                         workflow_instance['initiated_by'],
+#                         'task_rejected',
+#                         {
+#                             'task_id': str(task_id),
+#                             'task_name': task['name'],
+#                             'workflow_title': task['workflow_title'],
+#                             'rejected_by_name': approval_data['user_name'],
+#                             'rejection_reason': result_data['rejection_reason']
+#                         }
+#                     )
+#             except Exception as notification_error:
+#                 logger.error(f"Failed to send rejection notification: {notification_error}")
 
-            message = 'Task rejected successfully'
+#             message = 'Task rejected successfully'
 
-        elif decision == 'return_for_edit':
-            # Return task for editing - create new task or reset current task
-            result_data = {
-                'approval_status': 'returned_for_edit',
-                'approval_decision': decision,
-                'returned_by': user_id,
-                'returned_by_name': approval_data['user_name'],
-                'return_reason': reason or comments,
-                'comments': comments,
-                'returned_at': approval_data['approved_at'],
-                'form_data': approval_data['form_data']
-            }
+#         elif decision == 'return_for_edit':
+#             # Return task for editing - create new task or reset current task
+#             result_data = {
+#                 'approval_status': 'returned_for_edit',
+#                 'approval_decision': decision,
+#                 'returned_by': user_id,
+#                 'returned_by_name': approval_data['user_name'],
+#                 'return_reason': reason or comments,
+#                 'comments': comments,
+#                 'returned_at': approval_data['approved_at'],
+#                 'form_data': approval_data['form_data']
+#             }
 
-            # Mark current task as completed
-            Database.execute_query("""
-                UPDATE tasks 
-                SET status = %s, completed_by = %s, completed_at = NOW(), 
-                    result = %s, updated_at = NOW()
-                WHERE id = %s
-            """, ('completed', user_id, JSONUtils.safe_json_dumps(result_data), task_id))
+#             # Mark current task as completed
+#             Database.execute_query("""
+#                 UPDATE tasks 
+#                 SET status = %s, completed_by = %s, completed_at = NOW(), 
+#                     result = %s, updated_at = NOW()
+#                 WHERE id = %s
+#             """, ('completed', user_id, JSONUtils.safe_json_dumps(result_data), task_id))
 
-            # Get workflow instance details for creating return task
-            workflow_instance = Database.execute_one("""
-                SELECT initiated_by, data FROM workflow_instances 
-                WHERE id = %s
-            """, (task['workflow_instance_id'],))
+#             # Get workflow instance details for creating return task
+#             workflow_instance = Database.execute_one("""
+#                 SELECT initiated_by, data FROM workflow_instances 
+#                 WHERE id = %s
+#             """, (task['workflow_instance_id'],))
 
-            # Create new task for the original submitter to edit
-            return_task_id = Database.execute_insert("""
-                INSERT INTO tasks 
-                (workflow_instance_id, step_id, name, description, type, 
-                 assigned_to, due_date, form_id, priority, metadata)
-                VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s, %s)
-            """, (
-                task['workflow_instance_id'],
-                f"{task['step_id']}_return",
-                f"Edit and Resubmit: {task['name']}",
-                f"Please address the feedback and resubmit. Reason: {result_data['return_reason']}",
-                'task',
-                workflow_instance['initiated_by'],
-                datetime.now() + timedelta(hours=48),  # 48 hours to make edits
-                task['form_id'],
-                'high',
-                JSONUtils.safe_json_dumps({
-                    'is_return_task': True,
-                    'original_task_id': task_id,
-                    'return_reason': result_data['return_reason']
-                })
-            ))
+#             # Create new task for the original submitter to edit
+#             return_task_id = Database.execute_insert("""
+#                 INSERT INTO tasks 
+#                 (workflow_instance_id, step_id, name, description, type, 
+#                  assigned_to, due_date, form_id, priority, metadata)
+#                 VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s, %s)
+#             """, (
+#                 task['workflow_instance_id'],
+#                 f"{task['step_id']}_return",
+#                 f"Edit and Resubmit: {task['name']}",
+#                 f"Please address the feedback and resubmit. Reason: {result_data['return_reason']}",
+#                 'task',
+#                 workflow_instance['initiated_by'],
+#                 datetime.now() + timedelta(hours=48),  # 48 hours to make edits
+#                 task['form_id'],
+#                 'high',
+#                 JSONUtils.safe_json_dumps({
+#                     'is_return_task': True,
+#                     'original_task_id': task_id,
+#                     'return_reason': result_data['return_reason']
+#                 })
+#             ))
 
-            # Send return notification
-            try:
-                NotificationService.send_notification(
-                    workflow_instance['initiated_by'],
-                    'task_returned_for_edit',
-                    {
-                        'task_id': str(return_task_id),
-                        'original_task_id': str(task_id),
-                        'task_name': task['name'],
-                        'workflow_title': task['workflow_title'],
-                        'returned_by_name': approval_data['user_name'],
-                        'return_reason': result_data['return_reason']
-                    }
-                )
-            except Exception as notification_error:
-                logger.error(f"Failed to send return notification: {notification_error}")
+#             # Send return notification
+#             try:
+#                 NotificationService.send_notification(
+#                     workflow_instance['initiated_by'],
+#                     'task_returned_for_edit',
+#                     {
+#                         'task_id': str(return_task_id),
+#                         'original_task_id': str(task_id),
+#                         'task_name': task['name'],
+#                         'workflow_title': task['workflow_title'],
+#                         'returned_by_name': approval_data['user_name'],
+#                         'return_reason': result_data['return_reason']
+#                     }
+#                 )
+#             except Exception as notification_error:
+#                 logger.error(f"Failed to send return notification: {notification_error}")
 
-            message = 'Task returned for editing successfully'
-            response_extras['return_task_id'] = return_task_id
+#             message = 'Task returned for editing successfully'
+#             response_extras['return_task_id'] = return_task_id
 
-        # Record approval decision in audit log (FIXED: Include all approval data)
-        AuditLogger.log_action(
-            user_id=user_id,
-            action=f'approval_{decision}',
-            resource_type='task',
-            resource_id=task_id,
-            old_values={'status': 'pending'},
-            new_values=approval_data
-        )
+#         # Record approval decision in audit log (FIXED: Include all approval data)
+#         AuditLogger.log_action(
+#             user_id=user_id,
+#             action=f'approval_{decision}',
+#             resource_type='task',
+#             resource_id=task_id,
+#             old_values={'status': 'pending'},
+#             new_values=approval_data
+#         )
 
-        # Build response
-        response_data = {
-            'message': message,
-            'task_id': task_id,
-            'decision': decision,
-            'approved_by': user_id,
-            'approved_by_name': approval_data['user_name'],
-            'comments': comments,
-            'reason': reason,
-            'timestamp': approval_data['approved_at'],
-            'workflow_instance_id': task['workflow_instance_id']
-        }
+#         # Build response
+#         response_data = {
+#             'message': message,
+#             'task_id': task_id,
+#             'decision': decision,
+#             'approved_by': user_id,
+#             'approved_by_name': approval_data['user_name'],
+#             'comments': comments,
+#             'reason': reason,
+#             'timestamp': approval_data['approved_at'],
+#             'workflow_instance_id': task['workflow_instance_id']
+#         }
 
-        if form_response_id:
-            response_data['form_response_id'] = form_response_id
+#         if form_response_id:
+#             response_data['form_response_id'] = form_response_id
 
-        if approval_comment_id:
-            response_data['comment_id'] = approval_comment_id
+#         if approval_comment_id:
+#             response_data['comment_id'] = approval_comment_id
 
-        # Add any extra response data
-        response_data.update(response_extras)
+#         # Add any extra response data
+#         response_data.update(response_extras)
 
-        logger.info(f"✓ Approval decision processed successfully: {decision}")
-        return jsonify(response_data), 200
+#         logger.info(f"✓ Approval decision processed successfully: {decision}")
+#         return jsonify(response_data), 200
 
-    except Exception as e:
-        logger.error(f"Approval decision failed for task {task_id}: {e}", exc_info=True)
-        return jsonify({
-            'error': 'Failed to process approval decision',
-            'message': str(e),
-            'task_id': task_id
-        }), 500
+#     except Exception as e:
+#         logger.error(f"Approval decision failed for task {task_id}: {e}", exc_info=True)
+#         return jsonify({
+#             'error': 'Failed to process approval decision',
+#             'message': str(e),
+#             'task_id': task_id
+#         }), 500
 
 
 @tasks_bp.route('/<task_id>/approval-history', methods=['GET'])
@@ -1716,6 +1716,554 @@ def get_task_comments(task_id):
         logger.error(f"Error getting comments for task {task_id}: {e}")
         return jsonify({'error': 'Failed to retrieve task comments'}), 500
 
+
+# Fixed approval return task implementation for tasks.py
+
+@tasks_bp.route('/<task_id>/approval', methods=['POST'])
+@require_auth
+@audit_log('submit_approval_decision', 'task')
+def submit_approval_decision(task_id):
+    """Submit approval decision (approve, reject, or return for edit) - FIXED VERSION"""
+    try:
+        if not validate_uuid(task_id):
+            return jsonify({'error': 'Invalid task ID'}), 400
+
+        data = sanitize_input(request.get_json())
+        user_id = g.current_user['user_id']
+        tenant_id = g.current_user['tenant_id']
+
+        logger.info(f"=== PROCESSING APPROVAL DECISION ===")
+        logger.info(f"Task ID: {task_id}, User: {user_id}")
+        logger.info(f"Request data: {data}")
+
+        # Validate required fields
+        required_fields = ['decision']
+        if not validate_required_fields(data, required_fields):
+            return jsonify({'error': 'Missing required fields'}), 400
+
+        decision = data['decision'].lower()
+        valid_decisions = ['approve', 'reject', 'return_for_edit']
+        
+        if decision not in valid_decisions:
+            return jsonify({
+                'error': f'Invalid decision. Must be one of: {valid_decisions}'
+            }), 400
+
+        # Get task details with workflow information
+        task = Database.execute_one("""
+            SELECT t.id, t.name, t.type, t.status, t.assigned_to, t.workflow_instance_id,
+                   t.step_id, t.form_id, t.form_data, wi.tenant_id, wi.title as workflow_title,
+                   wi.initiated_by, wi.data as workflow_data,
+                   w.name as workflow_name, w.definition as workflow_definition,
+                   fd.name as form_name, fd.schema as form_schema
+            FROM tasks t
+            JOIN workflow_instances wi ON t.workflow_instance_id = wi.id
+            JOIN workflows w ON wi.workflow_id = w.id
+            LEFT JOIN form_definitions fd ON t.form_id = fd.id
+            WHERE t.id = %s
+        """, (task_id,))
+
+        if not task:
+            return jsonify({'error': 'Task not found'}), 404
+
+        if task['tenant_id'] != tenant_id:
+            return jsonify({'error': 'Unauthorized'}), 403
+
+        if task['status'] != 'pending':
+            return jsonify({'error': f'Task is not in pending status: {task["status"]}'}), 400
+
+        # Check permissions
+        user_permissions = g.current_user.get('permissions', [])
+        if (task['assigned_to'] != user_id and 
+            'manage_tasks' not in user_permissions and 
+            '*' not in user_permissions):
+            return jsonify({'error': 'Not authorized to make approval decisions for this task'}), 403
+
+        # Extract comments and reason
+        comments = data.get('comment', '').strip()
+        reason = data.get('reason', '').strip()
+        
+        if not comments and reason:
+            comments = reason
+
+        logger.info(f"Decision: {decision}, Comments: '{comments}', Reason: '{reason}'")
+
+        # Prepare approval data
+        approval_data = {
+            'decision': decision,
+            'comments': comments,
+            'reason': reason,
+            'approved_by': user_id,
+            'approved_at': datetime.now().isoformat(),
+            'form_data': data.get('form_data', {}),
+            'user_name': g.current_user.get('username', 'Unknown')
+        }
+
+        # Handle form data if provided
+        form_response_id = None
+        if task['form_id'] and approval_data['form_data']:
+            try:
+                form_response_id = Database.execute_insert("""
+                    INSERT INTO form_responses 
+                    (form_definition_id, task_id, workflow_instance_id, data, submitted_by)
+                    VALUES (%s, %s, %s, %s, %s)
+                """, (
+                    task['form_id'],
+                    task_id,
+                    task['workflow_instance_id'],
+                    JSONUtils.safe_json_dumps(approval_data['form_data']),
+                    user_id
+                ))
+                logger.info(f"Created form response {form_response_id} for approval task {task_id}")
+            except Exception as form_error:
+                logger.error(f"Error saving approval form response: {form_error}")
+                return jsonify({'error': 'Failed to save form response'}), 500
+
+        # Save approval comment
+        approval_comment_id = None
+        if comments:
+            try:
+                comment_text = f"**{decision.upper()}** decision by {approval_data['user_name']}"
+                if comments:
+                    comment_text += f"\n\nComments: {comments}"
+                if reason and reason != comments:
+                    comment_text += f"\nReason: {reason}"
+                
+                approval_comment_id = Database.execute_insert("""
+                    INSERT INTO task_comments 
+                    (task_id, comment, is_internal, created_by)
+                    VALUES (%s, %s, %s, %s)
+                """, (task_id, comment_text, False, user_id))
+                logger.info(f"Created approval comment {approval_comment_id}")
+            except Exception as comment_error:
+                logger.error(f"Error saving approval comment: {comment_error}")
+
+        # Handle different approval decisions
+        message = ""
+        response_extras = {}
+        
+        if decision == 'approve':
+            result_data = {
+                'approval_status': 'approved',
+                'approval_decision': decision,
+                'approved_by': user_id,
+                'approved_by_name': approval_data['user_name'],
+                'comments': comments,
+                'reason': reason,
+                'approved_at': approval_data['approved_at'],
+                'form_data': approval_data['form_data']
+            }
+
+            Database.execute_query("""
+                UPDATE tasks 
+                SET status = %s, completed_by = %s, completed_at = NOW(), 
+                    result = %s, updated_at = NOW()
+                WHERE id = %s
+            """, ('completed', user_id, JSONUtils.safe_json_dumps(result_data), task_id))
+
+            try:
+                WorkflowEngine.complete_task(task_id, result_data, user_id)
+                logger.info(f"✓ Task {task_id} approved and workflow advanced")
+            except Exception as workflow_error:
+                logger.error(f"Workflow advancement failed after approval: {workflow_error}")
+
+            try:
+                NotificationService.send_notification(
+                    task.get('assigned_to') or user_id,
+                    'task_approved',
+                    {
+                        'task_id': str(task_id),
+                        'task_name': task['name'],
+                        'workflow_title': task['workflow_title'],
+                        'approved_by_name': approval_data['user_name'],
+                        'comments': comments
+                    }
+                )
+            except Exception as notification_error:
+                logger.error(f"Failed to send approval notification: {notification_error}")
+
+            message = 'Task approved successfully'
+
+        elif decision == 'reject':
+            result_data = {
+                'approval_status': 'rejected',
+                'approval_decision': decision,
+                'rejected_by': user_id,
+                'rejected_by_name': approval_data['user_name'],
+                'rejection_reason': reason or comments,
+                'comments': comments,
+                'rejected_at': approval_data['approved_at'],
+                'form_data': approval_data['form_data']
+            }
+
+            Database.execute_query("""
+                UPDATE tasks 
+                SET status = %s, completed_by = %s, completed_at = NOW(), 
+                    result = %s, updated_at = NOW()
+                WHERE id = %s
+            """, ('completed', user_id, JSONUtils.safe_json_dumps(result_data), task_id))
+
+            try:
+                # Handle rejection workflow logic
+                workflow_instance = Database.execute_one("""
+                    SELECT wi.*, w.definition
+                    FROM workflow_instances wi
+                    JOIN workflows w ON wi.workflow_id = w.id
+                    WHERE wi.id = %s
+                """, (task['workflow_instance_id'],))
+
+                definition = JSONUtils.safe_parse_json(workflow_instance['definition'])
+                rejection_handled = _handle_rejection_transition(
+                    task_id, task['step_id'], definition, result_data, user_id
+                )
+
+                if not rejection_handled:
+                    Database.execute_query("""
+                        UPDATE workflow_instances 
+                        SET status = %s, completed_at = NOW(), updated_at = NOW()
+                        WHERE id = %s
+                    """, ('rejected', task['workflow_instance_id']))
+
+                logger.info(f"✓ Task {task_id} rejected")
+            except Exception as workflow_error:
+                logger.error(f"Error handling rejection: {workflow_error}")
+
+            try:
+                if workflow_instance.get('initiated_by'):
+                    NotificationService.send_notification(
+                        workflow_instance['initiated_by'],
+                        'task_rejected',
+                        {
+                            'task_id': str(task_id),
+                            'task_name': task['name'],
+                            'workflow_title': task['workflow_title'],
+                            'rejected_by_name': approval_data['user_name'],
+                            'rejection_reason': result_data['rejection_reason']
+                        }
+                    )
+            except Exception as notification_error:
+                logger.error(f"Failed to send rejection notification: {notification_error}")
+
+            message = 'Task rejected successfully'
+
+        elif decision == 'return_for_edit':
+            # FIXED: Improved return for edit handling
+            result_data = {
+                'approval_status': 'returned_for_edit',
+                'approval_decision': decision,
+                'returned_by': user_id,
+                'returned_by_name': approval_data['user_name'],
+                'return_reason': reason or comments,
+                'comments': comments,
+                'returned_at': approval_data['approved_at'],
+                'form_data': approval_data['form_data']
+            }
+
+            # Mark current approval task as completed
+            Database.execute_query("""
+                UPDATE tasks 
+                SET status = %s, completed_by = %s, completed_at = NOW(), 
+                    result = %s, updated_at = NOW()
+                WHERE id = %s
+            """, ('completed', user_id, JSONUtils.safe_json_dumps(result_data), task_id))
+
+            # Create return task with proper handling
+            return_task_id = _create_return_task(task, result_data, user_id)
+            
+            if return_task_id:
+                try:
+                    # Send return notification
+                    NotificationService.send_notification(
+                        task['initiated_by'],
+                        'task_returned_for_edit',
+                        {
+                            'task_id': str(return_task_id),
+                            'original_task_id': str(task_id),
+                            'task_name': task['name'],
+                            'workflow_title': task['workflow_title'],
+                            'returned_by_name': approval_data['user_name'],
+                            'return_reason': result_data['return_reason']
+                        }
+                    )
+                except Exception as notification_error:
+                    logger.error(f"Failed to send return notification: {notification_error}")
+
+                message = 'Task returned for editing successfully'
+                response_extras['return_task_id'] = return_task_id
+            else:
+                return jsonify({'error': 'Failed to create return task'}), 500
+
+        # Record approval decision in audit log
+        AuditLogger.log_action(
+            user_id=user_id,
+            action=f'approval_{decision}',
+            resource_type='task',
+            resource_id=task_id,
+            old_values={'status': 'pending'},
+            new_values=approval_data
+        )
+
+        # Build response
+        response_data = {
+            'message': message,
+            'task_id': task_id,
+            'decision': decision,
+            'approved_by': user_id,
+            'approved_by_name': approval_data['user_name'],
+            'comments': comments,
+            'reason': reason,
+            'timestamp': approval_data['approved_at'],
+            'workflow_instance_id': task['workflow_instance_id']
+        }
+
+        if form_response_id:
+            response_data['form_response_id'] = form_response_id
+
+        if approval_comment_id:
+            response_data['comment_id'] = approval_comment_id
+
+        response_data.update(response_extras)
+
+        logger.info(f"✓ Approval decision processed successfully: {decision}")
+        return jsonify(response_data), 200
+
+    except Exception as e:
+        logger.error(f"Approval decision failed for task {task_id}: {e}", exc_info=True)
+        return jsonify({
+            'error': 'Failed to process approval decision',
+            'message': str(e),
+            'task_id': task_id
+        }), 500
+
+
+def _create_return_task(task, result_data, returned_by_user_id):
+    """Create a return task for editing - FIXED VERSION"""
+    try:
+        # Get the original form data to pre-populate the return task
+        original_form_data = {}
+        
+        # Try to get the most recent form submission for this task
+        latest_form_response = Database.execute_one("""
+            SELECT data FROM form_responses 
+            WHERE task_id = %s 
+            ORDER BY submitted_at DESC 
+            LIMIT 1
+        """, (task['id'],))
+        
+        if latest_form_response:
+            original_form_data = JSONUtils.safe_parse_json(latest_form_response['data'], {})
+        elif task['form_data']:
+            original_form_data = JSONUtils.safe_parse_json(task['form_data'], {})
+
+        # Get workflow instance data
+        workflow_instance = Database.execute_one("""
+            SELECT initiated_by, data, current_step FROM workflow_instances 
+            WHERE id = %s
+        """, (task['workflow_instance_id'],))
+
+        if not workflow_instance:
+            logger.error(f"Workflow instance not found: {task['workflow_instance_id']}")
+            return None
+
+        # Create return task metadata
+        return_metadata = {
+            'is_return_task': True,
+            'original_task_id': task['id'],
+            'original_step_id': task['step_id'],
+            'return_reason': result_data['return_reason'],
+            'returned_by': returned_by_user_id,
+            'returned_at': result_data['returned_at'],
+            'original_form_data': original_form_data,
+            'approval_feedback': {
+                'comments': result_data.get('comments', ''),
+                'reason': result_data.get('return_reason', ''),
+                'returned_by_name': result_data.get('returned_by_name', '')
+            }
+        }
+
+        # Create the return task using the SAME step_id as original
+        # This allows the workflow to continue properly after completion
+        return_task_id = Database.execute_insert("""
+            INSERT INTO tasks 
+            (workflow_instance_id, step_id, name, description, type, 
+             assigned_to, due_date, form_id, priority, metadata, form_data)
+            VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s)
+        """, (
+            task['workflow_instance_id'],
+            task['step_id'],  # FIXED: Use original step_id, not a custom one
+            f"EDIT REQUIRED: {task['name']}",
+            f"Please address the feedback and resubmit.\n\nFeedback: {result_data['return_reason']}\n\nOriginal task: {task['name']}",
+            'task',  # FIXED: Make it a regular task, not 'return' type
+            workflow_instance['initiated_by'],  # Assign to original submitter
+            datetime.now() + timedelta(hours=72),  # 72 hours to make edits
+            task['form_id'],  # Same form as original
+            'high',  # High priority for returns
+            JSONUtils.safe_json_dumps(return_metadata),
+            JSONUtils.safe_json_dumps(original_form_data)  # Pre-populate with original data
+        ))
+
+        # Update workflow instance to track the return
+        workflow_data = JSONUtils.safe_parse_json(workflow_instance['data'], {})
+        workflow_data['return_task_created'] = {
+            'return_task_id': return_task_id,
+            'original_task_id': task['id'],
+            'returned_at': result_data['returned_at'],
+            'return_reason': result_data['return_reason']
+        }
+
+        Database.execute_query("""
+            UPDATE workflow_instances 
+            SET data = %s, current_step = %s, updated_at = NOW()
+            WHERE id = %s
+        """, (
+            JSONUtils.safe_json_dumps(workflow_data),
+            task['step_id'],  # Reset to the step that needs to be redone
+            task['workflow_instance_id']
+        ))
+
+        logger.info(f"Created return task {return_task_id} for original task {task['id']}")
+        return return_task_id
+
+    except Exception as e:
+        logger.error(f"Error creating return task: {e}")
+        return None
+
+
+def _handle_rejection_transition(task_id, step_id, definition, result_data, user_id):
+    """Handle workflow transition for rejection - FIXED VERSION"""
+    try:
+        from app.utils.task import TaskUtils
+        
+        transitions = definition.get('transitions', [])
+        
+        for transition in transitions:
+            if transition.get('from') != step_id:
+                continue
+
+            condition = transition.get('condition')
+            if not condition:
+                continue
+
+            rules = condition.get('rules', [])
+            condition_operator = condition.get('operator')
+
+            matched_rules = [TaskUtils.is_rejection_rule(rule) for rule in rules]
+
+            if (
+                (condition_operator is None and any(matched_rules)) or
+                (condition_operator == 'any' and any(matched_rules)) or
+                (condition_operator == 'all' and all(matched_rules))
+            ):
+                # Found rejection transition - continue workflow
+                WorkflowEngine.complete_task(task_id, result_data, user_id)
+                return True
+
+        return False
+
+    except Exception as e:
+        logger.error(f"Error handling rejection transition: {e}")
+        return False
+
+
+# Additional endpoint to handle return task completion
+@tasks_bp.route('/<task_id>/complete-return', methods=['POST'])
+@require_auth
+@audit_log('complete_return_task', 'task')
+def complete_return_task(task_id):
+    """Complete a return task and restart the approval process - NEW ENDPOINT"""
+    try:
+        if not validate_uuid(task_id):
+            return jsonify({'error': 'Invalid task ID'}), 400
+
+        data = sanitize_input(request.get_json())
+        user_id = g.current_user['user_id']
+        tenant_id = g.current_user['tenant_id']
+
+        # Get task with metadata
+        task = Database.execute_one("""
+            SELECT t.*, wi.tenant_id
+            FROM tasks t
+            JOIN workflow_instances wi ON t.workflow_instance_id = wi.id
+            WHERE t.id = %s
+        """, (task_id,))
+
+        if not task or task['tenant_id'] != tenant_id:
+            return jsonify({'error': 'Task not found'}), 404
+
+        if task['status'] != 'pending':
+            return jsonify({'error': f'Task is not in pending status: {task["status"]}'}), 400
+
+        # Verify this is a return task and user is authorized
+        metadata = JSONUtils.safe_parse_json(task['metadata'], {})
+        if not metadata.get('is_return_task'):
+            return jsonify({'error': 'This is not a return task'}), 400
+
+        if task['assigned_to'] != user_id:
+            return jsonify({'error': 'Not authorized to complete this task'}), 403
+
+        # Validate form data if required
+        if task['form_id'] and 'form_data' not in data:
+            return jsonify({'error': 'Form data required'}), 400
+
+        # Complete the return task
+        result_data = {
+            'status': 'resubmitted',
+            'resubmitted_by': user_id,
+            'resubmitted_at': datetime.now().isoformat(),
+            'form_data': data.get('form_data', {}),
+            'return_task_completed': True,
+            'original_task_id': metadata.get('original_task_id'),
+            'original_feedback_addressed': True
+        }
+
+        # Save form response if provided
+        if task['form_id'] and data.get('form_data'):
+            form_response_id = Database.execute_insert("""
+                INSERT INTO form_responses 
+                (form_definition_id, task_id, workflow_instance_id, data, submitted_by)
+                VALUES (%s, %s, %s, %s, %s)
+            """, (
+                task['form_id'],
+                task_id,
+                task['workflow_instance_id'],
+                JSONUtils.safe_json_dumps(data['form_data']),
+                user_id
+            ))
+
+        # Complete the return task
+        Database.execute_query("""
+            UPDATE tasks 
+            SET status = %s, completed_by = %s, completed_at = NOW(), 
+                form_data = %s, result = %s, updated_at = NOW()
+            WHERE id = %s
+        """, (
+            'completed', user_id, 
+            JSONUtils.safe_json_dumps(data.get('form_data', {})),
+            JSONUtils.safe_json_dumps(result_data), 
+            task_id
+        ))
+
+        # Continue workflow from this point
+        try:
+            WorkflowEngine.complete_task(task_id, result_data, user_id)
+            logger.info(f"✓ Return task {task_id} completed and workflow continued")
+        except Exception as workflow_error:
+            logger.error(f"Workflow continuation failed: {workflow_error}")
+
+        return jsonify({
+            'message': 'Return task completed successfully',
+            'task_id': task_id,
+            'status': 'completed',
+            'resubmitted_at': result_data['resubmitted_at'],
+            'workflow_instance_id': task['workflow_instance_id']
+        }), 200
+
+    except Exception as e:
+        logger.error(f"Return task completion failed: {e}", exc_info=True)
+        return jsonify({
+            'error': 'Failed to complete return task',
+            'message': str(e)
+        }), 500
     
 def _extract_approval_info(task_dict, detailed=False):
     """Extract approval information from task and workflow definition"""

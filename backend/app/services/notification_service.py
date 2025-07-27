@@ -296,13 +296,75 @@ class NotificationService:
             logger.error(f"Error getting notification template: {e}")
             return None
 
+    # @staticmethod
+    # def _get_default_template(template_name):
+    #     """Get default template for common notification types"""
+    #     default_templates = {
+    #         'task_assignment': {
+    #             'title': 'New Task Assigned: {{task_name}}',
+    #             'message': 'You have been assigned a new task "{{task_name}}" in workflow "{{workflow_title}}"'
+    #         },
+    #         'task_completion': {
+    #             'title': 'Task Completed: {{task_name}}',
+    #             'message': 'Task "{{task_name}}" has been completed in workflow "{{workflow_title}}"'
+    #         },
+    #         'workflow_completion': {
+    #             'title': 'Workflow Completed: {{workflow_title}}',
+    #             'message': 'Workflow "{{workflow_title}}" has been completed successfully'
+    #         },
+    #         'workflow_failure': {
+    #             'title': 'Workflow Failed: {{workflow_title}}',
+    #             'message': 'Workflow "{{workflow_title}}" has failed with error: {{error_message}}'
+    #         },
+    #         'sla_breach': {
+    #             'title': 'SLA Breach - {{level_text}}: {{task_name}}',
+    #             'message': 'Task "{{task_name}}" has breached its SLA deadline. Escalation level: {{escalation_level}}'
+    #         },
+    #         'approval_request': {
+    #             'title': 'Approval Required: {{workflow_title}}',
+    #             'message': 'Your approval is required for "{{workflow_title}}" (Amount: ${{amount}})'
+    #         },
+    #         'automation_notification': {
+    #             'title': 'Automation {{automation_status}}: {{step_name}}',
+    #             'message': 'Automation step "{{step_name}}" in workflow "{{workflow_title}}" has {{automation_status}}'
+    #         },
+    #         'generic': {
+    #             'title': 'Workflow Notification',
+    #             'message': 'You have a new workflow notification'
+    #         },
+    #         'task_approved': {
+    #             'title': 'Task Approved: {{task_name}}',
+    #             'message': 'Your task "{{task_name}}" in workflow "{{workflow_title}}" has been approved by {{approved_by_name}}. {{#comments}}Comments: {{comments}}{{/comments}}'
+    #         },
+    #         'task_rejected': {
+    #             'title': 'Task Rejected: {{task_name}}',
+    #             'message': 'Your task "{{task_name}}" in workflow "{{workflow_title}}" has been rejected by {{rejected_by_name}}. {{#rejection_reason}}Reason: {{rejection_reason}}{{/rejection_reason}}'
+    #         },
+    #         'task_returned_for_edit': {
+    #             'title': 'Task Returned for Edit: {{task_name}}',
+    #             'message': 'Your task "{{task_name}}" in workflow "{{workflow_title}}" has been returned for editing by {{returned_by_name}}. {{#return_reason}}Reason: {{return_reason}}{{/return_reason}} Please make the necessary changes and resubmit.'
+    #         }
+    #     }
+
+    #     return default_templates.get(template_name, default_templates['generic'])
+    
+    # Enhanced notification templates in notification_service.py for return task support
+
     @staticmethod
     def _get_default_template(template_name):
-        """Get default template for common notification types"""
+        """Get default template for common notification types - Enhanced with return task templates"""
         default_templates = {
             'task_assignment': {
                 'title': 'New Task Assigned: {{task_name}}',
                 'message': 'You have been assigned a new task "{{task_name}}" in workflow "{{workflow_title}}"'
+            },
+            'task_assignment_resubmission': {
+                'title': 'Re-approval Required: {{task_name}}',
+                'message': 'A task has been resubmitted for your approval: "{{task_name}}" in workflow "{{workflow_title}}". Previous feedback has been addressed.'
+            },
+            'task_assignment_post_return': {
+                'title': 'Review Required: {{task_name}}',
+                'message': 'Content has been resubmitted for review: "{{task_name}}" in workflow "{{workflow_title}}"'
             },
             'task_completion': {
                 'title': 'Task Completed: {{task_name}}',
@@ -322,7 +384,7 @@ class NotificationService:
             },
             'approval_request': {
                 'title': 'Approval Required: {{workflow_title}}',
-                'message': 'Your approval is required for "{{workflow_title}}" (Amount: ${{amount}})'
+                'message': 'Your approval is required for "{{workflow_title}}" {{#amount}}(Amount: ${{amount}}){{/amount}}'
             },
             'automation_notification': {
                 'title': 'Automation {{automation_status}}: {{step_name}}',
@@ -342,12 +404,183 @@ class NotificationService:
             },
             'task_returned_for_edit': {
                 'title': 'Task Returned for Edit: {{task_name}}',
-                'message': 'Your task "{{task_name}}" in workflow "{{workflow_title}}" has been returned for editing by {{returned_by_name}}. {{#return_reason}}Reason: {{return_reason}}{{/return_reason}} Please make the necessary changes and resubmit.'
+                'message': '''Your task "{{task_name}}" in workflow "{{workflow_title}}" has been returned for editing by {{returned_by_name}}.
+
+    {{#return_reason}}Feedback: {{return_reason}}{{/return_reason}}
+
+    Please review the feedback, make the necessary changes, and resubmit the task. You have been assigned a new task to complete the edits.'''
+            },
+            'return_task_reminder': {
+                'title': 'Reminder: Edit Required for {{task_name}}',
+                'message': '''This is a reminder that you have a task requiring edits: "{{task_name}}" in workflow "{{workflow_title}}".
+
+    Original feedback: {{return_reason}}
+
+    Please complete your edits and resubmit as soon as possible.'''
+            },
+            'return_task_completed': {
+                'title': 'Resubmission Completed: {{task_name}}',
+                'message': 'Task "{{task_name}}" has been successfully resubmitted in workflow "{{workflow_title}}" and is now pending re-approval.'
+            },
+            'return_task_deadline_warning': {
+                'title': 'Edit Deadline Approaching: {{task_name}}',
+                'message': '''Your task edit deadline is approaching for "{{task_name}}" in workflow "{{workflow_title}}".
+
+    Deadline: {{due_date}}
+    Feedback: {{return_reason}}
+
+    Please complete your edits soon to avoid delays.'''
             }
         }
 
         return default_templates.get(template_name, default_templates['generic'])
 
+    # Enhanced notification methods for return task scenarios
+    @staticmethod
+    def send_return_task_reminder(user_id, task_id, hours_until_due=24):
+        """Send reminder for pending return task"""
+        try:
+            task = Database.execute_one("""
+                SELECT t.name, t.due_date, t.metadata, wi.title as workflow_title
+                FROM tasks t
+                JOIN workflow_instances wi ON t.workflow_instance_id = wi.id
+                WHERE t.id = %s
+            """, (task_id,))
+
+            if not task:
+                return
+
+            metadata = JSONUtils.safe_parse_json(task.get('metadata'), {})
+            
+            notification_data = {
+                'task_id': str(task_id),
+                'task_name': task['name'],
+                'workflow_title': task['workflow_title'],
+                'due_date': task['due_date'].isoformat() if task['due_date'] else None,
+                'return_reason': metadata.get('return_reason', 'Please review and address feedback'),
+                'hours_until_due': hours_until_due
+            }
+
+            template = 'return_task_deadline_warning' if hours_until_due <= 24 else 'return_task_reminder'
+            
+            NotificationService.send_notification(
+                user_id, template, notification_data
+            )
+
+        except Exception as e:
+            logger.error(f"Error sending return task reminder: {e}")
+
+
+    @staticmethod
+    def send_return_task_completed_notification(instance_id, original_task_id, return_task_id):
+        """Send notification when return task is completed"""
+        try:
+            # Get workflow instance and original approver
+            instance_info = Database.execute_one("""
+                SELECT wi.title, wi.initiated_by, 
+                    t.assigned_to as original_approver, t.name as task_name
+                FROM workflow_instances wi
+                JOIN tasks t ON wi.id = t.workflow_instance_id
+                WHERE wi.id = %s AND t.id = %s
+            """, (instance_id, original_task_id))
+
+            if not instance_info:
+                return
+
+            notification_data = {
+                'task_name': instance_info['task_name'],
+                'workflow_title': instance_info['title'],
+                'workflow_instance_id': str(instance_id),
+                'original_task_id': str(original_task_id),
+                'return_task_id': str(return_task_id)
+            }
+
+            # Notify the original approver that content has been resubmitted
+            if instance_info['original_approver']:
+                NotificationService.send_notification(
+                    instance_info['original_approver'],
+                    'return_task_completed',
+                    notification_data
+                )
+
+            # Notify the submitter that resubmission was successful
+            if instance_info['initiated_by']:
+                NotificationService.send_notification(
+                    instance_info['initiated_by'],
+                    'return_task_completed',
+                    notification_data
+                )
+
+        except Exception as e:
+            logger.error(f"Error sending return task completed notification: {e}")
+
+
+    @staticmethod
+    def send_escalation_notification_for_return_task(task_id, escalation_level):
+        """Send escalation notification for overdue return tasks"""
+        try:
+            task = Database.execute_one("""
+                SELECT t.name, t.assigned_to, t.due_date, t.metadata,
+                    wi.title as workflow_title, wi.initiated_by
+                FROM tasks t
+                JOIN workflow_instances wi ON t.workflow_instance_id = wi.id
+                WHERE t.id = %s
+            """, (task_id,))
+
+            if not task:
+                return
+
+            metadata = JSONUtils.safe_parse_json(task.get('metadata'), {})
+            
+            # Calculate how overdue the task is
+            if task['due_date']:
+                hours_overdue = (datetime.now() - task['due_date']).total_seconds() / 3600
+            else:
+                hours_overdue = 0
+
+            notification_data = {
+                'task_id': str(task_id),
+                'task_name': task['name'],
+                'workflow_title': task['workflow_title'],
+                'escalation_level': escalation_level,
+                'hours_overdue': int(hours_overdue),
+                'return_reason': metadata.get('return_reason', ''),
+                'assigned_to': task['assigned_to'],
+                'due_date': task['due_date'].isoformat() if task['due_date'] else None
+            }
+
+            # Determine escalation recipients based on level
+            escalation_recipients = []
+            
+            if escalation_level >= 1:
+                # Level 1: Notify task assignee and their manager
+                escalation_recipients.append(task['assigned_to'])
+                # Could add manager lookup here
+                
+            if escalation_level >= 2:
+                # Level 2: Notify workflow initiator and department head
+                escalation_recipients.append(task['initiated_by'])
+                # Could add department head lookup here
+                
+            if escalation_level >= 3:
+                # Level 3: Notify senior management
+                # Could add senior management lookup here
+                pass
+
+            # Send escalation notifications
+            for recipient in escalation_recipients:
+                if recipient:
+                    NotificationService.send_notification(
+                        recipient,
+                        'return_task_escalation',
+                        notification_data
+                    )
+
+        except Exception as e:
+            logger.error(f"Error sending return task escalation notification: {e}")
+
+
+    
     @staticmethod
     def _interpolate_template(template, data):
         """Interpolate template variables with data"""
@@ -649,3 +882,31 @@ class NotificationService:
 
         except Exception as e:
             logger.error(f"Error sending task returned for edit notification: {e}")
+            
+            
+            
+    # Add this template to the default templates dictionary above:
+    def get_return_task_templates():
+        """Get additional templates specific to return task functionality"""
+        return {
+            'return_task_escalation': {
+                'title': 'OVERDUE: Edit Required for {{task_name}}',
+                'message': '''ESCALATION LEVEL {{escalation_level}}: Task requiring edits is {{hours_overdue}} hours overdue.
+
+    Task: "{{task_name}}" in workflow "{{workflow_title}}"
+    Original feedback: {{return_reason}}
+    Due date: {{due_date}}
+
+    Immediate action is required to prevent further delays.'''
+            },
+            'return_task_auto_reminder': {
+                'title': 'Daily Reminder: Edit Required for {{task_name}}',
+                'message': '''Daily reminder: You have a task requiring edits.
+
+    Task: "{{task_name}}" in workflow "{{workflow_title}}"
+    Feedback: {{return_reason}}
+    Due: {{due_date}}
+
+    Please complete your edits to keep the workflow moving.'''
+            }
+        }

@@ -74,9 +74,114 @@ class WorkflowEngine:
 
     # Add this enhanced version to your workflow_engine.py
 
+    # @staticmethod
+    # def complete_task(task_id, result_data, completed_by):
+    #     """Complete a task and advance workflow - Enhanced with debugging"""
+    #     try:
+    #         logger.info(f"=== STARTING TASK COMPLETION ===")
+    #         logger.info(f"Task ID: {task_id}")
+    #         logger.info(f"Completed by: {completed_by}")
+    #         logger.info(f"Result data: {result_data}")
+
+    #         # Get task and workflow instance
+    #         task = WorkflowEngine._get_task(task_id)
+    #         if not task:
+    #             raise ValueError(f"Task {task_id} not found")
+
+    #         logger.info(f"Task found: {task}")
+
+    #         # if task['status'] != 'pending':
+    #         #     raise ValueError(f"Task {task_id} is not in pending status: {task['status']}")
+
+    #         # Update task status first
+    #         WorkflowEngine._update_task_status(task_id, 'completed', result_data, completed_by)
+    #         logger.info(f"✓ Task {task_id} marked as completed")
+
+    #         # Get workflow instance
+    #         workflow_instance = WorkflowEngine._get_workflow_instance(task['workflow_instance_id'])
+    #         if not workflow_instance:
+    #             raise ValueError(f"Workflow instance {task['workflow_instance_id']} not found")
+
+    #         logger.info(f"Workflow instance: {workflow_instance['id']}, Status: {workflow_instance['status']}")
+
+    #         # Get workflow definition
+    #         workflow = WorkflowEngine._get_workflow(workflow_instance['workflow_id'])
+    #         if not workflow:
+    #             raise ValueError(f"Workflow {workflow_instance['workflow_id']} not found")
+
+    #         logger.info(f"Workflow: {workflow['name']}")
+
+    #         # Parse definition
+    #         # if isinstance(workflow['definition'], str):
+    #         #     definition = json.loads(workflow['definition'])
+    #         # else:
+    #         #     definition = workflow['definition']
+    #         # Parse workflow definition safely
+    #         definition = JSONUtils.safe_parse_json(workflow['definition'])
+    #         if not definition or 'steps' not in definition:
+    #             raise ValueError("Invalid workflow definition")
+
+    #         logger.info(f"Workflow steps: {[s['id'] for s in definition.get('steps', [])]}")
+    #         logger.info(f"Workflow transitions: {definition.get('transitions', [])}")
+
+    #         # Create context for next step resolution
+    #         # workflow_data = json.loads(workflow_instance['data']) if workflow_instance['data'] else {}
+    #         # workflow_data.update(result_data)  # Merge task result into workflow data
+    #         # Parse workflow data safely
+    #         workflow_data = JSONUtils.safe_parse_json(workflow_instance['data'], {})
+        
+    #         # Merge task result into workflow data
+    #         workflow_data = JSONUtils.merge_json_data(workflow_data, result_data)
+
+    #         context = {
+    #             'initiator': workflow_instance['initiated_by'],
+    #             'initiated_by': workflow_instance['initiated_by'],
+    #             'tenant_id': workflow_instance['tenant_id'],
+    #             'workflow_data': workflow_data,
+    #             'completed_by': completed_by,
+    #             'workflow_instance_id': task['workflow_instance_id']
+    #         }
+
+    #         # Update workflow instance data
+    #         # Database.execute_query("""
+    #         #     UPDATE workflow_instances 
+    #         #     SET data = %s, updated_at = NOW()
+    #         #     WHERE id = %s
+    #         # """, (json.dumps(workflow_data), task['workflow_instance_id']))
+    #         # logger.info(f"✓ Workflow instance data updated")
+    #         Database.execute_query("""
+    #             UPDATE workflow_instances 
+    #             SET data = %s, updated_at = NOW()
+    #             WHERE id = %s
+    #         """, (JSONUtils.safe_stringify_json(workflow_data), task['workflow_instance_id']))
+
+    #         # Determine next step
+    #         logger.info(f"=== FINDING NEXT STEP ===")
+    #         logger.info(f"Current step: {task['step_id']}")
+
+    #         next_step = WorkflowEngine._get_next_step_debug(
+    #             definition, task['step_id'], result_data
+    #         )
+
+    #         if next_step:
+    #             logger.info(f"✓ Next step found: {next_step['id']} ({next_step['name']})")
+    #             logger.info(f"=== EXECUTING NEXT STEP ===")
+
+    #             WorkflowEngine._execute_step(task['workflow_instance_id'], next_step, definition, context)
+    #             logger.info(f"✓ Next step executed successfully")
+    #         else:
+    #             logger.info(f"No next step found - completing workflow")
+    #             WorkflowEngine._complete_workflow(task['workflow_instance_id'])
+    #             logger.info(f"✓ Workflow completed")
+
+    #         logger.info(f"=== TASK COMPLETION FINISHED ===")
+
+    #     except Exception as e:
+    #         logger.error(f"❌ Failed to complete task {task_id}: {e}", exc_info=True)
+    #         raise
     @staticmethod
     def complete_task(task_id, result_data, completed_by):
-        """Complete a task and advance workflow - Enhanced with debugging"""
+        """Complete a task and advance workflow - Enhanced with return task handling"""
         try:
             logger.info(f"=== STARTING TASK COMPLETION ===")
             logger.info(f"Task ID: {task_id}")
@@ -84,18 +189,15 @@ class WorkflowEngine:
             logger.info(f"Result data: {result_data}")
 
             # Get task and workflow instance
-            task = WorkflowEngine._get_task(task_id)
+            task = WorkflowEngine._get_task_with_metadata(task_id)
             if not task:
                 raise ValueError(f"Task {task_id} not found")
 
             logger.info(f"Task found: {task}")
 
-            # if task['status'] != 'pending':
-            #     raise ValueError(f"Task {task_id} is not in pending status: {task['status']}")
-
-            # Update task status first
-            WorkflowEngine._update_task_status(task_id, 'completed', result_data, completed_by)
-            logger.info(f"✓ Task {task_id} marked as completed")
+            # Check if this is a return task
+            metadata = JSONUtils.safe_parse_json(task.get('metadata'), {})
+            is_return_task = metadata.get('is_return_task', False)
 
             # Get workflow instance
             workflow_instance = WorkflowEngine._get_workflow_instance(task['workflow_instance_id'])
@@ -111,11 +213,6 @@ class WorkflowEngine:
 
             logger.info(f"Workflow: {workflow['name']}")
 
-            # Parse definition
-            # if isinstance(workflow['definition'], str):
-            #     definition = json.loads(workflow['definition'])
-            # else:
-            #     definition = workflow['definition']
             # Parse workflow definition safely
             definition = JSONUtils.safe_parse_json(workflow['definition'])
             if not definition or 'steps' not in definition:
@@ -125,11 +222,8 @@ class WorkflowEngine:
             logger.info(f"Workflow transitions: {definition.get('transitions', [])}")
 
             # Create context for next step resolution
-            # workflow_data = json.loads(workflow_instance['data']) if workflow_instance['data'] else {}
-            # workflow_data.update(result_data)  # Merge task result into workflow data
-            # Parse workflow data safely
             workflow_data = JSONUtils.safe_parse_json(workflow_instance['data'], {})
-        
+            
             # Merge task result into workflow data
             workflow_data = JSONUtils.merge_json_data(workflow_data, result_data)
 
@@ -139,29 +233,31 @@ class WorkflowEngine:
                 'tenant_id': workflow_instance['tenant_id'],
                 'workflow_data': workflow_data,
                 'completed_by': completed_by,
-                'workflow_instance_id': task['workflow_instance_id']
+                'workflow_instance_id': task['workflow_instance_id'],
+                'is_return_task': is_return_task
             }
 
             # Update workflow instance data
-            # Database.execute_query("""
-            #     UPDATE workflow_instances 
-            #     SET data = %s, updated_at = NOW()
-            #     WHERE id = %s
-            # """, (json.dumps(workflow_data), task['workflow_instance_id']))
-            # logger.info(f"✓ Workflow instance data updated")
             Database.execute_query("""
                 UPDATE workflow_instances 
                 SET data = %s, updated_at = NOW()
                 WHERE id = %s
             """, (JSONUtils.safe_stringify_json(workflow_data), task['workflow_instance_id']))
 
-            # Determine next step
-            logger.info(f"=== FINDING NEXT STEP ===")
-            logger.info(f"Current step: {task['step_id']}")
-
-            next_step = WorkflowEngine._get_next_step_debug(
-                definition, task['step_id'], result_data
-            )
+            # Handle return task completion specially
+            if is_return_task:
+                logger.info(f"=== HANDLING RETURN TASK COMPLETION ===")
+                next_step = WorkflowEngine._handle_return_task_completion(
+                    task, definition, context, metadata
+                )
+            else:
+                # Normal task completion - determine next step
+                logger.info(f"=== FINDING NEXT STEP ===")
+                logger.info(f"Current step: {task['step_id']}")
+                
+                next_step = WorkflowEngine._get_next_step_debug(
+                    definition, task['step_id'], result_data
+                )
 
             if next_step:
                 logger.info(f"✓ Next step found: {next_step['id']} ({next_step['name']})")
@@ -179,7 +275,7 @@ class WorkflowEngine:
         except Exception as e:
             logger.error(f"❌ Failed to complete task {task_id}: {e}", exc_info=True)
             raise
-
+    
     @staticmethod
     def _get_next_step_debug(definition, current_step_id, result_data):
         """Enhanced next step detection with comprehensive debugging"""
@@ -913,64 +1009,145 @@ class WorkflowEngine:
         result = Database.execute_one(query, (username, tenant_id))
         return result['id'] if result else None
 
+    # @staticmethod
+    #  def _create_task(instance_id, step, context):
+    #     """Create a new task with enhanced assignee resolution"""
+    #     properties = step.get('properties', {})
+
+    #     # Resolve assignee with enhanced logic
+    #     assignee_config = properties.get('assignee') or properties.get('assigned_to')
+    #     assigned_to = WorkflowEngine._resolve_assignee(assignee_config, context)
+
+    #     # Calculate due date
+    #     due_hours = properties.get('dueHours', 24)
+    #     due_date = datetime.now() + timedelta(hours=due_hours)
+
+    #     # Get form ID from step properties
+    #     form_id = properties.get('formId')
+
+    #     # Resolve form ID if it's a string reference
+    #     if form_id and isinstance(form_id, str) and not WorkflowEngine._is_valid_uuid(form_id):
+    #         # Look up form by name
+    #         form = Database.execute_one("""
+    #             SELECT id FROM form_definitions 
+    #             WHERE name = %s AND is_active = true
+    #             ORDER BY version DESC
+    #             LIMIT 1
+    #         """, (form_id,))
+    #         form_id = form['id'] if form else None
+
+    #     # Create task with enhanced metadata
+    #     query = """
+    #         INSERT INTO tasks 
+    #         (workflow_instance_id, step_id, name, description, type, 
+    #          assigned_to, due_date, form_id, priority, metadata)
+    #         VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s, %s)
+    #     """
+
+    #     metadata = {
+    #         'assignee_config': assignee_config,
+    #         'auto_assigned': assignee_config and assignee_config.startswith('auto:'),
+    #         'step_properties': properties
+    #     }
+
+    #     task_id = Database.execute_insert(query, (
+    #         instance_id, step['id'], step['name'],
+    #         step.get('description', ''), step['type'],
+    #         assigned_to, due_date, form_id,
+    #         properties.get('priority', 'medium'),
+    #         json.dumps(metadata)
+    #     ))
+
+    #     # Send notification to assigned user if assigned
+    #     if assigned_to:
+    #         try:
+    #             NotificationService.send_task_assignment(assigned_to, task_id)
+    #         except Exception as e:
+    #             logger.error(f"Failed to send task assignment notification: {e}")
+
+    #     logger.info(f"Created task {task_id} assigned to {assigned_to} for step {step['id']}")
+    #     return task_id
+    # Enhanced task creation for return scenarios
     @staticmethod
     def _create_task(instance_id, step, context):
-        """Create a new task with enhanced assignee resolution"""
-        properties = step.get('properties', {})
+        """Create a new task with enhanced assignee resolution and return task handling"""
+        try:
+            properties = step.get('properties', {})
 
-        # Resolve assignee with enhanced logic
-        assignee_config = properties.get('assignee') or properties.get('assigned_to')
-        assigned_to = WorkflowEngine._resolve_assignee(assignee_config, context)
+            # Resolve assignee with enhanced logic
+            assignee_config = properties.get('assignee') or properties.get('assigned_to')
+            assigned_to = WorkflowEngine._resolve_assignee(assignee_config, context)
 
-        # Calculate due date
-        due_hours = properties.get('dueHours', 24)
-        due_date = datetime.now() + timedelta(hours=due_hours)
+            # Calculate due date
+            due_hours = properties.get('dueHours', 24)
+            due_date = datetime.now() + timedelta(hours=due_hours)
 
-        # Get form ID from step properties
-        form_id = properties.get('formId')
+            # Get form ID from step properties
+            form_id = properties.get('formId')
 
-        # Resolve form ID if it's a string reference
-        if form_id and isinstance(form_id, str) and not WorkflowEngine._is_valid_uuid(form_id):
-            # Look up form by name
-            form = Database.execute_one("""
-                SELECT id FROM form_definitions 
-                WHERE name = %s AND is_active = true
-                ORDER BY version DESC
-                LIMIT 1
-            """, (form_id,))
-            form_id = form['id'] if form else None
+            # Resolve form ID if it's a string reference
+            if form_id and isinstance(form_id, str) and not WorkflowEngine._is_valid_uuid(form_id):
+                form = Database.execute_one("""
+                    SELECT id FROM form_definitions 
+                    WHERE name = %s AND is_active = true
+                    ORDER BY version DESC
+                    LIMIT 1
+                """, (form_id,))
+                form_id = form['id'] if form else None
 
-        # Create task with enhanced metadata
-        query = """
-            INSERT INTO tasks 
-            (workflow_instance_id, step_id, name, description, type, 
-             assigned_to, due_date, form_id, priority, metadata)
-            VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s, %s)
-        """
+            # Enhanced task name and description for context
+            task_name = step['name']
+            task_description = step.get('description', '')
+            
+            # Check if this is related to a return task scenario
+            workflow_data = context.get('workflow_data', {})
+            if workflow_data.get('return_task_created'):
+                task_name = f"Review: {task_name}"
+                task_description = f"Review resubmitted content. {task_description}"
 
-        metadata = {
-            'assignee_config': assignee_config,
-            'auto_assigned': assignee_config and assignee_config.startswith('auto:'),
-            'step_properties': properties
-        }
+            # Create task with enhanced metadata
+            query = """
+                INSERT INTO tasks 
+                (workflow_instance_id, step_id, name, description, type, 
+                assigned_to, due_date, form_id, priority, metadata)
+                VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s, %s)
+            """
 
-        task_id = Database.execute_insert(query, (
-            instance_id, step['id'], step['name'],
-            step.get('description', ''), step['type'],
-            assigned_to, due_date, form_id,
-            properties.get('priority', 'medium'),
-            json.dumps(metadata)
-        ))
+            metadata = {
+                'assignee_config': assignee_config,
+                'auto_assigned': assignee_config and assignee_config.startswith('auto:'),
+                'step_properties': properties,
+                'is_post_return': bool(workflow_data.get('return_task_created')),
+                'context_type': 'return_review' if workflow_data.get('return_task_created') else 'normal'
+            }
 
-        # Send notification to assigned user if assigned
-        if assigned_to:
-            try:
-                NotificationService.send_task_assignment(assigned_to, task_id)
-            except Exception as e:
-                logger.error(f"Failed to send task assignment notification: {e}")
+            task_id = Database.execute_insert(query, (
+                instance_id, step['id'], task_name, task_description, step['type'],
+                assigned_to, due_date, form_id,
+                properties.get('priority', 'medium'),
+                JSONUtils.safe_json_dumps(metadata)
+            ))
 
-        logger.info(f"Created task {task_id} assigned to {assigned_to} for step {step['id']}")
-        return task_id
+            # Send notification to assigned user if assigned
+            if assigned_to:
+                try:
+                    notification_template = 'task_assignment_post_return' if workflow_data.get('return_task_created') else 'task_assignment'
+                    NotificationService.send_notification(assigned_to, notification_template, {
+                        'task_id': str(task_id),
+                        'task_name': task_name,
+                        'workflow_title': workflow_data.get('title', 'Workflow'),
+                        'is_post_return': bool(workflow_data.get('return_task_created'))
+                    })
+                except Exception as e:
+                    logger.error(f"Failed to send task assignment notification: {e}")
+
+            logger.info(f"Created task {task_id} assigned to {assigned_to} for step {step['id']}")
+            return task_id
+
+        except Exception as e:
+            logger.error(f"Error creating task: {e}")
+            return None
+    
 
     # Keep all other existing methods...
     @staticmethod
@@ -1103,60 +1280,144 @@ class WorkflowEngine:
         Database.execute_query(query, (step_id, instance_id))
 
     # Additional methods for other step types...
+    # @staticmethod
+    # def _create_approval_task(instance_id, step, context):
+    #     """Create approval task(s) with proper assignee resolution"""
+    #     properties = step.get('properties', {})
+
+    #     # Resolve approvers
+    #     approvers_config = properties.get('approvers', [])
+    #     approvers = WorkflowEngine._resolve_assignee_list(approvers_config, context)
+
+    #     approval_type = properties.get('approvalType', 'any')
+    #     due_hours = properties.get('dueHours', 48)
+    #     due_date = datetime.now() + timedelta(hours=due_hours)
+
+    #     # Get form ID for approval
+    #     form_id = properties.get('formId')
+    #     if form_id and isinstance(form_id, str) and not WorkflowEngine._is_valid_uuid(form_id):
+    #         form = Database.execute_one("""
+    #             SELECT id FROM form_definitions 
+    #             WHERE name = %s AND is_active = true
+    #             ORDER BY version DESC
+    #             LIMIT 1
+    #         """, (form_id,))
+    #         form_id = form['id'] if form else None
+
+    #     created_tasks = []
+
+    #     # Create approval task for each approver
+    #     for approver in approvers:
+    #         if approver:  # Only create task if approver is resolved
+    #             query = """
+    #                 INSERT INTO tasks 
+    #                 (workflow_instance_id, step_id, name, description, type, 
+    #                  assigned_to, due_date, form_id)
+    #                 VALUES (%s, %s, %s, %s, %s, %s, %s, %s)
+    #             """
+    #             task_id = Database.execute_insert(query, (
+    #                 instance_id, step['id'], f"Approval: {step['name']}",
+    #                 step.get('description', ''), 'approval',
+    #                 approver, due_date, form_id
+    #             ))
+
+    #             created_tasks.append(task_id)
+
+    #             # Send notification
+    #             try:
+    #                 NotificationService.send_task_assignment(approver, task_id)
+    #             except Exception as e:
+    #                 logger.error(f"Failed to send approval task notification: {e}")
+
+    #     if not created_tasks:
+    #         logger.warning(f"No approval tasks created for step {step['id']} - no valid approvers found")
+
+    #     return created_tasks
     @staticmethod
     def _create_approval_task(instance_id, step, context):
-        """Create approval task(s) with proper assignee resolution"""
-        properties = step.get('properties', {})
+        """Create approval task(s) with proper assignee resolution - Enhanced for return tasks"""
+        try:
+            properties = step.get('properties', {})
 
-        # Resolve approvers
-        approvers_config = properties.get('approvers', [])
-        approvers = WorkflowEngine._resolve_assignee_list(approvers_config, context)
+            # Resolve approvers
+            approvers_config = properties.get('approvers', [])
+            approvers = WorkflowEngine._resolve_assignee_list(approvers_config, context)
 
-        approval_type = properties.get('approvalType', 'any')
-        due_hours = properties.get('dueHours', 48)
-        due_date = datetime.now() + timedelta(hours=due_hours)
+            approval_type = properties.get('approvalType', 'any')
+            due_hours = properties.get('dueHours', 48)
+            due_date = datetime.now() + timedelta(hours=due_hours)
 
-        # Get form ID for approval
-        form_id = properties.get('formId')
-        if form_id and isinstance(form_id, str) and not WorkflowEngine._is_valid_uuid(form_id):
-            form = Database.execute_one("""
-                SELECT id FROM form_definitions 
-                WHERE name = %s AND is_active = true
-                ORDER BY version DESC
-                LIMIT 1
-            """, (form_id,))
-            form_id = form['id'] if form else None
+            # Get form ID for approval
+            form_id = properties.get('formId')
+            if form_id and isinstance(form_id, str) and not WorkflowEngine._is_valid_uuid(form_id):
+                form = Database.execute_one("""
+                    SELECT id FROM form_definitions 
+                    WHERE name = %s AND is_active = true
+                    ORDER BY version DESC
+                    LIMIT 1
+                """, (form_id,))
+                form_id = form['id'] if form else None
 
-        created_tasks = []
+            created_tasks = []
 
-        # Create approval task for each approver
-        for approver in approvers:
-            if approver:  # Only create task if approver is resolved
-                query = """
-                    INSERT INTO tasks 
-                    (workflow_instance_id, step_id, name, description, type, 
-                     assigned_to, due_date, form_id)
-                    VALUES (%s, %s, %s, %s, %s, %s, %s, %s)
-                """
-                task_id = Database.execute_insert(query, (
-                    instance_id, step['id'], f"Approval: {step['name']}",
-                    step.get('description', ''), 'approval',
-                    approver, due_date, form_id
-                ))
+            # Create approval task for each approver
+            for approver in approvers:
+                if approver:  # Only create task if approver is resolved
+                    # Enhanced task name for resubmitted approvals
+                    task_name = f"Approval: {step['name']}"
+                    if context.get('is_return_task'):
+                        task_name = f"Re-approval: {step['name']} (Resubmitted)"
 
-                created_tasks.append(task_id)
+                    query = """
+                        INSERT INTO tasks 
+                        (workflow_instance_id, step_id, name, description, type, 
+                        assigned_to, due_date, form_id, priority, metadata)
+                        VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s, %s)
+                    """
+                    
+                    # Add metadata for resubmitted approval
+                    approval_metadata = {
+                        'approval_type': approval_type,
+                        'is_resubmitted_approval': context.get('is_return_task', False)
+                    }
+                    
+                    if context.get('is_return_task'):
+                        approval_metadata['resubmission_reason'] = 'Return task completed'
+                        approval_metadata['previous_return'] = True
 
-                # Send notification
-                try:
-                    NotificationService.send_task_assignment(approver, task_id)
-                except Exception as e:
-                    logger.error(f"Failed to send approval task notification: {e}")
+                    task_id = Database.execute_insert(query, (
+                        instance_id, step['id'], task_name,
+                        step.get('description', ''), 'approval',
+                        approver, due_date, form_id, 'high',
+                        JSONUtils.safe_json_dumps(approval_metadata)
+                    ))
 
-        if not created_tasks:
-            logger.warning(f"No approval tasks created for step {step['id']} - no valid approvers found")
+                    created_tasks.append(task_id)
 
-        return created_tasks
+                    # Send notification with context about resubmission
+                    try:
+                        notification_data = {
+                            'task_id': str(task_id),
+                            'task_name': task_name,
+                            'workflow_title': context.get('workflow_data', {}).get('title', 'Workflow'),
+                            'is_resubmission': context.get('is_return_task', False)
+                        }
+                        
+                        template = 'task_assignment_resubmission' if context.get('is_return_task') else 'task_assignment'
+                        NotificationService.send_notification(approver, template, notification_data)
+                    except Exception as e:
+                        logger.error(f"Failed to send approval task notification: {e}")
 
+            if not created_tasks:
+                logger.warning(f"No approval tasks created for step {step['id']} - no valid approvers found")
+                return None
+
+            return created_tasks[0] if len(created_tasks) == 1 else created_tasks
+
+        except Exception as e:
+            logger.error(f"Error creating approval task: {e}")
+            return None
+    
     @staticmethod
     def _resolve_assignee_list(assignee_list, context):
         """Resolve a list of assignees"""
@@ -1226,3 +1487,61 @@ class WorkflowEngine:
                 next_step = WorkflowEngine._find_step_by_id(definition['steps'], step_id)
                 if next_step:
                     WorkflowEngine._execute_step(instance_id, next_step, definition, context)
+                    
+                    
+                    
+    @staticmethod
+    def _get_task_with_metadata(task_id):
+        """Get task with metadata information"""
+        query = """
+            SELECT id, workflow_instance_id, step_id, status, assigned_to, metadata, form_data
+            FROM tasks 
+            WHERE id = %s
+        """
+        return Database.execute_one(query, (task_id,))
+
+
+    @staticmethod
+    def _handle_return_task_completion(task, definition, context, metadata):
+        """Handle completion of a return task - find the appropriate next step"""
+        try:
+            logger.info(f"Handling return task completion for task {task['id']}")
+            
+            # Get the original step that was returned
+            original_step_id = metadata.get('original_step_id') or task['step_id']
+            
+            # Find the original step in the definition
+            original_step = WorkflowEngine._find_step_by_id(definition['steps'], original_step_id)
+            if not original_step:
+                logger.error(f"Original step {original_step_id} not found in workflow definition")
+                return None
+
+            # Check if the original step was an approval step
+            if original_step.get('type') == 'approval':
+                logger.info(f"Return task was for approval step, creating new approval task")
+                
+                # Create a new approval task for the same step
+                new_approval_task_id = WorkflowEngine._create_approval_task(
+                    task['workflow_instance_id'], original_step, context
+                )
+                
+                if new_approval_task_id:
+                    logger.info(f"Created new approval task {new_approval_task_id}")
+                    # Don't return a next_step since we created the approval task directly
+                    return None
+                else:
+                    logger.error("Failed to create new approval task")
+                    return None
+            else:
+                # For non-approval steps, proceed to the next step normally
+                logger.info(f"Return task was for regular step, proceeding to next step")
+                
+                # Use the result data from the return task to determine next step
+                return_result = JSONUtils.safe_parse_json(task.get('form_data'), {})
+                return WorkflowEngine._get_next_step_debug(
+                    definition, original_step_id, return_result
+                )
+                
+        except Exception as e:
+            logger.error(f"Error handling return task completion: {e}")
+            return None
