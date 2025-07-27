@@ -2,6 +2,7 @@
 """
 Enhanced webhooks blueprint - handles both incoming and outgoing webhook processing
 """
+from typing import Dict, List
 from flask import Blueprint, request, jsonify, g, current_app
 from app.middleware import require_auth, require_permissions, audit_log, rate_limit_by_user
 from app.database import Database
@@ -9,6 +10,8 @@ from app.utils.security import sanitize_input, validate_uuid
 from app.utils.validators import validate_required_fields
 from app.services.webhook_processor import WebhookProcessor
 from app.services.webhook_security import WebhookSecurity
+from app.services.webhook_delivery import webhook_delivery_service
+from app.services.webhook_queue import webhook_queue_manager
 from app.services.notification_service import NotificationService
 import json
 import requests
@@ -1110,3 +1113,749 @@ def delete_webhook(webhook_id):
     except Exception as e:
         logger.error(f"Error deleting webhook {webhook_id}: {e}")
         return jsonify({'error': 'Failed to delete webhook'}), 500
+    
+    
+    
+# These endpoints can be added to your existing webhooks blueprint
+
+# ===== WEBHOOK QUEUE MANAGEMENT =====
+
+@require_auth
+@require_permissions(['manage_webhooks'])
+def get_webhook_queue_status():
+    """Get webhook queue status and statistics"""
+    try:
+        tenant_id = g.current_user['tenant_id']
+        
+        # Get queue statistics
+        queue_stats = webhook_queue_manager.get_stats()
+        
+        # Get recent jobs for this tenant
+        recent_jobs = Database.execute_query("""
+            SELECT wq.*, w.name as webhook_name, w.tenant_id
+            FROM webhook_queue wq
+            JOIN webhooks w ON wq.webhook_id = w.id
+            WHERE w.tenant_id = %s
+            ORDER BY wq.created_at DESC
+            LIMIT 50
+        """, (tenant_id,))
+        
+        return jsonify({
+            'queue_statistics': queue_stats,
+            'recent_jobs': [
+                {
+                    'id': job['id'],
+                    'webhook_id': job['webhook_id'],
+                    'webhook_name': job['webhook_name'],
+                    'event_type': job['event_type'],
+                    'status': job['status'],
+                    'retry_count': job['retry_count'],
+                    'priority': job['priority'],
+                    'created_at': job['created_at'].isoformat(),
+                    'scheduled_at': job['scheduled_at'].isoformat(),
+                    'error_message': job['error_message']
+                }
+                for job in recent_jobs
+            ]
+        }), 200
+
+    except Exception as e:
+        logger.error(f"Error getting webhook queue status: {e}")
+        return jsonify({'error': 'Failed to get queue status'}), 500
+
+
+@require_auth
+@require_permissions(['manage_webhooks'])
+@audit_log('webhook_queue_management', 'webhook_queue')
+def manage_webhook_queue():
+    """Manage webhook queue (cancel jobs, retry failed, etc.)"""
+    try:
+        data = sanitize_input(request.get_json())
+        action = data.get('action')
+        tenant_id = g.current_user['tenant_id']
+        
+        if action == 'cancel_job':
+            job_id = data.get('job_id')
+            if not job_id or not validate_uuid(job_id):
+                return jsonify({'error': 'Valid job_id required'}), 400
+            
+            # Verify job belongs to user's tenant
+            job = Database.execute_one("""
+                SELECT wq.id FROM webhook_queue wq
+                JOIN webhooks w ON wq.webhook_id = w.id
+                WHERE wq.id = %s AND w.tenant_id = %s
+            """, (job_id, tenant_id))
+            
+            if not job:
+                return jsonify({'error': 'Job not found'}), 404
+            
+            success = webhook_queue_manager.cancel_job(job_id)
+            if success:
+                return jsonify({'message': 'Job cancelled successfully'}), 200
+            else:
+                return jsonify({'error': 'Failed to cancel job'}), 400
+        
+        elif action == 'retry_failed':
+            webhook_id = data.get('webhook_id')  # Optional
+            max_age_hours = data.get('max_age_hours', 24)
+            
+            if webhook_id and not validate_uuid(webhook_id):
+                return jsonify({'error': 'Invalid webhook_id'}), 400
+            
+            # Verify webhook belongs to tenant if specified
+            if webhook_id:
+                webhook = Database.execute_one("""
+                    SELECT id FROM webhooks WHERE id = %s AND tenant_id = %s
+                """, (webhook_id, tenant_id))
+                if not webhook:
+                    return jsonify({'error': 'Webhook not found'}), 404
+            
+            result = webhook_delivery_service.retry_failed_deliveries(
+                webhook_id=webhook_id,
+                max_age_hours=max_age_hours
+            )
+            
+            return jsonify(result), 200 if result['success'] else 400
+        
+        elif action == 'cleanup_old':
+            days_to_keep = data.get('days_to_keep', 7)
+            deleted_count = webhook_queue_manager.cleanup_old_jobs(days_to_keep)
+            
+            return jsonify({
+                'message': f'Cleaned up {deleted_count} old jobs',
+                'deleted_count': deleted_count
+            }), 200
+        
+        else:
+            return jsonify({'error': f'Unknown action: {action}'}), 400
+
+    except Exception as e:
+        logger.error(f"Error managing webhook queue: {e}")
+        return jsonify({'error': 'Failed to manage webhook queue'}), 500
+
+
+# ===== WEBHOOK SECURITY MANAGEMENT =====
+
+@require_auth
+@require_permissions(['manage_webhooks', 'view_webhook_security'])
+def get_webhook_security_logs():
+    """Get webhook security logs and incidents"""
+    try:
+        tenant_id = g.current_user['tenant_id']
+        page = int(request.args.get('page', 1))
+        limit = min(int(request.args.get('limit', 50)), 100)
+        offset = (page - 1) * limit
+        
+        # Filters
+        severity = request.args.get('severity')
+        event_type = request.args.get('event_type')
+        webhook_id = request.args.get('webhook_id')
+        start_date = request.args.get('start_date')
+        end_date = request.args.get('end_date')
+        
+        # Build query conditions
+        where_conditions = []
+        params = []
+        
+        # Join with webhooks to filter by tenant
+        join_clause = "LEFT JOIN webhooks w ON wsl.webhook_id = w.id"
+        where_conditions.append("(w.tenant_id = %s OR wsl.webhook_id IS NULL)")
+        params.append(tenant_id)
+        
+        if severity:
+            where_conditions.append("wsl.severity = %s")
+            params.append(severity)
+        
+        if event_type:
+            where_conditions.append("wsl.event_type = %s")
+            params.append(event_type)
+        
+        if webhook_id:
+            if not validate_uuid(webhook_id):
+                return jsonify({'error': 'Invalid webhook_id'}), 400
+            where_conditions.append("wsl.webhook_id = %s")
+            params.append(webhook_id)
+        
+        if start_date:
+            where_conditions.append("wsl.created_at >= %s")
+            params.append(start_date)
+        
+        if end_date:
+            where_conditions.append("wsl.created_at <= %s")
+            params.append(end_date)
+        
+        where_clause = "WHERE " + " AND ".join(where_conditions) if where_conditions else ""
+        
+        # Get security logs
+        security_logs = Database.execute_query(f"""
+            SELECT wsl.*, w.name as webhook_name
+            FROM webhook_security_logs wsl
+            {join_clause}
+            {where_clause}
+            ORDER BY wsl.created_at DESC
+            LIMIT %s OFFSET %s
+        """, params + [limit, offset])
+        
+        # Get total count
+        total = Database.execute_one(f"""
+            SELECT COUNT(*) as count
+            FROM webhook_security_logs wsl
+            {join_clause}
+            {where_clause}
+        """, params)
+        
+        # Get summary statistics
+        stats = Database.execute_one(f"""
+            SELECT 
+                COUNT(*) as total_events,
+                COUNT(CASE WHEN wsl.severity = 'critical' THEN 1 END) as critical_events,
+                COUNT(CASE WHEN wsl.severity = 'error' THEN 1 END) as error_events,
+                COUNT(CASE WHEN wsl.severity = 'warning' THEN 1 END) as warning_events,
+                COUNT(CASE WHEN wsl.created_at >= NOW() - INTERVAL '24 hours' THEN 1 END) as events_24h,
+                COUNT(DISTINCT wsl.client_ip) as unique_ips,
+                COUNT(DISTINCT wsl.event_type) as unique_event_types
+            FROM webhook_security_logs wsl
+            {join_clause}
+            {where_clause}
+        """, params)
+        
+        return jsonify({
+            'security_logs': [
+                {
+                    'id': log['id'],
+                    'webhook_id': log['webhook_id'],
+                    'webhook_name': log['webhook_name'],
+                    'client_ip': log['client_ip'],
+                    'event_type': log['event_type'],
+                    'severity': log['severity'],
+                    'details': json.loads(log['details']) if log['details'] else {},
+                    'created_at': log['created_at'].isoformat()
+                }
+                for log in security_logs
+            ],
+            'pagination': {
+                'page': page,
+                'limit': limit,
+                'total': total['count'],
+                'pages': (total['count'] + limit - 1) // limit
+            },
+            'statistics': dict(stats) if stats else {},
+            'filters': {
+                'severity': severity,
+                'event_type': event_type,
+                'webhook_id': webhook_id,
+                'start_date': start_date,
+                'end_date': end_date
+            }
+        }), 200
+
+    except Exception as e:
+        logger.error(f"Error getting security logs: {e}")
+        return jsonify({'error': 'Failed to retrieve security logs'}), 500
+
+
+@require_auth
+@require_permissions(['manage_webhooks'])
+@audit_log('webhook_security_action', 'webhook_security')
+def webhook_security_action():
+    """Perform webhook security actions (block IP, update whitelist, etc.)"""
+    try:
+        data = sanitize_input(request.get_json())
+        action = data.get('action')
+        tenant_id = g.current_user['tenant_id']
+        
+        if action == 'block_ip':
+            ip_address = data.get('ip_address')
+            webhook_id = data.get('webhook_id')
+            duration_hours = data.get('duration_hours', 24)
+            reason = data.get('reason', 'Manual block')
+            
+            if not ip_address:
+                return jsonify({'error': 'IP address required'}), 400
+            
+            if webhook_id and not validate_uuid(webhook_id):
+                return jsonify({'error': 'Invalid webhook_id'}), 400
+            
+            # Verify webhook belongs to tenant
+            if webhook_id:
+                webhook = Database.execute_one("""
+                    SELECT id FROM webhooks WHERE id = %s AND tenant_id = %s
+                """, (webhook_id, tenant_id))
+                if not webhook:
+                    return jsonify({'error': 'Webhook not found'}), 404
+            
+            # Add to rate limits with extended block
+            block_until = datetime.now() + timedelta(hours=duration_hours)
+            
+            Database.execute_query("""
+                INSERT INTO webhook_rate_limits 
+                (webhook_id, client_ip, request_count, window_start, blocked_until)
+                VALUES (%s, %s, 999, NOW(), %s)
+                ON CONFLICT (webhook_id, client_ip)
+                DO UPDATE SET blocked_until = %s, request_count = 999
+            """, (webhook_id, ip_address, block_until, block_until))
+            
+            # Log security action
+            WebhookSecurity.log_security_event(
+                webhook_id, ip_address, 'manual_ip_block',
+                {
+                    'duration_hours': duration_hours,
+                    'reason': reason,
+                    'blocked_by': g.current_user['user_id']
+                },
+                'warning'
+            )
+            
+            return jsonify({
+                'message': f'IP {ip_address} blocked for {duration_hours} hours',
+                'blocked_until': block_until.isoformat()
+            }), 200
+        
+        elif action == 'update_ip_whitelist':
+            webhook_id = data.get('webhook_id')
+            ip_whitelist = data.get('ip_whitelist', [])
+            
+            if not webhook_id or not validate_uuid(webhook_id):
+                return jsonify({'error': 'Valid webhook_id required'}), 400
+            
+            # Verify webhook belongs to tenant
+            webhook = Database.execute_one("""
+                SELECT id, headers FROM webhooks WHERE id = %s AND tenant_id = %s
+            """, (webhook_id, tenant_id))
+            
+            if not webhook:
+                return jsonify({'error': 'Webhook not found'}), 404
+            
+            # Update webhook headers with IP whitelist
+            try:
+                headers = json.loads(webhook['headers']) if webhook['headers'] else {}
+            except json.JSONDecodeError:
+                headers = {}
+            
+            headers['ip_whitelist'] = ip_whitelist
+            
+            Database.execute_query("""
+                UPDATE webhooks SET headers = %s WHERE id = %s
+            """, (json.dumps(headers), webhook_id))
+            
+            return jsonify({
+                'message': 'IP whitelist updated successfully',
+                'ip_whitelist': ip_whitelist
+            }), 200
+        
+        else:
+            return jsonify({'error': f'Unknown action: {action}'}), 400
+
+    except Exception as e:
+        logger.error(f"Error performing security action: {e}")
+        return jsonify({'error': 'Failed to perform security action'}), 500
+
+
+# ===== WEBHOOK TESTING AND DEBUGGING =====
+
+@require_auth
+@require_permissions(['manage_webhooks'])
+@rate_limit_by_user(5)  # 5 tests per minute
+def test_webhook_advanced():
+    """Advanced webhook testing with detailed diagnostics"""
+    try:
+        data = sanitize_input(request.get_json())
+        webhook_id = data.get('webhook_id')
+        test_type = data.get('test_type', 'connectivity')  # connectivity, payload, security
+        custom_payload = data.get('custom_payload')
+        
+        if not webhook_id or not validate_uuid(webhook_id):
+            return jsonify({'error': 'Valid webhook_id required'}), 400
+        
+        tenant_id = g.current_user['tenant_id']
+        user_id = g.current_user['user_id']
+        
+        # Verify webhook belongs to tenant
+        webhook = Database.execute_one("""
+            SELECT * FROM webhooks WHERE id = %s AND tenant_id = %s
+        """, (webhook_id, tenant_id))
+        
+        if not webhook:
+            return jsonify({'error': 'Webhook not found'}), 404
+        
+        test_results = {
+            'webhook_id': webhook_id,
+            'webhook_name': webhook['name'],
+            'test_type': test_type,
+            'timestamp': datetime.now().isoformat(),
+            'tests': []
+        }
+        
+        if test_type in ['connectivity', 'all']:
+            # Test basic connectivity
+            connectivity_result = webhook_delivery_service.test_webhook_endpoint(
+                webhook_id, test_payload={'test_type': 'connectivity'}, user_id=user_id
+            )
+            test_results['tests'].append({
+                'name': 'Connectivity Test',
+                'type': 'connectivity',
+                'result': connectivity_result
+            })
+        
+        if test_type in ['payload', 'all']:
+            # Test with custom or realistic payload
+            if custom_payload:
+                test_payload = custom_payload
+            else:
+                # Generate realistic test payload
+                test_payload = {
+                    'event_type': 'workflow_completed',
+                    'workflow_instance_id': str(uuid.uuid4()),
+                    'workflow_name': 'Test Workflow',
+                    'completed_by': user_id,
+                    'completion_time': datetime.now().isoformat(),
+                    'data': {
+                        'title': 'Test Workflow Instance',
+                        'status': 'completed',
+                        'steps_completed': 3,
+                        'total_duration_minutes': 45
+                    }
+                }
+            
+            payload_result = webhook_delivery_service.test_webhook_endpoint(
+                webhook_id, test_payload=test_payload, user_id=user_id
+            )
+            test_results['tests'].append({
+                'name': 'Payload Test',
+                'type': 'payload',
+                'result': payload_result,
+                'test_payload': test_payload
+            })
+        
+        if test_type in ['security', 'all']:
+            # Test security features
+            security_tests = []
+            
+            # URL validation
+            url_valid, url_error = WebhookSecurity.validate_webhook_url(
+                webhook['url'], allow_private=False
+            )
+            security_tests.append({
+                'name': 'URL Security Validation',
+                'passed': url_valid,
+                'message': url_error if not url_valid else 'URL passes security checks'
+            })
+            
+            # Signature verification (if secret configured)
+            if webhook['secret']:
+                try:
+                    test_payload_str = json.dumps({'test': 'signature_verification'})
+                    test_headers = {
+                        'X-Timestamp': str(int(datetime.now().timestamp()))
+                    }
+                    
+                    # Generate correct signature
+                    import hashlib
+                    import hmac
+                    signature = hmac.new(
+                        webhook['secret'].encode(),
+                        f"{test_headers['X-Timestamp']}.{test_payload_str}".encode(),
+                        hashlib.sha256
+                    ).hexdigest()
+                    test_headers['X-Webhook-Signature'] = f'sha256={signature}'
+                    
+                    signature_valid = WebhookSecurity.verify_signature(
+                        webhook['secret'],
+                        test_payload_str.encode(),
+                        test_headers
+                    )
+                    
+                    security_tests.append({
+                        'name': 'Signature Verification',
+                        'passed': signature_valid,
+                        'message': 'Signature verification working' if signature_valid else 'Signature verification failed'
+                    })
+                except Exception as sig_error:
+                    security_tests.append({
+                        'name': 'Signature Verification',
+                        'passed': False,
+                        'message': f'Signature test error: {str(sig_error)}'
+                    })
+            
+            test_results['tests'].append({
+                'name': 'Security Tests',
+                'type': 'security',
+                'result': {
+                    'tests': security_tests,
+                    'overall_passed': all(test['passed'] for test in security_tests)
+                }
+            })
+        
+        # Overall test summary
+        all_passed = True
+        for test in test_results['tests']:
+            if test['type'] == 'security':
+                if not test['result']['overall_passed']:
+                    all_passed = False
+            else:
+                if not test['result']['success']:
+                    all_passed = False
+        
+        test_results['overall_success'] = all_passed
+        test_results['summary'] = {
+            'total_tests': len(test_results['tests']),
+            'passed_tests': sum(1 for test in test_results['tests'] 
+                              if (test['result'].get('success', False) if test['type'] != 'security' 
+                                  else test['result'].get('overall_passed', False))),
+            'test_duration_ms': 0  # Would be calculated in real implementation
+        }
+        
+        return jsonify(test_results), 200
+
+    except Exception as e:
+        logger.error(f"Error in advanced webhook testing: {e}")
+        return jsonify({'error': 'Failed to test webhook'}), 500
+
+
+# ===== WEBHOOK TEMPLATES AND PRESETS =====
+
+@require_auth
+@require_permissions(['view_webhooks'])
+def get_webhook_templates():
+    """Get available webhook templates"""
+    try:
+        tenant_id = g.current_user['tenant_id']
+        
+        # Get system templates
+        system_templates = Database.execute_query("""
+            SELECT * FROM webhook_templates
+            WHERE (tenant_id = %s OR is_system = true)
+            AND is_active = true
+            ORDER BY is_system DESC, name ASC
+        """, (tenant_id,))
+        
+        templates = []
+        for template in system_templates:
+            template_data = dict(template)
+            try:
+                template_data['template_config'] = json.loads(template['template_config'])
+            except json.JSONDecodeError:
+                template_data['template_config'] = {}
+            
+            templates.append(template_data)
+        
+        return jsonify({
+            'templates': templates,
+            'total_count': len(templates)
+        }), 200
+
+    except Exception as e:
+        logger.error(f"Error getting webhook templates: {e}")
+        return jsonify({'error': 'Failed to retrieve webhook templates'}), 500
+
+
+@require_auth
+@require_permissions(['manage_webhooks'])
+@audit_log('create_from_template', 'webhook')
+def create_webhook_from_template():
+    """Create webhook from template"""
+    try:
+        data = sanitize_input(request.get_json())
+        template_id = data.get('template_id')
+        webhook_name = data.get('name')
+        webhook_url = data.get('url')
+        custom_config = data.get('config', {})
+        
+        if not template_id or not validate_uuid(template_id):
+            return jsonify({'error': 'Valid template_id required'}), 400
+        
+        if not webhook_name or not webhook_url:
+            return jsonify({'error': 'Webhook name and URL required'}), 400
+        
+        tenant_id = g.current_user['tenant_id']
+        user_id = g.current_user['user_id']
+        
+        # Get template
+        template = Database.execute_one("""
+            SELECT * FROM webhook_templates
+            WHERE id = %s AND (tenant_id = %s OR is_system = true)
+            AND is_active = true
+        """, (template_id, tenant_id))
+        
+        if not template:
+            return jsonify({'error': 'Template not found'}), 404
+        
+        # Parse template configuration
+        try:
+            template_config = json.loads(template['template_config'])
+        except json.JSONDecodeError:
+            return jsonify({'error': 'Invalid template configuration'}), 400
+        
+        # Validate URL
+        url_valid, url_error = WebhookSecurity.validate_webhook_url(webhook_url)
+        if not url_valid:
+            return jsonify({'error': f'Invalid URL: {url_error}'}), 400
+        
+        # Merge template config with custom config
+        webhook_config = template_config.copy()
+        webhook_config.update(custom_config)
+        
+        # Create webhook
+        webhook_id = Database.execute_insert("""
+            INSERT INTO webhooks 
+            (tenant_id, name, url, events, headers, webhook_type, 
+             environment, retry_count, timeout_seconds, secret, 
+             created_by, is_active)
+            VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s)
+        """, (
+            tenant_id, webhook_name, webhook_url,
+            json.dumps(webhook_config.get('events', [])),
+            json.dumps(webhook_config.get('headers', {})),
+            template['webhook_type'],
+            webhook_config.get('environment', 'production'),
+            webhook_config.get('retry_count', 3),
+            webhook_config.get('timeout_seconds', 30),
+            webhook_config.get('secret'),
+            user_id, True
+        ))
+        
+        return jsonify({
+            'message': 'Webhook created from template successfully',
+            'webhook_id': webhook_id,
+            'template_used': template['name'],
+            'webhook_url': f"/api/webhooks/incoming/{webhook_id}" if template['webhook_type'] == 'incoming' else None
+        }), 201
+
+    except Exception as e:
+        logger.error(f"Error creating webhook from template: {e}")
+        return jsonify({'error': 'Failed to create webhook from template'}), 500
+
+
+# ===== WEBHOOK MONITORING AND ALERTS =====
+
+@require_auth
+@require_permissions(['view_webhooks'])
+def get_webhook_monitoring():
+    """Get webhook monitoring data and health status"""
+    try:
+        tenant_id = g.current_user['tenant_id']
+        
+        # Get webhook health status
+        webhook_health = Database.execute_query("""
+            SELECT 
+                w.id, w.name, w.url, w.is_active, w.failure_count,
+                w.last_triggered_at, w.webhook_type, w.environment,
+                COUNT(wd.id) as recent_deliveries,
+                COUNT(CASE WHEN wd.delivered_at IS NOT NULL THEN 1 END) as successful_deliveries,
+                COUNT(CASE WHEN wd.response_status >= 400 THEN 1 END) as failed_deliveries,
+                MAX(wd.created_at) as last_delivery_attempt,
+                AVG(wd.execution_time_ms) as avg_response_time,
+                CASE 
+                    WHEN NOT w.is_active THEN 'disabled'
+                    WHEN COUNT(wd.id) = 0 THEN 'unused'
+                    WHEN w.failure_count > 5 THEN 'critical'
+                    WHEN w.failure_count > 2 THEN 'warning'
+                    WHEN MAX(wd.delivered_at) < NOW() - INTERVAL '24 hours' AND COUNT(wd.id) > 0 THEN 'stale'
+                    ELSE 'healthy'
+                END as health_status
+            FROM webhooks w
+            LEFT JOIN webhook_deliveries wd ON w.id = wd.webhook_id 
+                AND wd.created_at >= NOW() - INTERVAL '24 hours'
+            WHERE w.tenant_id = %s
+            GROUP BY w.id, w.name, w.url, w.is_active, w.failure_count,
+                     w.last_triggered_at, w.webhook_type, w.environment
+            ORDER BY 
+                CASE health_status
+                    WHEN 'critical' THEN 1
+                    WHEN 'warning' THEN 2
+                    WHEN 'stale' THEN 3
+                    WHEN 'unused' THEN 4
+                    WHEN 'disabled' THEN 5
+                    ELSE 6
+                END,
+                w.name
+        """, (tenant_id,))
+        
+        # Get alerts and issues
+        current_issues = []
+        for webhook in webhook_health:
+            if webhook['health_status'] in ['critical', 'warning']:
+                issue = {
+                    'webhook_id': webhook['id'],
+                    'webhook_name': webhook['name'],
+                    'severity': webhook['health_status'],
+                    'description': _get_health_issue_description(webhook),
+                    'suggested_actions': _get_suggested_actions(webhook)
+                }
+                current_issues.append(issue)
+        
+        # Get recent security events
+        recent_security_events = Database.execute_query("""
+            SELECT wsl.*, w.name as webhook_name
+            FROM webhook_security_logs wsl
+            LEFT JOIN webhooks w ON wsl.webhook_id = w.id
+            WHERE (w.tenant_id = %s OR wsl.webhook_id IS NULL)
+            AND wsl.created_at >= NOW() - INTERVAL '24 hours'
+            AND wsl.severity IN ('error', 'critical')
+            ORDER BY wsl.created_at DESC
+            LIMIT 10
+        """, (tenant_id,))
+        
+        # Summary statistics
+        summary = {
+            'total_webhooks': len(webhook_health),
+            'healthy_webhooks': len([w for w in webhook_health if w['health_status'] == 'healthy']),
+            'warning_webhooks': len([w for w in webhook_health if w['health_status'] == 'warning']),
+            'critical_webhooks': len([w for w in webhook_health if w['health_status'] == 'critical']),
+            'disabled_webhooks': len([w for w in webhook_health if w['health_status'] == 'disabled']),
+            'current_issues': len(current_issues),
+            'security_events_24h': len(recent_security_events)
+        }
+        
+        return jsonify({
+            'summary': summary,
+            'webhook_health': [dict(w) for w in webhook_health],
+            'current_issues': current_issues,
+            'recent_security_events': [
+                {
+                    'id': event['id'],
+                    'webhook_id': event['webhook_id'],
+                    'webhook_name': event['webhook_name'],
+                    'event_type': event['event_type'],
+                    'severity': event['severity'],
+                    'client_ip': event['client_ip'],
+                    'created_at': event['created_at'].isoformat()
+                }
+                for event in recent_security_events
+            ],
+            'last_updated': datetime.now().isoformat()
+        }), 200
+
+    except Exception as e:
+        logger.error(f"Error getting webhook monitoring data: {e}")
+        return jsonify({'error': 'Failed to retrieve monitoring data'}), 500
+
+
+def _get_health_issue_description(webhook: Dict) -> str:
+    """Get description for webhook health issue"""
+    if webhook['health_status'] == 'critical':
+        return f"Webhook has {webhook['failure_count']} consecutive failures"
+    elif webhook['health_status'] == 'warning':
+        return f"Webhook has {webhook['failure_count']} recent failures"
+    elif webhook['health_status'] == 'stale':
+        return "No successful deliveries in the last 24 hours"
+    return "Unknown issue"
+
+
+def _get_suggested_actions(webhook: Dict) -> List[str]:
+    """Get suggested actions for webhook issues"""
+    actions = []
+    
+    if webhook['failure_count'] > 0:
+        actions.append("Check webhook endpoint availability")
+        actions.append("Verify webhook URL is correct")
+        actions.append("Test webhook connectivity")
+    
+    if webhook['health_status'] == 'critical':
+        actions.append("Consider temporarily disabling webhook")
+        actions.append("Check webhook logs for error patterns")
+    
+    if webhook['avg_response_time'] and webhook['avg_response_time'] > 10000:
+        actions.append("Webhook response time is slow - check endpoint performance")
+    
+    return actions
