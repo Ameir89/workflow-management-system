@@ -77,7 +77,9 @@ const VariableHelpSection = ({ variables }) => {
           <p className="mt-1">{t("notifications.variableHelpDesc")}</p>
           {variables.length > 0 && (
             <div className="mt-2 space-x-2">
-              <span className="text-xs font-medium">Available variables:</span>
+              <span className="text-xs font-medium">
+                {t("notifications.availableVariables")}:
+              </span>
               {variables.slice(0, 5).map(
                 (variable) =>
                   variable.key && (

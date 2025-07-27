@@ -1,0 +1,196 @@
+{
+  "automation": {
+    "title": "Automation Scripts",
+    "scripts": "Automation Scripts",
+    "scriptsDescription": "Manage and execute automation scripts for workflow processes",
+    "createScript": "Create Script",
+    "createFirstScript": "Create First Script",
+    "editScript": "Edit Script",
+    "creatingScript": "Creating new automation script",
+    "editingScript": "Editing automation script",
+    "createAndEdit": "Create & Edit",
+
+    "scriptName": "Script Name",
+    "enterScriptName": "Enter script name",
+    "description": "Description",
+    "enterDescription": "Enter description",
+    "category": "Category",
+    "selectCategory": "Select category",
+    "language": "Language",
+    "activeScript": "Active Script",
+    "scriptSettings": "Script Settings",
+
+    "categories": {
+      "apiCall": "API Call",
+      "dataProcessing": "Data Processing",
+      "notification": "Notification",
+      "integration": "Integration",
+      "utility": "Utility"
+    },
+
+    "languages": {
+      "javascript": "JavaScript",
+      "python": "Python",
+      "json": "JSON Configuration"
+    },
+
+    "validate": "Validate",
+    "test": "Test",
+    "testScript": "Test Script",
+    "duplicate": "Duplicate",
+    "delete": "Delete",
+    "view": "View",
+    "edit": "Edit",
+    "run": "Run",
+    "format": "Format",
+    "minify": "Minify",
+    "clear": "Clear",
+
+    "active": "Active",
+    "inactive": "Inactive",
+    "loading": "Loading...",
+    "loadingEditor": "Loading editor...",
+    "running": "Running...",
+    "validated": "Validated",
+    "unsavedChanges": "Unsaved Changes",
+
+    "validationErrors": "Validation Errors",
+    "validationErrors_plural": "{{count}} Validation Errors",
+
+    "testConfiguration": "Test Configuration",
+    "testData": "Test Data",
+    "enterTestData": "Enter test data in JSON format",
+    "testDataHelp": "Provide test data that will be available in the script context",
+    "useSampleData": "Use Sample Data",
+    "formatJson": "Format JSON",
+    "allowNetworkAccess": "Allow Network Access",
+    "timeout": "Timeout",
+    "runTest": "Run Test",
+    "testResults": "Test Results",
+    "testPassed": "Test Passed",
+    "testFailed": "Test Failed",
+    "executionTime": "Execution Time",
+    "output": "Output",
+    "error": "Error",
+    "logs": "Logs",
+    "testHistory": "Test History",
+    "passed": "Passed",
+    "failed": "Failed",
+    "testExecuted": "Test executed successfully",
+
+    "executions": "Executions",
+    "executionCount": "Execution Count",
+    "executionStats": "{{total}} total, {{success}} successful ({{rate}}%)",
+    "noExecutions": "No executions",
+    "lastRun": "Last run",
+    "by": "by",
+
+    "history": {
+      "title": "Execution History",
+      "description": "View past script executions and their results",
+      "loading": "Loading execution history...",
+      "loadError": "Failed to Load History",
+      "noExecutions": "No Executions Yet",
+      "noExecutionsDesc": "This script hasn't been executed yet",
+      "success": "Success",
+      "failed": "Failed",
+      "test": "Test",
+      "testExecution": "Test Execution",
+      "production": "Production",
+      "details": "Details",
+      "executionDetails": "Execution Details",
+      "duration": "Duration",
+      "executedBy": "Executed By",
+      "type": "Type",
+      "output": "Output",
+      "errorDetails": "Error Details",
+      "rawData": "Raw Data",
+      "system": "System",
+      "justNow": "Just now",
+      "minutesAgo": "{{count}} minute ago",
+      "minutesAgo_plural": "{{count}} minutes ago",
+      "hoursAgo": "{{count}} hour ago",
+      "hoursAgo_plural": "{{count}} hours ago",
+      "daysAgo": "{{count}} day ago",
+      "daysAgo_plural": "{{count}} days ago"
+    },
+
+    "examples": "Examples",
+    "help": {
+      "title": "Help",
+      "variablesInfo": "Use template variables to access workflow data:",
+      "workflowId": "Current workflow instance ID",
+      "workflowData": "Access workflow data fields",
+      "userEmail": "Current user's email",
+      "context": "Script execution context (Python only)"
+    },
+
+    "scriptEditor": "Script Editor",
+    "theme": {
+      "light": "Light",
+      "dark": "Dark",
+      "highContrast": "High Contrast"
+    },
+    "lines": "Lines",
+    "characters": "Characters",
+    "shortcuts": {
+      "save": "Save"
+    },
+
+    "quickActions": {
+      "format": "Format Code",
+      "formatDesc": "Format and beautify JSON code",
+      "minify": "Minify Code",
+      "minifyDesc": "Remove whitespace to reduce size",
+      "clear": "Clear Editor",
+      "clearDesc": "Remove all content from editor"
+    },
+
+    "tabs": {
+      "editor": "Editor",
+      "settings": "Settings",
+      "history": "History"
+    },
+
+    "searchPlaceholder": "Search automation scripts...",
+    "filters": {
+      "allTypes": "All Types",
+      "allCategories": "All Categories",
+      "allStatuses": "All Statuses",
+      "active": "Active",
+      "inactive": "Inactive"
+    },
+
+    "name": "Name",
+    "type": "Type",
+    "status": "Status",
+    "lastModified": "Last Modified",
+    "uncategorized": "Uncategorized",
+
+    "selectedCount": "{{count}} script selected",
+    "selectedCount_plural": "{{count}} scripts selected",
+    "testSelected": "Test Selected",
+    "deleteSelected": "Delete Selected",
+    "bulkTestNotImplemented": "Bulk testing not yet implemented",
+    "bulkDeleteNotImplemented": "Bulk deletion not yet implemented",
+
+    "noScripts": "No Automation Scripts",
+    "noScriptsDescription": "Create your first automation script to get started with workflow automation",
+
+    "loadError": "Failed to Load Scripts",
+    "errors": {
+      "saveBeforeTest": "Please save the script before testing",
+      "invalidJson": "Invalid JSON format",
+      "scriptRequired": "Script content is required",
+      "nameRequired": "Script name is required"
+    },
+
+    "scriptCreated": "Script created successfully",
+    "scriptUpdated": "Script updated successfully",
+    "scriptDeleted": "Script deleted successfully",
+    "scriptDuplicated": "Script duplicated successfully",
+
+    "deleteConfirmation": "Are you sure you want to delete \"{{name}}\"? This action cannot be undone.",
+    "deleteScript": "Delete Script"
+  }
+}

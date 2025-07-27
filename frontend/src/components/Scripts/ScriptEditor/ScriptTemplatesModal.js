@@ -1,5 +1,6 @@
-// src/components/Scripts/ScriptEditor/ScriptTemplatesModal.js - Updated for API response
+// src/components/Scripts/ScriptEditor/ScriptTemplatesModal.js - Updated for API response and i18n
 import React from "react";
+import { useTranslation } from "react-i18next";
 import { XMarkIcon, BookOpenIcon } from "@heroicons/react/24/outline";
 
 const ScriptTemplatesModal = ({
@@ -9,6 +10,8 @@ const ScriptTemplatesModal = ({
   scriptLanguage,
   onTemplateSelect,
 }) => {
+  const { t } = useTranslation();
+
   if (!isOpen) return null;
 
   // Filter templates by language - handle both script_type and language fields
@@ -20,7 +23,9 @@ const ScriptTemplatesModal = ({
     <div className="fixed inset-0 bg-gray-600 bg-opacity-50 overflow-y-auto h-full w-full z-50">
       <div className="relative top-20 mx-auto p-5 border w-full max-w-4xl shadow-lg rounded-md bg-white">
         <div className="flex justify-between items-center mb-4">
-          <h3 className="text-lg font-bold text-gray-900">Script Templates</h3>
+          <h3 className="text-lg font-bold text-gray-900">
+            {t("scripts.templates.scriptTemplates")}
+          </h3>
           <button
             onClick={onClose}
             className="text-gray-400 hover:text-gray-600"
@@ -50,7 +55,7 @@ const ScriptTemplatesModal = ({
                   </span>
                   {template.is_template && (
                     <span className="inline-flex items-center px-2 py-1 rounded text-xs bg-green-100 text-green-800">
-                      Template
+                      {t("scripts.templates.template")}
                     </span>
                   )}
                 </div>
@@ -70,10 +75,12 @@ const ScriptTemplatesModal = ({
             <div className="col-span-2 text-center py-8 text-gray-500">
               <BookOpenIcon className="mx-auto h-12 w-12 text-gray-400" />
               <h3 className="mt-2 text-sm font-medium text-gray-900">
-                No templates available
+                {t("scripts.templates.noTemplatesAvailable")}
               </h3>
               <p className="mt-1 text-sm text-gray-500">
-                No templates found for {scriptLanguage}
+                {t("scripts.templates.noTemplatesForLanguage", {
+                  language: scriptLanguage,
+                })}
               </p>
             </div>
           )}
@@ -84,7 +91,7 @@ const ScriptTemplatesModal = ({
             onClick={onClose}
             className="px-4 py-2 border border-gray-300 rounded-md text-sm font-medium text-gray-700 bg-white hover:bg-gray-50"
           >
-            Close
+            {t("scripts.templates.close")}
           </button>
         </div>
       </div>

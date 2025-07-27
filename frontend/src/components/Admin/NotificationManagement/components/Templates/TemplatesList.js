@@ -259,7 +259,11 @@ const TemplatesList = ({
                     </td>
                     <td className="px-6 py-4">
                       <StatusBadge
-                        status={template.is_active ? "Active" : "Inactive"}
+                        status={
+                          template.is_active
+                            ? t("common.active")
+                            : t("common.inactive")
+                        }
                         variant={template.is_active ? "success" : "default"}
                       />
                     </td>

@@ -1,0 +1,196 @@
+{
+  "automation": {
+    "title": "نصوص الأتمتة",
+    "scripts": "نصوص الأتمتة",
+    "scriptsDescription": "إدارة وتنفيذ نصوص الأتمتة لعمليات سير العمل",
+    "createScript": "إنشاء نص",
+    "createFirstScript": "إنشاء أول نص",
+    "editScript": "تحرير النص",
+    "creatingScript": "إنشاء نص أتمتة جديد",
+    "editingScript": "تحرير نص الأتمتة",
+    "createAndEdit": "إنشاء وتحرير",
+
+    "scriptName": "اسم النص",
+    "enterScriptName": "أدخل اسم النص",
+    "description": "الوصف",
+    "enterDescription": "أدخل الوصف",
+    "category": "الفئة",
+    "selectCategory": "اختر الفئة",
+    "language": "اللغة",
+    "activeScript": "نص نشط",
+    "scriptSettings": "إعدادات النص",
+
+    "categories": {
+      "apiCall": "استدعاء واجهة برمجة التطبيقات",
+      "dataProcessing": "معالجة البيانات",
+      "notification": "الإشعارات",
+      "integration": "التكامل",
+      "utility": "الأدوات المساعدة"
+    },
+
+    "languages": {
+      "javascript": "جافا سكريبت",
+      "python": "بايثون",
+      "json": "تكوين JSON"
+    },
+
+    "validate": "التحقق",
+    "test": "اختبار",
+    "testScript": "اختبار النص",
+    "duplicate": "نسخ",
+    "delete": "حذف",
+    "view": "عرض",
+    "edit": "تحرير",
+    "run": "تشغيل",
+    "format": "تنسيق",
+    "minify": "ضغط",
+    "clear": "مسح",
+
+    "active": "نشط",
+    "inactive": "غير نشط",
+    "loading": "جاري التحميل...",
+    "loadingEditor": "جاري تحميل المحرر...",
+    "running": "جاري التشغيل...",
+    "validated": "تم التحقق",
+    "unsavedChanges": "تغييرات غير محفوظة",
+
+    "validationErrors": "أخطاء التحقق",
+    "validationErrors_plural": "{{count}} أخطاء في التحقق",
+
+    "testConfiguration": "تكوين الاختبار",
+    "testData": "بيانات الاختبار",
+    "enterTestData": "أدخل بيانات الاختبار بتنسيق JSON",
+    "testDataHelp": "قدم بيانات اختبار ستكون متاحة في سياق النص",
+    "useSampleData": "استخدام بيانات نموذجية",
+    "formatJson": "تنسيق JSON",
+    "allowNetworkAccess": "السماح بالوصول للشبكة",
+    "timeout": "انتهاء المهلة الزمنية",
+    "runTest": "تشغيل الاختبار",
+    "testResults": "نتائج الاختبار",
+    "testPassed": "نجح الاختبار",
+    "testFailed": "فشل الاختبار",
+    "executionTime": "وقت التنفيذ",
+    "output": "الإخراج",
+    "error": "خطأ",
+    "logs": "السجلات",
+    "testHistory": "تاريخ الاختبارات",
+    "passed": "نجح",
+    "failed": "فشل",
+    "testExecuted": "تم تنفيذ الاختبار بنجاح",
+
+    "executions": "التنفيذات",
+    "executionCount": "عدد التنفيذات",
+    "executionStats": "{{total}} إجمالي، {{success}} ناجح ({{rate}}%)",
+    "noExecutions": "لا توجد تنفيذات",
+    "lastRun": "آخر تشغيل",
+    "by": "بواسطة",
+
+    "history": {
+      "title": "تاريخ التنفيذ",
+      "description": "عرض تنفيذات النص السابقة ونتائجها",
+      "loading": "جاري تحميل تاريخ التنفيذ...",
+      "loadError": "فشل في تحميل التاريخ",
+      "noExecutions": "لا توجد تنفيذات بعد",
+      "noExecutionsDesc": "لم يتم تنفيذ هذا النص بعد",
+      "success": "نجح",
+      "failed": "فشل",
+      "test": "اختبار",
+      "testExecution": "تنفيذ تجريبي",
+      "production": "الإنتاج",
+      "details": "التفاصيل",
+      "executionDetails": "تفاصيل التنفيذ",
+      "duration": "المدة الزمنية",
+      "executedBy": "نفذ بواسطة",
+      "type": "النوع",
+      "output": "الإخراج",
+      "errorDetails": "تفاصيل الخطأ",
+      "rawData": "البيانات الخام",
+      "system": "النظام",
+      "justNow": "الآن",
+      "minutesAgo": "منذ {{count}} دقيقة",
+      "minutesAgo_plural": "منذ {{count}} دقائق",
+      "hoursAgo": "منذ {{count}} ساعة",
+      "hoursAgo_plural": "منذ {{count}} ساعات",
+      "daysAgo": "منذ {{count}} يوم",
+      "daysAgo_plural": "منذ {{count}} أيام"
+    },
+
+    "examples": "أمثلة",
+    "help": {
+      "title": "المساعدة",
+      "variablesInfo": "استخدم متغيرات القالب للوصول إلى بيانات سير العمل:",
+      "workflowId": "معرف مثيل سير العمل الحالي",
+      "workflowData": "الوصول إلى حقول بيانات سير العمل",
+      "userEmail": "البريد الإلكتروني للمستخدم الحالي",
+      "context": "سياق تنفيذ النص (بايثون فقط)"
+    },
+
+    "scriptEditor": "محرر النص",
+    "theme": {
+      "light": "فاتح",
+      "dark": "داكن",
+      "highContrast": "تباين عالي"
+    },
+    "lines": "الأسطر",
+    "characters": "الأحرف",
+    "shortcuts": {
+      "save": "حفظ"
+    },
+
+    "quickActions": {
+      "format": "تنسيق الكود",
+      "formatDesc": "تنسيق وتجميل كود JSON",
+      "minify": "ضغط الكود",
+      "minifyDesc": "إزالة المسافات البيضاء لتقليل الحجم",
+      "clear": "مسح المحرر",
+      "clearDesc": "إزالة جميع المحتوى من المحرر"
+    },
+
+    "tabs": {
+      "editor": "المحرر",
+      "settings": "الإعدادات",
+      "history": "التاريخ"
+    },
+
+    "searchPlaceholder": "البحث في نصوص الأتمتة...",
+    "filters": {
+      "allTypes": "جميع الأنواع",
+      "allCategories": "جميع الفئات",
+      "allStatuses": "جميع الحالات",
+      "active": "نشط",
+      "inactive": "غير نشط"
+    },
+
+    "name": "الاسم",
+    "type": "النوع",
+    "status": "الحالة",
+    "lastModified": "آخر تعديل",
+    "uncategorized": "غير مصنف",
+
+    "selectedCount": "تم تحديد {{count}} نص",
+    "selectedCount_plural": "تم تحديد {{count}} نصوص",
+    "testSelected": "اختبار المحدد",
+    "deleteSelected": "حذف المحدد",
+    "bulkTestNotImplemented": "الاختبار المجمع غير مطبق بعد",
+    "bulkDeleteNotImplemented": "الحذف المجمع غير مطبق بعد",
+
+    "noScripts": "لا توجد نصوص أتمتة",
+    "noScriptsDescription": "أنشئ أول نص أتمتة للبدء في أتمتة سير العمل",
+
+    "loadError": "فشل في تحميل النصوص",
+    "errors": {
+      "saveBeforeTest": "يرجى حفظ النص قبل الاختبار",
+      "invalidJson": "تنسيق JSON غير صحيح",
+      "scriptRequired": "محتوى النص مطلوب",
+      "nameRequired": "اسم النص مطلوب"
+    },
+
+    "scriptCreated": "تم إنشاء النص بنجاح",
+    "scriptUpdated": "تم تحديث النص بنجاح",
+    "scriptDeleted": "تم حذف النص بنجاح",
+    "scriptDuplicated": "تم نسخ النص بنجاح",
+
+    "deleteConfirmation": "هل أنت متأكد من حذف \"{{name}}\"؟ لا يمكن التراجع عن هذا الإجراء.",
+    "deleteScript": "حذف النص"
+  }
+}

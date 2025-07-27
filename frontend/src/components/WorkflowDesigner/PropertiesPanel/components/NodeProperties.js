@@ -11,7 +11,7 @@ import TaskProperties from "./node-types/TaskProperties";
 import ApprovalProperties from "./node-types/ApprovalProperties";
 import NotificationProperties from "./node-types/NotificationProperties/NotificationProperties";
 import ConditionProperties from "./node-types/ConditionProperties";
-import AutomationProperties from "./node-types/AutomationProperties";
+import AutomationProperties from "./node-types/AutomationProperties/AutomationProperties";
 
 const NodeProperties = ({
   node,

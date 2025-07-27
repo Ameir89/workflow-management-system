@@ -19,7 +19,6 @@ import ChannelSpecificSettings from "./components/ChannelSpecificSettings";
 const NotificationProperties = ({ node, onPropertyChange }) => {
   const { t } = useTranslation();
   const properties = node.properties || {};
-  console.log("NotificationProperties properties:", properties);
   // Fetch notification templates
   const { data: templatesData, isLoading: templatesLoading } = useQuery(
     ["notification-templates-for-workflow"],

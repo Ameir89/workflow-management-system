@@ -15,13 +15,15 @@ import profile from "./profile.json";
 import designer from "./designer.json";
 import validation from "./validation.json";
 import myWorkflow from "./myWorkflow.json";
+import automation from "./automation.json";
 
-const en = {
+const ar = {
   common,
   auth,
   navigation,
   dashboard,
   tasks,
+  automation,
   workflows,
   forms,
   files,
@@ -36,4 +38,4 @@ const en = {
   myWorkflow,
 };
 
-export default en;
+export default ar;

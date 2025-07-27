@@ -21,14 +21,14 @@ const TemplateSelector = ({
   const templateOptions = [
     { value: "", label: t("designer.selectTemplate") },
     ...(templatesData?.templates || []).map((template) => ({
-      value: template.id,
+      value: template.name,
       label: `${template.name} (${
         (template.channels || []).join(", ") || "Email"
       })`,
       data: template,
     })),
   ];
-  console.log("Template selectedTemplateName:", selectedTemplateName);
+
   // Find selected template - try multiple sources
   const selectedTemplate = useMemo(() => {
     if (!selectedTemplateName) return null;
@@ -49,17 +49,12 @@ const TemplateSelector = ({
   }, [selectedTemplateName, selectedTemplateDetails, templatesData]);
 
   const handleTemplateChange = (templateId) => {
-    console.log("Template selected:", templateId);
-
-    // onPropertyChange("template", templateId);
-
     if (templateId && templatesData?.templates) {
       const templateOption = templatesData.templates.find(
         (t) => t.id === templateId
       );
 
       if (templateOption) {
-        console.log("Found template:", templateOption.name);
         onPropertyChange("template", templateOption.name);
 
         // Set channel from template channels
@@ -75,7 +70,7 @@ const TemplateSelector = ({
       }
     } else if (!templateId) {
       // Clear template data when no template is selected
-      onPropertyChange("selectedTemplateName", "");
+      onPropertyChange("template", "");
     }
   };
 

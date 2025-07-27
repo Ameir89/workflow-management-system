@@ -467,14 +467,16 @@ class WorkflowEngine:
 
             # Get automation configuration from step properties
             automation_config = properties.get('automation', {})
-
+            # script_date = getScript(properties.get('script_id'))
+            script_data = WorkflowEngine._get_script(properties.get('script_id'))
             # Support legacy script property for backward compatibility
-            if not automation_config and properties.get('script'):
+            # if not automation_config and properties.get('script'):
+            if not automation_config and script_data:
                 automation_config = {
                     # 'type': 'script_execution',
-                    'type': properties.get('automation_type', 'script_execution'),
-                    'script_type': 'python',
-                    'script': properties.get('script'),
+                    'type': script_data.get('type', 'script_execution'),
+                    'script_type': script_data.get('script_type', 'python'),
+                    'script': script_data.get('script_content'),
                     'timeout': properties.get('timeout', 300)
                 }
 
@@ -980,6 +982,16 @@ class WorkflowEngine:
             WHERE id = %s
         """
         return Database.execute_one(query, (workflow_id,))
+    
+    @staticmethod
+    def _get_script(script_id):
+        """Get script by ID"""
+        query = """
+            SELECT * 
+            FROM  automation_scripts
+            WHERE id = %s
+        """
+        return Database.execute_one(query, (script_id,))
 
     @staticmethod
     def _create_instance(workflow_id, title, data, initiated_by, tenant_id):

@@ -45,7 +45,8 @@
       "lookupsManagement": "Lookups Management",
       "notificationManagement": "Notification Management",
       "files": "Files",
-      "scripts": "Scripts"
+      "scripts": "Scripts",
+      "automationScripts": "Automation Scripts"
     },
     "activeTasks": "Active Tasks",
     "dueCount": "{{count}} due"

@@ -1,8 +1,11 @@
 // src/components/Scripts/ScriptEditor/tabs/ParametersTab.js
 import React from "react";
+import { useTranslation } from "react-i18next";
 import { TagIcon, TrashIcon } from "@heroicons/react/24/outline";
 
 const ParametersTab = ({ script, onScriptChange }) => {
+  const { t } = useTranslation();
+
   const addParameter = () => {
     onScriptChange("parameters", [
       ...(script.parameters || []),
@@ -34,13 +37,15 @@ const ParametersTab = ({ script, onScriptChange }) => {
   return (
     <div className="bg-white border border-gray-200 rounded-lg p-6">
       <div className="flex items-center justify-between mb-4">
-        <h2 className="text-lg font-medium text-gray-900">Script Parameters</h2>
+        <h2 className="text-lg font-medium text-gray-900">
+          {t("scripts.parameters")}
+        </h2>
         <button
           onClick={addParameter}
           className="inline-flex items-center px-3 py-2 bg-indigo-50 text-indigo-700 rounded-lg hover:bg-indigo-100"
         >
           <TagIcon className="h-4 w-4 mr-1" />
-          Add Parameter
+          {t("scripts.parameters.addParameter")}
         </button>
       </div>
 
@@ -48,17 +53,17 @@ const ParametersTab = ({ script, onScriptChange }) => {
         <div className="text-center py-8 text-gray-500">
           <TagIcon className="mx-auto h-12 w-12 text-gray-400" />
           <h3 className="mt-2 text-sm font-medium text-gray-900">
-            No parameters defined
+            {t("scripts.parameters.noParameters")}
           </h3>
           <p className="mt-1 text-sm text-gray-500">
-            Add parameters to make your script configurable
+            {t("scripts.parameters.noParametersDescription")}
           </p>
           <button
             onClick={addParameter}
             className="mt-4 inline-flex items-center px-4 py-2 border border-transparent shadow-sm text-sm font-medium rounded-md text-white bg-indigo-600 hover:bg-indigo-700"
           >
             <TagIcon className="h-4 w-4 mr-2" />
-            Add First Parameter
+            {t("scripts.parameters.addFirstParameter")}
           </button>
         </div>
       ) : (
@@ -70,7 +75,7 @@ const ParametersTab = ({ script, onScriptChange }) => {
             >
               <div className="col-span-3">
                 <label className="block text-xs font-medium text-gray-700 mb-1">
-                  Parameter Name
+                  {t("scripts.parameters.parameterName")}
                 </label>
                 <input
                   type="text"
@@ -84,7 +89,7 @@ const ParametersTab = ({ script, onScriptChange }) => {
               </div>
               <div className="col-span-2">
                 <label className="block text-xs font-medium text-gray-700 mb-1">
-                  Type
+                  {t("scripts.parameters.parameterType")}
                 </label>
                 <select
                   value={param.type}
@@ -93,16 +98,26 @@ const ParametersTab = ({ script, onScriptChange }) => {
                   }
                   className="w-full px-2 py-1 text-sm border border-gray-300 rounded focus:ring-1 focus:ring-indigo-500"
                 >
-                  <option value="string">String</option>
-                  <option value="number">Number</option>
-                  <option value="boolean">Boolean</option>
-                  <option value="array">Array</option>
-                  <option value="object">Object</option>
+                  <option value="string">
+                    {t("scripts.parameters.types.string")}
+                  </option>
+                  <option value="number">
+                    {t("scripts.parameters.types.number")}
+                  </option>
+                  <option value="boolean">
+                    {t("scripts.parameters.types.boolean")}
+                  </option>
+                  <option value="array">
+                    {t("scripts.parameters.types.array")}
+                  </option>
+                  <option value="object">
+                    {t("scripts.parameters.types.object")}
+                  </option>
                 </select>
               </div>
               <div className="col-span-3">
                 <label className="block text-xs font-medium text-gray-700 mb-1">
-                  Description
+                  {t("scripts.parameters.parameterDescription")}
                 </label>
                 <input
                   type="text"
@@ -111,12 +126,12 @@ const ParametersTab = ({ script, onScriptChange }) => {
                     updateParameter(index, "description", e.target.value)
                   }
                   className="w-full px-2 py-1 text-sm border border-gray-300 rounded focus:ring-1 focus:ring-indigo-500"
-                  placeholder="Parameter description"
+                  placeholder={t("scripts.parameters.parameterDescription")}
                 />
               </div>
               <div className="col-span-2">
                 <label className="block text-xs font-medium text-gray-700 mb-1">
-                  Default Value
+                  {t("scripts.parameters.parameterDefault")}
                 </label>
                 <input
                   type="text"
@@ -125,7 +140,7 @@ const ParametersTab = ({ script, onScriptChange }) => {
                     updateParameter(index, "default_value", e.target.value)
                   }
                   className="w-full px-2 py-1 text-sm border border-gray-300 rounded focus:ring-1 focus:ring-indigo-500"
-                  placeholder="Default"
+                  placeholder={t("common.default")}
                 />
               </div>
               <div className="col-span-1">
@@ -138,13 +153,14 @@ const ParametersTab = ({ script, onScriptChange }) => {
                     }
                     className="mr-1 h-3 w-3 text-indigo-600 rounded"
                   />
-                  Required
+                  {t("scripts.parameters.parameterRequired")}
                 </label>
               </div>
               <div className="col-span-1">
                 <button
                   onClick={() => removeParameter(index)}
                   className="p-1 text-red-600 hover:bg-red-50 rounded"
+                  title={t("scripts.parameters.removeParameter")}
                 >
                   <TrashIcon className="h-4 w-4" />
                 </button>

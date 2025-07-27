@@ -1,7 +1,8 @@
 /* eslint-disable react-hooks/exhaustive-deps */
-// src/components/Scripts/ScriptEditor/ScriptEditor.js - Enhanced with Monaco Editor
+// src/components/Scripts/ScriptEditor/ScriptEditor.js - Enhanced with Monaco Editor and i18n
 import React, { useState, useEffect } from "react";
 import { useParams, useNavigate } from "react-router-dom";
+import { useTranslation } from "react-i18next";
 import {
   ArrowLeftIcon,
   ExclamationTriangleIcon,
@@ -18,6 +19,7 @@ import ScriptTemplatesModal from "./ScriptTemplatesModal";
 import UnsavedChangesModal from "./UnsavedChangesModal";
 
 const ScriptEditor = () => {
+  const { t } = useTranslation();
   const { id } = useParams();
   const navigate = useNavigate();
   const isEditing = Boolean(id);
@@ -112,7 +114,9 @@ const ScriptEditor = () => {
       <div className="flex items-center justify-center h-64">
         <div className="text-center">
           <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-indigo-600 mx-auto mb-4"></div>
-          <p className="text-gray-600">Loading script editor...</p>
+          <p className="text-gray-600">
+            {t("scripts.common.loadingScriptEditor")}
+          </p>
         </div>
       </div>
     );
@@ -128,19 +132,21 @@ const ScriptEditor = () => {
             className="inline-flex items-center text-sm text-gray-500 hover:text-gray-700 transition-colors"
           >
             <ArrowLeftIcon className="h-4 w-4 mr-1" />
-            Back to Scripts
+            {t("scripts.common.backToScripts")}
           </button>
         </div>
 
         <div className="flex items-center justify-between">
           <div>
             <h1 className="text-3xl font-bold text-gray-900">
-              {isEditing ? "Edit Script" : "Create New Script"}
+              {isEditing
+                ? t("scripts.common.editScript")
+                : t("scripts.common.createNewScript")}
             </h1>
             <p className="text-gray-600 mt-2">
               {isEditing
-                ? "Modify your existing script with VS Code-like editor"
-                : "Create a reusable script with advanced code editing features"}
+                ? t("scripts.editor.enhancedTitle")
+                : t("scripts.subtitle")}
             </p>
           </div>
 
@@ -150,14 +156,15 @@ const ScriptEditor = () => {
               {hasUnsavedChanges && (
                 <span className="text-amber-600 flex items-center">
                   <ExclamationTriangleIcon className="h-4 w-4 mr-1" />
-                  Unsaved changes
+                  {t("scripts.unsavedChanges.unsavedChanges")}
                 </span>
               )}
 
               {lastSaved && (
                 <span className="text-green-600 flex items-center">
                   <CheckCircleIcon className="h-4 w-4 mr-1" />
-                  Saved {new Date(lastSaved).toLocaleTimeString()}
+                  {t("scripts.common.save")}{" "}
+                  {new Date(lastSaved).toLocaleTimeString()}
                 </span>
               )}
             </div>
@@ -171,7 +178,7 @@ const ScriptEditor = () => {
                   onChange={(e) => setAutoSave(e.target.checked)}
                   className="mr-2 h-4 w-4 text-indigo-600 rounded"
                 />
-                Auto-save
+                {t("scripts.editor.autoSave")}
               </label>
             )}
 
@@ -186,7 +193,7 @@ const ScriptEditor = () => {
               ) : (
                 <CodeBracketIcon className="h-4 w-4 mr-2" />
               )}
-              Validate
+              {t("scripts.common.validate")}
             </button>
 
             <button
@@ -197,7 +204,9 @@ const ScriptEditor = () => {
               {saveScriptMutation.isLoading ? (
                 <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-white mr-2"></div>
               ) : null}
-              {isEditing ? "Update" : "Create"} Script
+              {isEditing
+                ? t("scripts.common.updateScript")
+                : t("scripts.common.createScript")}
             </button>
           </div>
         </div>

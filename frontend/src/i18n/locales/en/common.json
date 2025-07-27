@@ -104,6 +104,9 @@
     "uploadedBy": "Uploaded By",
     "downloadCount": "Download Count",
     "steps": "Steps",
-    "step": "Step"
+    "step": "Step",
+    "sortBy": "Sort By",
+    "dateCreated": "Date Created",
+    "dateModified": "Date Modified"
   }
 }

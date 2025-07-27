@@ -27,12 +27,12 @@ import FormsList from "../components/Forms/FormsList";
 import FormBuilder from "../components/Forms/FormBuilder/FormBuilder";
 import FormResponses from "../components/Forms/FormResponses";
 
-// Scripts components
-import ScriptsList from "../components/Scripts/ScriptsList";
-import ScriptEditor from "../components/Scripts/ScriptEditor/ScriptEditor";
-import ScriptExecutionHistory from "../components/Scripts/ScriptExecutionHistory";
-import ScriptTemplates from "../components/Scripts/ScriptTemplates";
-import ScriptAnalytics from "../components/Scripts/ScriptAnalytics";
+// // Scripts components
+// import ScriptsList from "../components/Scripts/ScriptsList";
+// import ScriptEditor from "../components/Scripts/ScriptEditor/ScriptEditor";
+// import ScriptExecutionHistory from "../components/Scripts/ScriptExecutionHistory";
+// import ScriptTemplates from "../components/Scripts/ScriptTemplates";
+// import ScriptAnalytics from "../components/Scripts/ScriptAnalytics";
 
 // Webhooks components
 import WebhooksList from "../components/Webhooks/WebhooksList";
@@ -60,6 +60,10 @@ import Profile from "../components/Auth/Profile";
 // Workflow Instance Detail Component (placeholder)
 import WorkflowInstanceDetail from "../components/Workflows/WorkflowInstanceDetail/WorkflowInstanceDetail";
 import MyWorkflowInstances from "../components/Workflows/MyWorkflowInstances";
+
+// Automation components
+import AutomationScripts from "../components/Admin/AutomationScripts/AutomationScripts";
+import AutomationEditorPage from "../components/Admin/AutomationEditor/AutomationEditor";
 
 const AppRoutes = () => {
   return (
@@ -197,7 +201,21 @@ const AppRoutes = () => {
             }
           />
 
-          {/* Scripts Routes */}
+          {/* Automation Routes */}
+          <Route path="automation">
+            <Route path="scripts" element={<AutomationScripts />} />
+            <Route path="scripts/create" element={<AutomationEditorPage />} />
+            <Route
+              path="scripts/:scriptId"
+              element={<AutomationEditorPage />}
+            />
+            <Route
+              path="scripts/:scriptId/edit"
+              element={<AutomationEditorPage />}
+            />
+          </Route>
+
+          {/* Scripts Routes
           <Route
             path="scripts"
             element={
@@ -253,7 +271,7 @@ const AppRoutes = () => {
                 <ScriptAnalytics />
               </ProtectedRoute>
             }
-          />
+          /> */}
 
           {/* Notification Routes */}
           <Route

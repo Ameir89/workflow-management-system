@@ -45,7 +45,8 @@
       "lookupsManagement": "إدارة القوائم المرجعية",
       "notificationManagement": "إدارة الإشعارات",
       "files": "الملفات",
-      "scripts": "البرامج النصية"
+      "scripts": "البرامج النصية",
+      "automationScripts": "كود التشغيل الآلي"
     },
     "activeTasks": "المهام النشطة",
     "dueCount": "{{count}} مستحقة"

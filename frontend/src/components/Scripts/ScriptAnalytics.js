@@ -1,6 +1,7 @@
 // src/components/Scripts/ScriptAnalytics.js
 import React, { useState } from "react";
 import { useQuery } from "react-query";
+import { useTranslation } from "react-i18next";
 import { scriptsService } from "../../services/scriptsService";
 import {
   ChartBarIcon,
@@ -12,6 +13,7 @@ import {
 } from "@heroicons/react/24/outline";
 
 const ScriptAnalytics = () => {
+  const { t } = useTranslation();
   const [timeRange, setTimeRange] = useState("30d");
   const [selectedScript, setSelectedScript] = useState("");
   const [selectedCategory, setSelectedCategory] = useState("");
@@ -100,7 +102,9 @@ const ScriptAnalytics = () => {
                 {change > 0 ? "+" : ""}
                 {change}%
               </span>
-              <span className="text-sm text-gray-500 ml-1">vs last period</span>
+              <span className="text-sm text-gray-500 ml-1">
+                {t("scripts.analytics.vsLastPeriod")}
+              </span>
             </div>
           )}
         </div>
@@ -118,7 +122,9 @@ const ScriptAnalytics = () => {
           <h3 className="text-lg font-medium text-gray-900 mb-4">{title}</h3>
           <div className="text-center py-8 text-gray-500">
             <ChartBarIcon className="mx-auto h-12 w-12 text-gray-400" />
-            <p className="mt-2 text-sm">No data available</p>
+            <p className="mt-2 text-sm">
+              {t("scripts.analytics.noDataAvailable")}
+            </p>
           </div>
         </div>
       );
@@ -155,7 +161,7 @@ const ScriptAnalytics = () => {
     <div className="bg-white rounded-lg border border-gray-200 overflow-hidden">
       <div className="px-6 py-4 border-b border-gray-200">
         <h3 className="text-lg font-medium text-gray-900">
-          Top Performing Scripts
+          {t("scripts.analytics.topPerformingScripts")}
         </h3>
       </div>
       <div className="overflow-x-auto">
@@ -163,19 +169,19 @@ const ScriptAnalytics = () => {
           <thead className="bg-gray-50">
             <tr>
               <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                Script
+                {t("scripts.common.script")}
               </th>
               <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                Executions
+                {t("scripts.analytics.executions")}
               </th>
               <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                Success Rate
+                {t("scripts.analytics.successRate")}
               </th>
               <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                Avg Duration
+                {t("scripts.analytics.avgDuration")}
               </th>
               <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                Last Executed
+                {t("scripts.analytics.lastExecuted")}
               </th>
             </tr>
           </thead>
@@ -221,7 +227,7 @@ const ScriptAnalytics = () => {
                 <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
                   {script.last_executed
                     ? new Date(script.last_executed).toLocaleDateString()
-                    : "Never"}
+                    : t("scripts.analytics.never")}
                 </td>
               </tr>
             ))}
@@ -244,7 +250,7 @@ const ScriptAnalytics = () => {
       <div className="text-center py-12">
         <XCircleIcon className="mx-auto h-12 w-12 text-red-400" />
         <h3 className="mt-2 text-sm font-medium text-gray-900">
-          Error Loading Analytics
+          {t("scripts.analytics.errorLoadingAnalytics")}
         </h3>
         <p className="mt-1 text-sm text-gray-500">{error.message}</p>
         <button
@@ -252,7 +258,7 @@ const ScriptAnalytics = () => {
           className="mt-4 inline-flex items-center px-4 py-2 border border-transparent shadow-sm text-sm font-medium rounded-md text-white bg-indigo-600 hover:bg-indigo-700"
         >
           <ArrowPathIcon className="h-4 w-4 mr-2" />
-          Retry
+          {t("scripts.analytics.retry")}
         </button>
       </div>
     );
@@ -264,10 +270,10 @@ const ScriptAnalytics = () => {
       <div className="flex justify-between items-center">
         <div>
           <h2 className="text-xl font-semibold text-gray-900">
-            Script Analytics
+            {t("scripts.analytics.title")}
           </h2>
           <p className="text-sm text-gray-600">
-            Monitor script performance and execution metrics
+            {t("scripts.analytics.subtitle")}
           </p>
         </div>
         <div className="flex items-center space-x-3">
@@ -276,7 +282,7 @@ const ScriptAnalytics = () => {
             className="inline-flex items-center px-3 py-2 border border-gray-300 rounded-md text-sm font-medium text-gray-700 bg-white hover:bg-gray-50"
           >
             <ArrowPathIcon className="h-4 w-4 mr-2" />
-            Refresh
+            {t("scripts.analytics.refresh")}
           </button>
         </div>
       </div>
@@ -286,31 +292,37 @@ const ScriptAnalytics = () => {
         <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
           <div>
             <label className="block text-sm font-medium text-gray-700 mb-1">
-              Time Range
+              {t("scripts.analytics.timeRange")}
             </label>
             <select
               value={timeRange}
               onChange={(e) => setTimeRange(e.target.value)}
               className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-indigo-500"
             >
-              <option value="24h">Last 24 Hours</option>
-              <option value="7d">Last 7 Days</option>
-              <option value="30d">Last 30 Days</option>
-              <option value="90d">Last 90 Days</option>
-              <option value="1y">Last Year</option>
+              <option value="24h">
+                {t("scripts.analytics.timeRanges.24h")}
+              </option>
+              <option value="7d">{t("scripts.analytics.timeRanges.7d")}</option>
+              <option value="30d">
+                {t("scripts.analytics.timeRanges.30d")}
+              </option>
+              <option value="90d">
+                {t("scripts.analytics.timeRanges.90d")}
+              </option>
+              <option value="1y">{t("scripts.analytics.timeRanges.1y")}</option>
             </select>
           </div>
 
           <div>
             <label className="block text-sm font-medium text-gray-700 mb-1">
-              Script
+              {t("scripts.analytics.script")}
             </label>
             <select
               value={selectedScript}
               onChange={(e) => setSelectedScript(e.target.value)}
               className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-indigo-500"
             >
-              <option value="">All Scripts</option>
+              <option value="">{t("scripts.analytics.allScripts")}</option>
               {scriptsData?.scripts?.map((script) => (
                 <option key={script.id} value={script.id}>
                   {script.name}
@@ -321,14 +333,14 @@ const ScriptAnalytics = () => {
 
           <div>
             <label className="block text-sm font-medium text-gray-700 mb-1">
-              Category
+              {t("scripts.analytics.category")}
             </label>
             <select
               value={selectedCategory}
               onChange={(e) => setSelectedCategory(e.target.value)}
               className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-indigo-500"
             >
-              <option value="">All Categories</option>
+              <option value="">{t("scripts.analytics.allCategories")}</option>
               {categories?.map((category) => (
                 <option key={category.value} value={category.value}>
                   {category.label}
@@ -342,7 +354,7 @@ const ScriptAnalytics = () => {
       {/* Key Metrics */}
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
         <MetricCard
-          title="Total Executions"
+          title={t("scripts.analytics.totalExecutions")}
           value={formatNumber(analyticsData?.metrics?.total_executions || 0)}
           change={analyticsData?.metrics?.execution_change}
           icon={ChartBarIcon}
@@ -350,7 +362,7 @@ const ScriptAnalytics = () => {
         />
 
         <MetricCard
-          title="Success Rate"
+          title={t("scripts.analytics.successRate")}
           value={`${analyticsData?.metrics?.success_rate || 0}%`}
           change={analyticsData?.metrics?.success_rate_change}
           icon={CheckCircleIcon}
@@ -358,7 +370,7 @@ const ScriptAnalytics = () => {
         />
 
         <MetricCard
-          title="Average Duration"
+          title={t("scripts.analytics.averageDuration")}
           value={formatDuration(analyticsData?.metrics?.avg_duration_ms || 0)}
           change={analyticsData?.metrics?.duration_change}
           icon={ClockIcon}
@@ -366,7 +378,7 @@ const ScriptAnalytics = () => {
         />
 
         <MetricCard
-          title="Active Scripts"
+          title={t("scripts.analytics.activeScripts")}
           value={formatNumber(analyticsData?.metrics?.active_scripts || 0)}
           change={analyticsData?.metrics?.active_scripts_change}
           icon={CalendarDaysIcon}
@@ -378,12 +390,12 @@ const ScriptAnalytics = () => {
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
         <PerformanceChart
           data={analyticsData?.execution_trends}
-          title="Execution Trends"
+          title={t("scripts.analytics.executionTrends")}
         />
 
         <PerformanceChart
           data={analyticsData?.error_types}
-          title="Common Error Types"
+          title={t("scripts.analytics.commonErrorTypes")}
         />
       </div>
 
@@ -391,12 +403,12 @@ const ScriptAnalytics = () => {
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
         <PerformanceChart
           data={analyticsData?.category_performance}
-          title="Performance by Category"
+          title={t("scripts.analytics.performanceByCategory")}
         />
 
         <PerformanceChart
           data={analyticsData?.language_usage}
-          title="Language Usage"
+          title={t("scripts.analytics.languageUsage")}
         />
       </div>
 
@@ -409,26 +421,32 @@ const ScriptAnalytics = () => {
       {analyticsData?.resource_usage && (
         <div className="bg-white p-6 rounded-lg border border-gray-200">
           <h3 className="text-lg font-medium text-gray-900 mb-4">
-            Resource Usage
+            {t("scripts.analytics.resourceUsage")}
           </h3>
           <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
             <div className="text-center">
               <div className="text-2xl font-semibold text-gray-900">
                 {analyticsData.resource_usage.avg_memory_mb}MB
               </div>
-              <div className="text-sm text-gray-500">Average Memory</div>
+              <div className="text-sm text-gray-500">
+                {t("scripts.analytics.averageMemory")}
+              </div>
             </div>
             <div className="text-center">
               <div className="text-2xl font-semibold text-gray-900">
                 {analyticsData.resource_usage.avg_cpu_percent}%
               </div>
-              <div className="text-sm text-gray-500">Average CPU</div>
+              <div className="text-sm text-gray-500">
+                {t("scripts.analytics.averageCPU")}
+              </div>
             </div>
             <div className="text-center">
               <div className="text-2xl font-semibold text-gray-900">
                 {analyticsData.resource_usage.concurrent_executions}
               </div>
-              <div className="text-sm text-gray-500">Peak Concurrent</div>
+              <div className="text-sm text-gray-500">
+                {t("scripts.analytics.peakConcurrent")}
+              </div>
             </div>
           </div>
         </div>
@@ -438,7 +456,7 @@ const ScriptAnalytics = () => {
       {analyticsData?.insights && analyticsData.insights.length > 0 && (
         <div className="bg-blue-50 border border-blue-200 rounded-lg p-6">
           <h3 className="text-lg font-medium text-blue-900 mb-4">
-            Insights & Recommendations
+            {t("scripts.analytics.insightsRecommendations")}
           </h3>
           <div className="space-y-3">
             {analyticsData.insights.map((insight, index) => (
@@ -450,7 +468,8 @@ const ScriptAnalytics = () => {
                   <p className="text-sm text-blue-800">{insight.message}</p>
                   {insight.recommendation && (
                     <p className="text-sm text-blue-600 mt-1">
-                      <strong>Recommendation:</strong> {insight.recommendation}
+                      <strong>{t("scripts.analytics.recommendation")}:</strong>{" "}
+                      {insight.recommendation}
                     </p>
                   )}
                 </div>

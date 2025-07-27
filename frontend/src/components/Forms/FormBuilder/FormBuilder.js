@@ -17,44 +17,7 @@ const EnhancedFormBuilder = () => {
   const [fields, setFields] = useState([]);
   const [isSaving, setIsSaving] = useState(false);
 
-  const [availableLookups, setAvailableLookups] = useState([
-    {
-      id: 1,
-      name: "countries",
-      displayName: "Countries",
-      valueField: "code",
-      displayField: "name",
-      fields: [
-        { name: "code", displayName: "Country Code" },
-        { name: "name", displayName: "Country Name" },
-        { name: "region", displayName: "Region" },
-      ],
-    },
-    {
-      id: 2,
-      name: "departments",
-      displayName: "Departments",
-      valueField: "id",
-      displayField: "name",
-      fields: [
-        { name: "id", displayName: "ID" },
-        { name: "name", displayName: "Department Name" },
-        { name: "manager", displayName: "Manager" },
-      ],
-    },
-    {
-      id: 3,
-      name: "priorities",
-      displayName: "Priority Levels",
-      valueField: "level",
-      displayField: "name",
-      fields: [
-        { name: "level", displayName: "Level" },
-        { name: "name", displayName: "Priority Name" },
-        { name: "color", displayName: "Color" },
-      ],
-    },
-  ]);
+  const [availableLookups, setAvailableLookups] = useState([]);
 
   useQuery(["form", id], () => formsService.getForm(id), {
     enabled: !!id,
@@ -117,7 +80,6 @@ const EnhancedFormBuilder = () => {
 
   const addField = () => {
     const newField = {
-      id: Date.now(),
       name: `field_${fields.length + 1}`,
       label: "New Field",
       type: "text",
@@ -141,7 +103,7 @@ const EnhancedFormBuilder = () => {
         max: "",
       },
     };
-    setFields([...fields, newField]);
+    setFields((prevFields) => [...prevFields, newField]);
   };
 
   // Create form mutation
@@ -198,14 +160,15 @@ const EnhancedFormBuilder = () => {
       }
 
       // Validate lookup configuration
+
       if (field.dataSource === "lookup") {
         if (!field.lookupTable) {
           errors.push(`Field ${index + 1}: Lookup table is required`);
         }
-        if (!field.lookupConfig.valueField) {
+        if (!field?.lookupConfig?.valueField) {
           errors.push(`Field ${index + 1}: Value field is required for lookup`);
         }
-        if (!field.lookupConfig.displayField) {
+        if (!field?.lookupConfig?.displayField) {
           errors.push(
             `Field ${index + 1}: Display field is required for lookup`
           );
@@ -327,70 +290,68 @@ const EnhancedFormBuilder = () => {
       navigate("/forms");
     }
   };
-  const removeField = (id) => {
-    setFields(fields.filter((field) => field.id !== id));
+  // Updated removeField function to use index instead of ID
+  const removeField = (index) => {
+    setFields((prevFields) => prevFields.filter((_, i) => i !== index));
   };
 
-  const moveField = (id, direction) => {
-    const index = fields.findIndex((field) => field.id === id);
+  const moveField = (index, direction) => {
     if (
       (direction === "up" && index > 0) ||
       (direction === "down" && index < fields.length - 1)
     ) {
-      const newFields = [...fields];
-      const targetIndex = direction === "up" ? index - 1 : index + 1;
-      [newFields[index], newFields[targetIndex]] = [
-        newFields[targetIndex],
-        newFields[index],
-      ];
-      setFields(newFields);
+      setFields((prevFields) => {
+        const newFields = [...prevFields];
+        const targetIndex = direction === "up" ? index - 1 : index + 1;
+        [newFields[index], newFields[targetIndex]] = [
+          newFields[targetIndex],
+          newFields[index],
+        ];
+        return newFields;
+      });
     }
   };
 
-  const updateField = (id, property, value) => {
-    setFields(
-      fields.map((field) => {
-        if (field.id !== id) return field;
+  const updateField = (index, property, value) => {
+    setFields((prevFields) => {
+      const newFields = [...prevFields];
+      const updatedField = { ...newFields[index], [property]: value };
 
-        const updatedField = { ...field, [property]: value };
+      // Special handling for field type changes
+      if (property === "type") {
+        const newFieldType = fieldTypes.find((type) => type.value === value);
 
-        // Special handling for field type changes
-        if (property === "type") {
-          const newFieldType = fieldTypes.find((type) => type.value === value);
+        // If the new field type doesn't support lookups, reset lookup-related data
+        if (!newFieldType?.hasLookup) {
+          updatedField.dataSource = "manual";
+          updatedField.lookupTable = null;
+          updatedField.lookupConfig = {
+            valueField: "",
+            displayField: "",
+            additionalFields: [],
+          };
 
-          // If the new field type doesn't support lookups, reset lookup-related data
-          if (!newFieldType?.hasLookup) {
-            updatedField.dataSource = "manual";
-            updatedField.lookupTable = null;
-            updatedField.lookupConfig = {
-              valueField: "",
-              displayField: "",
-              additionalFields: [],
-            };
-
-            // Ensure options array exists for manual configuration
-            if (!updatedField.options || updatedField.options.length === 0) {
-              updatedField.options = [{ value: "", label: "" }];
-            }
+          // Ensure options array exists for manual configuration
+          if (!updatedField.options || updatedField.options.length === 0) {
+            updatedField.options = [{ value: "", label: "" }];
           }
         }
+      }
 
-        return updatedField;
-      })
-    );
+      newFields[index] = updatedField;
+      return newFields;
+    });
   };
 
-  const updateLookupConfig = (id, property, value) => {
-    setFields(
-      fields.map((field) =>
-        field.id === id
-          ? {
-              ...field,
-              lookupConfig: { ...field.lookupConfig, [property]: value },
-            }
-          : field
-      )
-    );
+  const updateLookupConfig = (index, property, value) => {
+    setFields((prevFields) => {
+      const newFields = [...prevFields];
+      newFields[index] = {
+        ...newFields[index],
+        lookupConfig: { ...newFields[index].lookupConfig, [property]: value },
+      };
+      return newFields;
+    });
   };
 
   return (
@@ -473,7 +434,7 @@ const EnhancedFormBuilder = () => {
             <div className="space-y-6">
               {fields.map((field, index) => (
                 <FieldEditor
-                  key={index}
+                  key={`field-${index}`} // Use index for key instead of field.id
                   field={field}
                   index={index}
                   fields={fields}

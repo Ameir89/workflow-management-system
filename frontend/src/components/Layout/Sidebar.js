@@ -25,6 +25,7 @@ import {
   BellAlertIcon,
   CodeBracketSquareIcon,
   InboxArrowDownIcon,
+  CommandLineIcon,
 } from "@heroicons/react/24/outline";
 import {
   HomeIcon as HomeIconSolid,
@@ -40,6 +41,7 @@ import {
   BellAlertIcon as BellAlertIconSolid,
   CodeBracketSquareIcon as CodeBracketSquareIconSolid,
   InboxArrowDownIcon as InboxArrowDownIconSolid,
+  CommandLineIcon as CommandLineIconSolid,
 } from "@heroicons/react/24/solid";
 
 const Sidebar = ({ isOpen, onClose, userPermissions = [] }) => {
@@ -153,10 +155,11 @@ const Sidebar = ({ isOpen, onClose, userPermissions = [] }) => {
       iconSolid: BellAlertIconSolid,
     },
     {
-      name: t("nav.configuration.scripts"),
-      href: "/scripts",
-      icon: CodeBracketSquareIcon,
-      iconSolid: CodeBracketSquareIconSolid,
+      name: t("nav.configuration.automationScripts"),
+      href: "/automation/scripts",
+      icon: CommandLineIcon,
+      iconSolid: CommandLineIconSolid,
+      badge: null,
     },
   ];
 

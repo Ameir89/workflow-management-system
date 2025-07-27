@@ -1,6 +1,7 @@
 import React, { useState } from "react";
 import { useQuery, useMutation, useQueryClient } from "react-query";
 import { Link } from "react-router-dom";
+import { useTranslation } from "react-i18next";
 import { toast } from "react-toastify";
 import { scriptsService } from "../../services/scriptsService";
 import Pagination from "../Common/Pagination";
@@ -15,6 +16,7 @@ import {
 } from "@heroicons/react/24/outline";
 
 const ScriptsList = () => {
+  const { t } = useTranslation();
   const queryClient = useQueryClient();
   const [currentPage, setCurrentPage] = useState(1);
   const [search, setSearch] = useState("");
@@ -53,7 +55,7 @@ const ScriptsList = () => {
     (id) => scriptsService.deleteScript(id),
     {
       onSuccess: () => {
-        toast.success("Script deleted successfully");
+        toast.success(t("scripts.deleteSuccess"));
         queryClient.invalidateQueries(["scripts"]);
 
         // If we deleted the last item on current page and we're not on page 1,
@@ -73,7 +75,7 @@ const ScriptsList = () => {
     ({ id, name }) => scriptsService.duplicateScript(id, name),
     {
       onSuccess: () => {
-        toast.success("Script duplicated successfully");
+        toast.success(t("scripts.duplicateSuccess"));
         queryClient.invalidateQueries(["scripts"]);
       },
       onError: (error) => {
@@ -87,7 +89,7 @@ const ScriptsList = () => {
     (id) => scriptsService.testScript(id),
     {
       onSuccess: (result) => {
-        toast.success("Script executed successfully");
+        toast.success(t("scripts.testing.testSuccess"));
         console.log("Test result:", result);
       },
       onError: (error) => {
@@ -116,15 +118,15 @@ const ScriptsList = () => {
   };
 
   const handleDeleteScript = (script) => {
-    if (window.confirm(`Are you sure you want to delete "${script.name}"?`)) {
+    if (window.confirm(t("scripts.confirmDelete", { name: script.name }))) {
       deleteScriptMutation.mutate(script.id);
     }
   };
 
   const handleDuplicateScript = (script) => {
     const newName = prompt(
-      "Enter name for duplicated script:",
-      `${script.name} (Copy)`
+      t("scripts.duplicatePrompt"),
+      t("scripts.duplicateName", { name: script.name })
     );
     if (newName && newName.trim()) {
       duplicateScriptMutation.mutate({ id: script.id, name: newName.trim() });
@@ -168,18 +170,16 @@ const ScriptsList = () => {
       <div className="flex justify-between items-center">
         <div>
           <h1 className="text-2xl font-bold text-gray-900">
-            Scripts Management
+            {t("scripts.title")}
           </h1>
-          <p className="text-gray-600">
-            Create and manage reusable scripts for workflows
-          </p>
+          <p className="text-gray-600">{t("scripts.subtitle")}</p>
         </div>
         <Link
           to="/scripts/create"
           className="inline-flex items-center px-4 py-2 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-indigo-600 hover:bg-indigo-700"
         >
           <PlusIcon className="h-4 w-4 mr-2" />
-          Create Script
+          {t("scripts.createNew")}
         </Link>
       </div>
 
@@ -190,7 +190,7 @@ const ScriptsList = () => {
             <MagnifyingGlassIcon className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-gray-400" />
             <input
               type="text"
-              placeholder="Search scripts..."
+              placeholder={t("scripts.searchPlaceholder")}
               value={search}
               onChange={(e) => handleSearchChange(e.target.value)}
               className="pl-10 w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-indigo-500"
@@ -204,7 +204,7 @@ const ScriptsList = () => {
             }
             className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-indigo-500"
           >
-            <option value="">All Categories</option>
+            <option value="">{t("scripts.analytics.allCategories")}</option>
             {categories?.map((category) => (
               <option key={category.value} value={category.value}>
                 {category.label}
@@ -219,11 +219,13 @@ const ScriptsList = () => {
             }
             className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-indigo-500"
           >
-            <option value="">All Languages</option>
-            <option value="javascript">JavaScript</option>
-            <option value="python">Python</option>
-            <option value="sql">SQL</option>
-            <option value="shell">Shell</option>
+            <option value="">{t("scripts.allLanguages")}</option>
+            <option value="javascript">
+              {t("scripts.languages.javascript")}
+            </option>
+            <option value="python">{t("scripts.languages.python")}</option>
+            <option value="sql">{t("scripts.languages.sql")}</option>
+            <option value="shell">{t("scripts.languages.shell")}</option>
           </select>
 
           <select
@@ -233,18 +235,22 @@ const ScriptsList = () => {
             }
             className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-indigo-500"
           >
-            <option value="">All Status</option>
-            <option value="active">Active</option>
-            <option value="inactive">Inactive</option>
-            <option value="draft">Draft</option>
+            <option value="">{t("common.allStatus")}</option>
+            <option value="active">{t("scripts.statuses.active")}</option>
+            <option value="inactive">{t("scripts.statuses.inactive")}</option>
+            <option value="draft">{t("scripts.statuses.draft")}</option>
           </select>
         </div>
 
         {/* Results summary */}
         {pagination.total > 0 && (
           <div className="mt-4 text-sm text-gray-500">
-            Showing {scripts.length} of {pagination.total} scripts
-            {search && ` matching "${search}"`}
+            {t("common.showingResults", {
+              from: (currentPage - 1) * limit + 1,
+              to: Math.min(currentPage * limit, pagination.total),
+              total: pagination.total,
+            })}
+            {search && ` ${t("scripts.matchingSearch", { search })}`}
           </div>
         )}
       </div>
@@ -254,7 +260,9 @@ const ScriptsList = () => {
         <div className="fixed inset-0 bg-black bg-opacity-20 flex items-center justify-center z-50">
           <div className="bg-white p-4 rounded-lg shadow-lg">
             <div className="animate-spin rounded-full h-6 w-6 border-b-2 border-indigo-600 mx-auto"></div>
-            <p className="mt-2 text-sm text-gray-600">Loading scripts...</p>
+            <p className="mt-2 text-sm text-gray-600">
+              {t("scripts.loadingScripts")}
+            </p>
           </div>
         </div>
       )}
@@ -273,7 +281,7 @@ const ScriptsList = () => {
                     {script.name}
                   </h3>
                   <p className="text-sm text-gray-500 mt-1 line-clamp-2">
-                    {script.description || "No description provided"}
+                    {script.description || t("scripts.noDescriptionProvided")}
                   </p>
                 </div>
               </div>
@@ -284,14 +292,14 @@ const ScriptsList = () => {
                     script.script_type
                   )}`}
                 >
-                  {script.script_type}
+                  {t(`scripts.languages.${script.script_type}`)}
                 </span>
                 <span
                   className={`inline-flex items-center px-2 py-1 rounded text-xs font-medium ${getCategoryColor(
                     script.category
                   )}`}
                 >
-                  {script.category}
+                  {t(`scripts.categories.${script.category}`)}
                 </span>
                 {script.status && (
                   <span
@@ -303,13 +311,14 @@ const ScriptsList = () => {
                         : "bg-gray-100 text-gray-800"
                     }`}
                   >
-                    {script.status}
+                    {t(`scripts.statuses.${script.status}`)}
                   </span>
                 )}
               </div>
 
               <div className="text-xs text-gray-400 mb-4">
-                Created by {script.created_by_name} on{" "}
+                {t("common.createdBy")} {script.created_by_name}{" "}
+                {t("common.on")}{" "}
                 {new Date(script.created_at).toLocaleDateString()}
               </div>
 
@@ -319,7 +328,7 @@ const ScriptsList = () => {
                     onClick={() => testScriptMutation.mutate(script.id)}
                     disabled={testScriptMutation.isLoading}
                     className="text-green-400 hover:text-green-600 disabled:opacity-50"
-                    title="Test script"
+                    title={t("scripts.testScript")}
                   >
                     <PlayIcon className="h-5 w-5" />
                   </button>
@@ -327,7 +336,7 @@ const ScriptsList = () => {
                   <Link
                     to={`/scripts/${script.id}/edit`}
                     className="text-indigo-400 hover:text-indigo-600"
-                    title="Edit script"
+                    title={t("scripts.common.edit")}
                   >
                     <PencilIcon className="h-5 w-5" />
                   </Link>
@@ -336,7 +345,7 @@ const ScriptsList = () => {
                     onClick={() => handleDuplicateScript(script)}
                     disabled={duplicateScriptMutation.isLoading}
                     className="text-blue-400 hover:text-blue-600 disabled:opacity-50"
-                    title="Duplicate script"
+                    title={t("scripts.duplicateScript")}
                   >
                     <DocumentDuplicateIcon className="h-5 w-5" />
                   </button>
@@ -345,7 +354,7 @@ const ScriptsList = () => {
                     onClick={() => handleDeleteScript(script)}
                     disabled={deleteScriptMutation.isLoading}
                     className="text-red-400 hover:text-red-600 disabled:opacity-50"
-                    title="Delete script"
+                    title={t("scripts.common.delete")}
                   >
                     <TrashIcon className="h-5 w-5" />
                   </button>
@@ -361,12 +370,12 @@ const ScriptsList = () => {
         <div className="text-center py-12">
           <CodeBracketIcon className="mx-auto h-12 w-12 text-gray-400" />
           <h3 className="mt-2 text-sm font-medium text-gray-900">
-            No scripts found
+            {t("scripts.noScripts")}
           </h3>
           <p className="mt-1 text-sm text-gray-500">
             {search || filters.category || filters.language || filters.status
-              ? "No scripts match your current filters."
-              : "Get started by creating your first script."}
+              ? t("scripts.noScriptsMatchFilters")
+              : t("scripts.noScriptsDescription")}
           </p>
           <div className="mt-6">
             <Link
@@ -374,7 +383,7 @@ const ScriptsList = () => {
               className="inline-flex items-center px-4 py-2 border border-transparent shadow-sm text-sm font-medium rounded-md text-white bg-indigo-600 hover:bg-indigo-700"
             >
               <PlusIcon className="h-4 w-4 mr-2" />
-              Create Your First Script
+              {t("scripts.createFirst")}
             </Link>
           </div>
         </div>

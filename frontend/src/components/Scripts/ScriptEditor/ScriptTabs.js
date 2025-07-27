@@ -1,5 +1,6 @@
 // src/components/Scripts/ScriptEditor/ScriptTabs.js
 import React from "react";
+import { useTranslation } from "react-i18next";
 import {
   CodeBracketIcon,
   TagIcon,
@@ -23,11 +24,21 @@ const ScriptTabs = ({
   scriptId,
   onShowTemplateModal,
 }) => {
+  const { t } = useTranslation();
+
   const tabs = [
-    { id: "editor", name: "Editor", icon: CodeBracketIcon },
-    { id: "parameters", name: "Parameters", icon: TagIcon },
-    { id: "test", name: "Test", icon: PlayIcon },
-    { id: "history", name: "History", icon: ClockIcon },
+    {
+      id: "editor",
+      name: t("scripts.editor.tabs.editor"),
+      icon: CodeBracketIcon,
+    },
+    {
+      id: "parameters",
+      name: t("scripts.editor.tabs.parameters"),
+      icon: TagIcon,
+    },
+    { id: "test", name: t("scripts.editor.tabs.test"), icon: PlayIcon },
+    { id: "history", name: t("scripts.editor.tabs.history"), icon: ClockIcon },
   ];
 
   const renderTabContent = () => {

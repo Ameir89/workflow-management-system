@@ -402,159 +402,12 @@ def simple_template_render(template, data):
 # NOTIFICATION HISTORY
 # ===============================
 
-# @notification_mgmt_bp.route('/notifications/history', methods=['GET'])
-# @require_auth
-# @require_permissions(['manage_notifications', 'view_admin_dashboard'])
-# def get_notification_history():
-#     """Get notification history with filtering - FIXED"""
-#     try:
-#         tenant_id = g.current_user['tenant_id']
-#         page, limit = validate_pagination_params(
-#             request.args.get('page', 1),
-#             request.args.get('limit', 50)
-#         )
-        
-#         # Filters
-#         user_id = request.args.get('user_id')
-#         notification_type = request.args.get('type')
-#         start_date = request.args.get('start_date')
-#         end_date = request.args.get('end_date')
-#         is_read = request.args.get('is_read')
-        
-#         # Build query - FIXED: Ensure tenant filtering works
-#         where_conditions = ["n.tenant_id = %s"]
-#         params = [tenant_id]
-        
-#         if user_id:
-#             where_conditions.append("n.user_id = %s")
-#             params.append(user_id)
-            
-#         if notification_type:
-#             where_conditions.append("n.type = %s")
-#             params.append(notification_type)
-            
-#         if start_date:
-#             where_conditions.append("n.created_at >= %s")
-#             params.append(start_date)
-            
-#         if end_date:
-#             where_conditions.append("n.created_at <= %s")
-#             params.append(end_date)
-            
-#         if is_read is not None:
-#             where_conditions.append("n.is_read = %s")
-#             params.append(is_read.lower() == 'true')
-        
-#         where_clause = " AND ".join(where_conditions)
-#         offset = (page - 1) * limit
-        
-#         # Get notifications - FIXED: Handle missing tenant_id column
-#         # try:
-#         #     # First try with tenant_id in notifications table
-#         #     query = f"""
-#         #         SELECT n.id, n.type, n.title, n.message, n.is_read, n.created_at, n.read_at,
-#         #                u.username, u.email, u.first_name, u.last_name,
-#         #                n.data
-#         #         FROM notifications n
-#         #         JOIN users u ON n.user_id = u.id
-#         #         WHERE {where_clause}
-#         #         ORDER BY n.created_at DESC
-#         #         LIMIT %s OFFSET %s
-#         #     """
-#         #     params.extend([limit, offset])
-#         #     notifications = Database.execute_query(query, params)
-#         # except Exception as e:
-#         #     logger.warning(f"Query with tenant_id failed, trying without: {e}")
-#         #     # Fallback: filter by user's tenant through join
-#         #     where_conditions[0] = "u.tenant_id = %s"  # Change filter to user's tenant
-#         #     where_clause = " AND ".join(where_conditions)
-            
-#         #     query = f"""
-#         #         SELECT n.id, n.type, n.title, n.message, n.is_read, n.created_at, n.read_at,
-#         #                u.username, u.email, u.first_name, u.last_name,
-#         #                n.data
-#         #         FROM notifications n
-#         #         JOIN users u ON n.user_id = u.id
-#         #         WHERE {where_clause}
-#         #         ORDER BY n.created_at DESC
-#         #         LIMIT %s OFFSET %s
-#         #     """
-#         #     notifications = Database.execute_query(query, params)
-#         try:
-#             # First try with tenant_id in notifications table
-#             query = f"""
-#                 SELECT n.id, n.type, n.title, n.message, n.is_read, n.created_at, n.read_at,
-#                        u.username, u.email, u.first_name, u.last_name,
-#                        n.data
-#                 FROM notifications n
-#                 JOIN users u ON n.user_id = u.id
-#                 WHERE {where_clause}
-#                 ORDER BY n.created_at DESC
-#                 LIMIT %s OFFSET %s
-#             """
-#             params_with_paging = params + [limit, offset]
-#             notifications = Database.execute_query(query, params_with_paging)
-
-#         except Exception as e:
-#             logger.warning(f"Query with tenant_id failed, trying without: {e}")
-
-#             # Switch from n.tenant_id to u.tenant_id
-#             where_conditions[0] = "u.tenant_id = %s"
-#             where_clause = " AND ".join(where_conditions)
-
-#             query = f"""
-#                 SELECT n.id, n.type, n.title, n.message, n.is_read, n.created_at, n.read_at,
-#                        u.username, u.email, u.first_name, u.last_name,
-#                        n.data
-#                 FROM notifications n
-#                 JOIN users u ON n.user_id = u.id
-#                 WHERE {where_clause}
-#                 ORDER BY n.created_at DESC
-#                 LIMIT %s OFFSET %s
-#             """
-#             params_with_paging = params[:-2] + [limit, offset]  # ensure correct length
-#             notifications = Database.execute_query(query, params_with_paging)
-
-#         # Get total count
-#         count_query = f"""
-#             SELECT COUNT(*) as total 
-#             FROM notifications n
-#             JOIN users u ON n.user_id = u.id
-#             WHERE {where_clause}
-#         """
-#         total_result = Database.execute_one(count_query, params[:-2])
-#         total = total_result['total'] if total_result else 0
-        
-#         # Process notifications data - FIXED: Better error handling
-#         for notification in notifications:
-#             if notification['data']:
-#                 try:
-#                     notification['data'] = JSONUtils.safe_parse_json(notification['data'], {})
-#                 except Exception as e:
-#                     logger.warning(f"Error parsing notification data: {e}")
-#                     notification['data'] = {}
-        
-#         return jsonify({
-#             'notifications': notifications,
-#             'pagination': {
-#                 'page': page,
-#                 'limit': limit,
-#                 'total': total,
-#                 'pages': (total + limit - 1) // limit
-#             }
-#         }), 200
-        
-#     except Exception as e:
-#         logger.error(f"Error getting notification history: {e}")
-#         return jsonify({'error': 'Failed to retrieve notification history'}), 500
-
 @notification_mgmt_bp.route('/notifications/history', methods=['GET'])
 @require_auth
 @require_permissions(['manage_notifications', 'view_admin_dashboard'])
 def get_notification_history():
     """Get notification history with filtering"""
     try:
-        tenant_id = g.current_user['tenant_id']
         page, limit = validate_pagination_params(
             request.args.get('page', 1),
             request.args.get('limit', 50)
@@ -569,8 +422,8 @@ def get_notification_history():
         is_read = request.args.get('is_read')
 
         def build_where_clause(base_field):
-            where_conditions = [f"{base_field}.tenant_id = %s"]
-            params = [tenant_id]
+            where_conditions = []
+            params = []
 
             if user_id:
                 where_conditions.append("n.user_id = %s")
@@ -592,9 +445,11 @@ def get_notification_history():
                 where_conditions.append("n.is_read = %s")
                 params.append(is_read.lower() == 'true')
 
-            return " AND ".join(where_conditions), params
+            if where_conditions:
+                return " AND ".join(where_conditions), params
+            else:
+                return "TRUE", []  # No filter; return all rows
 
-        # Try first query (assuming notifications.tenant_id exists)
         try:
             where_clause, params = build_where_clause("n")
 
@@ -620,9 +475,9 @@ def get_notification_history():
             total_result = Database.execute_one(count_query, params)
 
         except Exception as e:
-            logger.warning(f"Primary query failed, retrying with user.tenant_id: {e}")
+            logger.warning(f"Primary query failed, retrying fallback: {e}")
 
-            # Fallback to users.tenant_id
+            # Fallback to user table still allowed
             where_clause, params = build_where_clause("u")
 
             query = f"""
@@ -648,7 +503,6 @@ def get_notification_history():
 
         total = total_result['total'] if total_result else 0
 
-        # Parse JSON field if exists
         for n in notifications:
             if n.get('data'):
                 try:
@@ -670,6 +524,130 @@ def get_notification_history():
     except Exception as e:
         logger.error(f"Error getting notification history: {e}", exc_info=True)
         return jsonify({'error': 'Failed to retrieve notification history'}), 500
+
+
+# @notification_mgmt_bp.route('/notifications/history', methods=['GET'])
+# @require_auth
+# @require_permissions(['manage_notifications', 'view_admin_dashboard'])
+# def get_notification_history():
+#     """Get notification history with filtering"""
+#     try:
+#         tenant_id = g.current_user['tenant_id']
+#         page, limit = validate_pagination_params(
+#             request.args.get('page', 1),
+#             request.args.get('limit', 50)
+#         )
+#         offset = (page - 1) * limit
+
+#         # Filters
+#         user_id = request.args.get('user_id')
+#         notification_type = request.args.get('type')
+#         start_date = request.args.get('start_date')
+#         end_date = request.args.get('end_date')
+#         is_read = request.args.get('is_read')
+
+#         def build_where_clause(base_field):
+#             where_conditions = [f"{base_field}.tenant_id = %s"]
+#             params = [tenant_id]
+            
+#             if user_id:
+#                 where_conditions.append("n.user_id = %s")
+#                 params.append(user_id)
+
+#             if notification_type:
+#                 where_conditions.append("n.type = %s")
+#                 params.append(notification_type)
+
+#             if start_date:
+#                 where_conditions.append("n.created_at >= %s")
+#                 params.append(start_date)
+
+#             if end_date:
+#                 where_conditions.append("n.created_at <= %s")
+#                 params.append(end_date)
+
+#             if is_read != '' and is_read is not None:
+#                 where_conditions.append("n.is_read = %s")
+#                 params.append(is_read.lower() == 'true')
+
+#             return " AND ".join(where_conditions), params
+
+#         # Try first query (assuming notifications.tenant_id exists)
+#         try:
+#             where_clause, params = build_where_clause("n")
+
+#             query = f"""
+#                 SELECT n.id, n.type, n.title, n.message, n.is_read, n.created_at, n.read_at,
+#                        u.username, u.email, u.first_name, u.last_name,
+#                        n.data
+#                 FROM notifications n
+#                 JOIN users u ON n.user_id = u.id
+#                 WHERE {where_clause}
+#                 ORDER BY n.created_at DESC
+#                 LIMIT %s OFFSET %s
+#             """
+#             query_params = params + [limit, offset]
+#             notifications = Database.execute_query(query, query_params)
+
+#             count_query = f"""
+#                 SELECT COUNT(*) as total
+#                 FROM notifications n
+#                 JOIN users u ON n.user_id = u.id
+#                 WHERE {where_clause}
+#             """
+#             total_result = Database.execute_one(count_query, params)
+
+#         except Exception as e:
+#             logger.warning(f"Primary query failed, retrying with user.tenant_id: {e}")
+
+#             # Fallback to users.tenant_id
+#             where_clause, params = build_where_clause("u")
+
+#             query = f"""
+#                 SELECT n.id, n.type, n.title, n.message, n.is_read, n.created_at, n.read_at,
+#                        u.username, u.email, u.first_name, u.last_name,
+#                        n.data
+#                 FROM notifications n
+#                 JOIN users u ON n.user_id = u.id
+#                 WHERE {where_clause}
+#                 ORDER BY n.created_at DESC
+#                 LIMIT %s OFFSET %s
+#             """
+#             query_params = params + [limit, offset]
+#             notifications = Database.execute_query(query, query_params)
+
+#             count_query = f"""
+#                 SELECT COUNT(*) as total
+#                 FROM notifications n
+#                 JOIN users u ON n.user_id = u.id
+#                 WHERE {where_clause}
+#             """
+#             total_result = Database.execute_one(count_query, params)
+
+#         total = total_result['total'] if total_result else 0
+
+#         # Parse JSON field if exists
+#         for n in notifications:
+#             if n.get('data'):
+#                 try:
+#                     n['data'] = JSONUtils.safe_parse_json(n['data'], {})
+#                 except Exception as e:
+#                     logger.warning(f"Error parsing notification data: {e}")
+#                     n['data'] = {}
+
+#         return jsonify({
+#             'notifications': notifications,
+#             'pagination': {
+#                 'page': page,
+#                 'limit': limit,
+#                 'total': total,
+#                 'pages': (total + limit - 1) // limit
+#             }
+#         }), 200
+
+#     except Exception as e:
+#         logger.error(f"Error getting notification history: {e}", exc_info=True)
+#         return jsonify({'error': 'Failed to retrieve notification history'}), 500
 
 
 # ===============================
@@ -728,9 +706,10 @@ def get_notification_analytics():
                 COUNT(DISTINCT n.user_id) as unique_users,
                 COUNT(DISTINCT n.type) as unique_types,
                 ROUND(
-                    AVG(EXTRACT(EPOCH FROM (n.read_at - n.created_at)) / 3600)::numeric,
+                    COALESCE(AVG(EXTRACT(EPOCH FROM (n.read_at - n.created_at)) / 3600), 0)::numeric,
                     2
                 ) AS avg_read_time_hours
+
             FROM notifications n
             {join_clause}
             WHERE {base_where}
@@ -745,8 +724,8 @@ def get_notification_analytics():
                 COUNT(*) AS count,
                 COUNT(CASE WHEN n.is_read = true THEN 1 END) AS read_count,
                 ROUND(
-                    (COUNT(CASE WHEN n.is_read = true THEN 1 END)::float 
-                    / NULLIF(COUNT(*), 0) * 100)::numeric,
+                    COALESCE(COUNT(CASE WHEN n.is_read = true THEN 1 END)::decimal 
+                    / NULLIF(COUNT(*), 0) * 100, 0),
                     2
                 ) AS read_rate,
                 ROUND(
@@ -792,7 +771,11 @@ def get_notification_analytics():
                 u.last_name,
                 COUNT(*) as notification_count,
                 COUNT(CASE WHEN n.is_read = true THEN 1 END) as read_count,
-                ROUND(COUNT(CASE WHEN n.is_read = true THEN 1 END)::float / NULLIF(COUNT(*), 0) * 100, 2) as read_rate
+                ROUND(
+                    COALESCE(COUNT(CASE WHEN n.is_read = true THEN 1 END)::decimal 
+                    / NULLIF(COUNT(*), 0) * 100, 0),
+                    2
+                ) as read_rate
             FROM notifications n
             {join_clause}
             WHERE {base_where}
@@ -844,7 +827,12 @@ def get_notification_analytics():
                 EXTRACT(HOUR FROM n.created_at) as hour,
                 COUNT(*) as total,
                 COUNT(CASE WHEN n.is_read = true THEN 1 END) as read,
-                ROUND(COUNT(CASE WHEN n.is_read = true THEN 1 END)::float / NULLIF(COUNT(*), 0) * 100, 2) as read_rate
+                ROUND(
+                    COALESCE(COUNT(CASE WHEN n.is_read = true THEN 1 END)::decimal 
+                    / NULLIF(COUNT(*), 0) * 100, 0),
+                    2
+                ) as read_rate
+
             FROM notifications n
             {join_clause}
             WHERE {base_where}

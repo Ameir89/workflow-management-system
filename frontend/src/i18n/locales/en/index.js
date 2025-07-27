@@ -15,6 +15,7 @@ import profile from "./profile.json";
 import designer from "./designer.json";
 import validation from "./validation.json";
 import myWorkflow from "./myWorkflow.json";
+import automation from "./automation.json";
 
 const en = {
   common,
@@ -34,6 +35,7 @@ const en = {
   designer,
   validation,
   myWorkflow,
+  automation,
 };
 
 export default en;
