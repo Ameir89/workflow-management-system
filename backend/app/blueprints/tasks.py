@@ -2562,3 +2562,314 @@ def _get_approval_status_details(task_dict):
 
     return details
 
+# Utility functions and API improvements for return task handling
+
+# Add these endpoints to tasks.py
+
+@tasks_bp.route('/<task_id>/return-history', methods=['GET'])
+@require_auth
+def get_task_return_history(task_id):
+    """Get return history for a task"""
+    try:
+        if not validate_uuid(task_id):
+            return jsonify({'error': 'Invalid task ID'}), 400
+
+        tenant_id = g.current_user['tenant_id']
+
+        # Verify task exists and user has access
+        task = Database.execute_one("""
+            SELECT t.id, wi.tenant_id, t.workflow_instance_id
+            FROM tasks t
+            JOIN workflow_instances wi ON t.workflow_instance_id = wi.id
+            WHERE t.id = %s
+        """, (task_id,))
+
+        if not task:
+            return jsonify({'error': 'Task not found'}), 404
+
+        if task['tenant_id'] != tenant_id:
+            return jsonify({'error': 'Unauthorized'}), 403
+
+        # Get return history from audit logs and related tasks
+        return_history = Database.execute_query("""
+            SELECT 
+                al.action,
+                al.new_values,
+                al.created_at,
+                u.first_name || ' ' || u.last_name as user_name,
+                u.username
+            FROM audit_logs al
+            LEFT JOIN users u ON al.user_id = u.id
+            WHERE al.resource_type = 'task' 
+            AND (
+                al.resource_id = %s OR 
+                al.new_values::text LIKE %s
+            )
+            AND al.action IN ('approval_return_for_edit', 'complete_return_task')
+            ORDER BY al.created_at ASC
+        """, (task_id, f'%"original_task_id": "{task_id}"%'))
+
+        # Get related return tasks
+        return_tasks = Database.execute_query("""
+            SELECT 
+                t.id,
+                t.name,
+                t.status,
+                t.created_at,
+                t.completed_at,
+                t.metadata,
+                u1.first_name || ' ' || u1.last_name as assigned_to_name,
+                u2.first_name || ' ' || u2.last_name as completed_by_name
+            FROM tasks t
+            LEFT JOIN users u1 ON t.assigned_to = u1.id
+            LEFT JOIN users u2 ON t.completed_by = u2.id
+            WHERE t.workflow_instance_id = %s
+            AND t.metadata::text LIKE %s
+            ORDER BY t.created_at ASC
+        """, (task['workflow_instance_id'], f'%"original_task_id": "{task_id}"%'))
+
+        # Process return history
+        processed_history = []
+        for record in return_history:
+            try:
+                new_values = JSONUtils.safe_parse_json(record['new_values'])
+                history_item = {
+                    'action': record['action'],
+                    'user_name': record['user_name'],
+                    'username': record['username'],
+                    'timestamp': record['created_at'].isoformat() if record['created_at'] else None,
+                    'details': {
+                        'return_reason': new_values.get('return_reason'),
+                        'comments': new_values.get('comments'),
+                        'decision': new_values.get('decision')
+                    }
+                }
+                processed_history.append(history_item)
+            except Exception as e:
+                logger.warning(f"Could not parse return history record: {e}")
+
+        # Process return tasks
+        processed_return_tasks = []
+        for task_record in return_tasks:
+            try:
+                metadata = JSONUtils.safe_parse_json(task_record['metadata'])
+                task_item = {
+                    'task_id': task_record['id'],
+                    'name': task_record['name'],
+                    'status': task_record['status'],
+                    'assigned_to_name': task_record['assigned_to_name'],
+                    'completed_by_name': task_record['completed_by_name'],
+                    'created_at': task_record['created_at'].isoformat() if task_record['created_at'] else None,
+                    'completed_at': task_record['completed_at'].isoformat() if task_record['completed_at'] else None,
+                    'return_reason': metadata.get('return_reason'),
+                    'feedback': metadata.get('approval_feedback', {})
+                }
+                processed_return_tasks.append(task_item)
+            except Exception as e:
+                logger.warning(f"Could not parse return task record: {e}")
+
+        return jsonify({
+            'task_id': task_id,
+            'return_history': processed_history,
+            'return_tasks': processed_return_tasks,
+            'total_returns': len(processed_return_tasks),
+            'has_returns': len(processed_return_tasks) > 0
+        }), 200
+
+    except Exception as e:
+        logger.error(f"Error getting return history for task {task_id}: {e}")
+        return jsonify({'error': 'Failed to retrieve return history'}), 500
+
+
+@tasks_bp.route('/return-tasks', methods=['GET'])
+@require_auth
+def get_user_return_tasks():
+    """Get return tasks assigned to current user"""
+    try:
+        user_id = g.current_user['user_id']
+        tenant_id = g.current_user['tenant_id']
+
+        page = int(request.args.get('page', 1))
+        limit = min(int(request.args.get('limit', 20)), 100)
+        offset = (page - 1) * limit
+
+        # Get return tasks assigned to user
+        return_tasks = Database.execute_query("""
+            SELECT 
+                t.id,
+                t.name,
+                t.description,
+                t.status,
+                t.due_date,
+                t.created_at,
+                t.metadata,
+                t.form_id,
+                wi.title as workflow_title,
+                wi.id as workflow_instance_id,
+                w.name as workflow_name,
+                fd.name as form_name,
+                CASE 
+                    WHEN t.due_date < NOW() AND t.status = 'pending' THEN true
+                    ELSE false
+                END as is_overdue,
+                CASE 
+                    WHEN t.due_date IS NOT NULL THEN 
+                        EXTRACT(EPOCH FROM (t.due_date - NOW()))/3600
+                    ELSE NULL
+                END as hours_until_due
+            FROM tasks t
+            JOIN workflow_instances wi ON t.workflow_instance_id = wi.id
+            JOIN workflows w ON wi.workflow_id = w.id
+            LEFT JOIN form_definitions fd ON t.form_id = fd.id
+            WHERE t.assigned_to = %s 
+            AND wi.tenant_id = %s
+            AND t.metadata::text LIKE '%"is_return_task": true%'
+            ORDER BY t.due_date ASC NULLS LAST, t.created_at DESC
+            LIMIT %s OFFSET %s
+        """, (user_id, tenant_id, limit, offset))
+
+        # Process return tasks
+        processed_tasks = []
+        for task in return_tasks:
+            task_dict = dict(task)
+            
+            # Parse metadata to get return information
+            metadata = JSONUtils.safe_parse_json(task.get('metadata'), {})
+            approval_feedback = metadata.get('approval_feedback', {})
+            
+            task_dict.update({
+                'is_return_task': True,
+                'original_task_id': metadata.get('original_task_id'),
+                'return_reason': metadata.get('return_reason'),
+                'returned_by_name': approval_feedback.get('returned_by_name'),
+                'feedback': {
+                    'comments': approval_feedback.get('comments', ''),
+                    'reason': approval_feedback.get('reason', ''),
+                    'returned_by': approval_feedback.get('returned_by_name', '')
+                },
+                'urgency': 'urgent' if task_dict.get('is_overdue') else 'high' if task_dict.get('hours_until_due', 48) < 24 else 'normal'
+            })
+
+            processed_tasks.append(task_dict)
+
+        # Get total count
+        total = Database.execute_one("""
+            SELECT COUNT(*) as count 
+            FROM tasks t
+            JOIN workflow_instances wi ON t.workflow_instance_id = wi.id
+            WHERE t.assigned_to = %s 
+            AND wi.tenant_id = %s
+            AND t.metadata::text LIKE '%"is_return_task": true%'
+        """, (user_id, tenant_id))
+
+        return jsonify({
+            'return_tasks': processed_tasks,
+            'pagination': {
+                'page': page,
+                'limit': limit,
+                'total': total['count'],
+                'pages': (total['count'] + limit - 1) // limit if total['count'] > 0 else 1
+            },
+            'summary': {
+                'total_return_tasks': total['count'],
+                'overdue_tasks': len([t for t in processed_tasks if t.get('is_overdue')]),
+                'due_soon_tasks': len([t for t in processed_tasks if t.get('hours_until_due', 48) < 24])
+            }
+        }), 200
+
+    except Exception as e:
+        logger.error(f"Error getting user return tasks: {e}")
+        return jsonify({'error': 'Failed to retrieve return tasks'}), 500
+
+
+@tasks_bp.route('/<task_id>/return-preview', methods=['GET'])
+@require_auth
+def get_return_task_preview(task_id):
+    """Get preview information for a return task including original data"""
+    try:
+        if not validate_uuid(task_id):
+            return jsonify({'error': 'Invalid task ID'}), 400
+
+        tenant_id = g.current_user['tenant_id']
+        user_id = g.current_user['user_id']
+
+        # Get return task with metadata
+        task = Database.execute_one("""
+            SELECT t.*, wi.tenant_id, wi.title as workflow_title,
+                   fd.name as form_name, fd.schema as form_schema
+            FROM tasks t
+            JOIN workflow_instances wi ON t.workflow_instance_id = wi.id
+            LEFT JOIN form_definitions fd ON t.form_id = fd.id
+            WHERE t.id = %s
+        """, (task_id,))
+
+        if not task:
+            return jsonify({'error': 'Task not found'}), 404
+
+        if task['tenant_id'] != tenant_id:
+            return jsonify({'error': 'Unauthorized'}), 403
+
+        if task['assigned_to'] != user_id:
+            return jsonify({'error': 'Not authorized to view this task'}), 403
+
+        # Parse metadata and form data
+        metadata = JSONUtils.safe_parse_json(task.get('metadata'), {})
+        current_form_data = JSONUtils.safe_parse_json(task.get('form_data'), {})
+        form_schema = JSONUtils.safe_parse_json(task.get('form_schema'), {})
+
+        # Check if this is a return task
+        if not metadata.get('is_return_task'):
+            return jsonify({'error': 'This is not a return task'}), 400
+
+        # Get original task information
+        original_task_id = metadata.get('original_task_id')
+        original_task = None
+        if original_task_id:
+            original_task = Database.execute_one("""
+                SELECT id, name, result, form_data
+                FROM tasks 
+                WHERE id = %s
+            """, (original_task_id,))
+
+        # Get approval feedback
+        approval_feedback = metadata.get('approval_feedback', {})
+        original_form_data = metadata.get('original_form_data', {})
+
+        # Build preview response
+        preview_data = {
+            'task': {
+                'id': task['id'],
+                'name': task['name'],
+                'description': task['description'],
+                'due_date': task['due_date'].isoformat() if task['due_date'] else None,
+                'workflow_title': task['workflow_title'],
+                'form_name': task['form_name']
+            },
+            'return_info': {
+                'is_return_task': True,
+                'original_task_id': original_task_id,
+                'return_reason': metadata.get('return_reason', ''),
+                'returned_at': metadata.get('returned_at'),
+                'returned_by': approval_feedback.get('returned_by_name', '')
+            },
+            'feedback': {
+                'comments': approval_feedback.get('comments', ''),
+                'reason': approval_feedback.get('reason', ''),
+                'returned_by_name': approval_feedback.get('returned_by_name', '')
+            },
+            'form_data': {
+                'current': current_form_data,
+                'original': original_form_data,
+                'schema': form_schema
+            },
+            'original_task': {
+                'id': original_task['id'] if original_task else None,
+                'name': original_task['name'] if original_task else None
+            } if original_task else None
+        }
+
+        return jsonify(preview_data), 200
+
+    except Exception as e:
+        logger.error(f"Error getting return task preview for {task_id}: {e}")
+        return jsonify({'error': 'Failed to retrieve return task preview'}), 500

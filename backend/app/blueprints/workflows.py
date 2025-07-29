@@ -105,7 +105,8 @@ def create_workflow():
     """Create new workflow"""
     try:
         data = sanitize_input(request.get_json())
-        
+        logger.debug("Creating workflow with data: %s", data)
+        print(data)
         required_fields = ['name', 'definition']
         if not validate_required_fields(data, required_fields):
             return jsonify({'error': 'Missing required fields'}), 400
@@ -120,12 +121,12 @@ def create_workflow():
         
         workflow_id = Database.execute_insert("""
             INSERT INTO workflows 
-            (tenant_id, name, description, definition, category, tags, created_by)
-            VALUES (%s, %s, %s, %s, %s, %s, %s)
+            (tenant_id, name, description, definition, category, tags, created_by , form_id)
+            VALUES (%s, %s, %s, %s, %s, %s, %s, %s)
         """, (
             tenant_id, data['name'], data.get('description', ''),
             json.dumps(definition), data.get('category', ''),
-            data.get('tags', []), user_id
+            data.get('tags', []), user_id, data.get('form_id')
         ))
         
         return jsonify({

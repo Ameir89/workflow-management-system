@@ -100,7 +100,7 @@ def create_app(config_class=Config):
     app.register_blueprint(automation_bp, url_prefix='/api/automation')
 
     # Enhanced Webhooks (UPDATED)
-    from app.blueprints.webhooks_complete import webhooks_bp
+    from app.blueprints.webhooks import webhooks_bp
     app.register_blueprint(webhooks_bp, url_prefix='/api/webhooks')
 
     # Notifications
