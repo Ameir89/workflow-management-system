@@ -183,6 +183,10 @@ def update_workflow(workflow_id):
         if 'tags' in data:
             update_fields.append('tags = %s')
             params.append(data['tags'])
+            
+        if 'form_id' in data:
+            update_fields.append('form_id = %s')
+            params.append(data['form_id'])
         
         if 'is_active' in data:
             update_fields.append('is_active = %s')
@@ -1281,7 +1285,7 @@ def get_execution_recommendations(workflow_id):
                     assignee_workload = Database.execute_one("""
                         SELECT 
                             COUNT(*) as pending_tasks,
-                            AVG(EXTRACT(EPOCH FROM (due_date - NOW()))/3600) as avg_time_to_deadline
+                            AVG(EXTRACT(EPOCH FROM (t.due_date - NOW()))/3600) as avg_time_to_deadline
                         FROM tasks t
                         JOIN workflow_instances wi ON t.workflow_instance_id = wi.id
                         WHERE t.assigned_to = %s AND t.status = 'pending' AND wi.tenant_id = %s

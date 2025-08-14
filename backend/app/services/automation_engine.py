@@ -55,6 +55,8 @@ class AutomationEngine:
         self.executor = ThreadPoolExecutor(max_workers=10)
         self._automation_handlers = self._register_handlers()
         self._script_cache = {}
+        
+
 
     def _register_handlers(self) -> Dict[AutomationType, callable]:
         """Register automation type handlers"""
@@ -282,19 +284,38 @@ class AutomationEngine:
         except requests.exceptions.RequestException as e:
             raise Exception(f"API call failed: {str(e)}")
 
+    # def _execute_script(self, config: Dict[str, Any],
+    #                     context: Dict[str, Any]) -> Dict[str, Any]:
+    #     """Execute custom script with sandboxing"""
+    #     script_type = config.get('script_type', 'python')
+    #     script_content = config.get('script')
+    #     script_id = config.get('script_id')
+
+    #     # Load script from database if script_id is provided
+    #     if script_id and not script_content:
+    #         script_content = self._load_script_from_db(script_id)
+
+    #     if not script_content:
+    #         raise ValueError("Script content or script_id is required")
+
+    #     if script_type == 'python':
+    #         return self._execute_python_script(script_content, context, config)
+    #     elif script_type == 'javascript':
+    #         return self._execute_javascript_script(script_content, context, config)
+    #     elif script_type == 'shell':
+    #         return self._execute_shell_script(script_content, context, config)
+    #     else:
+    #         raise ValueError(f"Unsupported script type: {script_type}")
+    
     def _execute_script(self, config: Dict[str, Any],
-                        context: Dict[str, Any]) -> Dict[str, Any]:
+                    context: Dict[str, Any]) -> Dict[str, Any]:
         """Execute custom script with sandboxing"""
         script_type = config.get('script_type', 'python')
         script_content = config.get('script')
-        script_id = config.get('script_id')
-
-        # Load script from database if script_id is provided
-        if script_id and not script_content:
-            script_content = self._load_script_from_db(script_id)
-
+        
+        # Script content should be passed in config, not loaded from database
         if not script_content:
-            raise ValueError("Script content or script_id is required")
+            raise ValueError("Script content is required in automation config")
 
         if script_type == 'python':
             return self._execute_python_script(script_content, context, config)
@@ -708,46 +729,46 @@ class AutomationEngine:
             logger.error(f"Failed to load automation template {template_id}: {e}")
             return None
 
-    def _load_script_from_db(self, script_id: str) -> Optional[str]:
-        """Load script content from database"""
-        try:
-            script = Database.execute_one("""
-                SELECT script_content FROM automation_scripts 
-                WHERE id = %s AND is_active = true
-            """, (script_id,))
+    # def _load_script_from_db(self, script_id: str) -> Optional[str]:
+    #     """Load script content from database"""
+    #     try:
+    #         script = Database.execute_one("""
+    #             SELECT script_content FROM automation_scripts 
+    #             WHERE id = %s AND is_active = true
+    #         """, (script_id,))
 
-            return script['script_content'] if script else None
-        except Exception as e:
-            logger.error(f"Failed to load script {script_id}: {e}")
-            return None
+    #         return script['script_content'] if script else None
+    #     except Exception as e:
+    #         logger.error(f"Failed to load script {script_id}: {e}")
+    #         return None
 
-    def _load_email_template(self, template_id: str) -> Optional[Dict[str, Any]]:
-        """Load email template from database"""
-        try:
-            template = Database.execute_one("""
-                SELECT subject, body FROM email_templates 
-                WHERE id = %s AND is_active = true
-            """, (template_id,))
+    # def _load_email_template(self, template_id: str) -> Optional[Dict[str, Any]]:
+    #     """Load email template from database"""
+    #     try:
+    #         template = Database.execute_one("""
+    #             SELECT subject, body FROM email_templates 
+    #             WHERE id = %s AND is_active = true
+    #         """, (template_id,))
 
-            return dict(template) if template else None
-        except Exception as e:
-            logger.error(f"Failed to load email template {template_id}: {e}")
-            return None
+    #         return dict(template) if template else None
+    #     except Exception as e:
+    #         logger.error(f"Failed to load email template {template_id}: {e}")
+    #         return None
 
-    def _load_sms_template(self, template_id: str) -> Optional[Dict[str, Any]]:
-        """Load SMS template from database"""
-        try:
-            template = Database.execute_one("""
-                SELECT message FROM sms_templates 
-                WHERE id = %s AND is_active = true
-            """, (template_id,))
+    # def _load_sms_template(self, template_id: str) -> Optional[Dict[str, Any]]:
+    #     """Load SMS template from database"""
+    #     try:
+    #         template = Database.execute_one("""
+    #             SELECT message FROM sms_templates 
+    #             WHERE id = %s AND is_active = true
+    #         """, (template_id,))
 
-            return dict(template) if template else None
-        except Exception as e:
-            logger.error(f"Failed to load SMS template {template_id}: {e}")
-            return None
+    #         return dict(template) if template else None
+    #     except Exception as e:
+    #         logger.error(f"Failed to load SMS template {template_id}: {e}")
+    #         return None
 
-    def _load_custom_function(self, function_name: str) -> Optional[callable]:
+    # def _load_custom_function(self, function_name: str) -> Optional[callable]:
         """Load custom function from registry"""
         # This would load from a function registry
         # For now, return None - implement based on your needs
@@ -767,41 +788,41 @@ class AutomationEngine:
         # Placeholder implementation
         pass
 
-    def _log_automation_start(self, execution_id: str, config: Dict[str, Any], context: Dict[str, Any]):
-        """Log automation execution start"""
-        try:
-            Database.execute_insert("""
-                INSERT INTO automation_executions 
-                (execution_id, automation_type, config, context, status, started_at)
-                VALUES (%s, %s, %s, %s, %s, NOW())
-            """, (
-                execution_id, config.get('type'), json.dumps(config),
-                json.dumps(context), AutomationStatus.RUNNING.value
-            ))
-        except Exception as e:
-            logger.error(f"Failed to log automation start: {e}")
+    # def _log_automation_start(self, execution_id: str, config: Dict[str, Any], context: Dict[str, Any]):
+    #     """Log automation execution start"""
+    #     try:
+    #         Database.execute_insert("""
+    #             INSERT INTO automation_executions 
+    #             (execution_id, automation_type, config, context, status, started_at)
+    #             VALUES (%s, %s, %s, %s, %s, NOW())
+    #         """, (
+    #             execution_id, config.get('type'), json.dumps(config),
+    #             json.dumps(context), AutomationStatus.RUNNING.value
+    #         ))
+    #     except Exception as e:
+    #         logger.error(f"Failed to log automation start: {e}")
 
-    def _log_automation_completion(self, execution_id: str, result: Dict[str, Any]):
-        """Log automation execution completion"""
-        try:
-            Database.execute_query("""
-                UPDATE automation_executions 
-                SET status = %s, result = %s, completed_at = NOW()
-                WHERE execution_id = %s
-            """, (AutomationStatus.COMPLETED.value, json.dumps(result), execution_id))
-        except Exception as e:
-            logger.error(f"Failed to log automation completion: {e}")
+    # def _log_automation_completion(self, execution_id: str, result: Dict[str, Any]):
+    #     """Log automation execution completion"""
+    #     try:
+    #         Database.execute_query("""
+    #             UPDATE automation_executions 
+    #             SET status = %s, result = %s, completed_at = NOW()
+    #             WHERE execution_id = %s
+    #         """, (AutomationStatus.COMPLETED.value, json.dumps(result), execution_id))
+    #     except Exception as e:
+    #         logger.error(f"Failed to log automation completion: {e}")
 
-    def _log_automation_error(self, execution_id: str, error: str):
-        """Log automation execution error"""
-        try:
-            Database.execute_query("""
-                UPDATE automation_executions 
-                SET status = %s, error_message = %s, completed_at = NOW()
-                WHERE execution_id = %s
-            """, (AutomationStatus.FAILED.value, error, execution_id))
-        except Exception as e:
-            logger.error(f"Failed to log automation error: {e}")
+    # def _log_automation_error(self, execution_id: str, error: str):
+    #     """Log automation execution error"""
+    #     try:
+    #         Database.execute_query("""
+    #             UPDATE automation_executions 
+    #             SET status = %s, error_message = %s, completed_at = NOW()
+    #             WHERE execution_id = %s
+    #         """, (AutomationStatus.FAILED.value, error, execution_id))
+    #     except Exception as e:
+    #         logger.error(f"Failed to log automation error: {e}")
 
 
 

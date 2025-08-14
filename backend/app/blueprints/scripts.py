@@ -244,14 +244,17 @@ def update_script(script_id):
             params.append(json.dumps(data['parameters']))
         
         if update_fields:
+            # Add updated_at as SQL function (no param needed)
             update_fields.append('updated_at = NOW()')
-            params.append(script_id)
-            
+
             query = f"""
-                UPDATE automation_scripts 
+                UPDATE automation_scripts
                 SET {', '.join(update_fields)}
                 WHERE id = %s
             """
+            # Append script_id only for WHERE clause
+            params.append(script_id)
+
             Database.execute_query(query, params)
             
         return jsonify({'message': 'Script updated successfully'}), 200

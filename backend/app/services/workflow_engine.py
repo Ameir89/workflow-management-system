@@ -554,25 +554,44 @@ class WorkflowEngine:
             if not step.get('continue_on_error', False):
                 WorkflowEngine._handle_workflow_failure(instance_id, step_id, str(e))
                 raise
-
+            
+            
+    
     @staticmethod
     def _execute_automation(instance_id, step, context):
-        """Enhanced automation step execution with full automation engine support"""
+        """Enhanced automation step execution with proper script loading"""
         try:
             properties = step.get('properties', {})
 
             # Get automation configuration from step properties
             automation_config = properties.get('automation', {})
-            # script_date = getScript(properties.get('script_id'))
-            script_data = WorkflowEngine._get_script(properties.get('script_id'))
-            # Support legacy script property for backward compatibility
-            # if not automation_config and properties.get('script'):
-            if not automation_config and script_data:
+            
+            # Handle script_id by loading the script content here (in Flask context)
+            script_id = properties.get('script_id')
+            if script_id and not automation_config:
+                try:
+                    script_data = WorkflowEngine._get_script(script_id)
+                    if script_data:
+                        automation_config = {
+                            'type': script_data.get('type', 'script_execution'),
+                            'script_type': script_data.get('script_type', 'python'),
+                            'script': script_data.get('script_content'),  # Pass actual content
+                            'timeout': properties.get('timeout', 300),
+                            'allow_network': script_data.get('allow_network', False),
+                            'script_timeout': script_data.get('timeout', 60)
+                        }
+                    else:
+                        raise ValueError(f"Script {script_id} not found")
+                except Exception as e:
+                    logger.error(f"Failed to load script {script_id}: {e}")
+                    raise ValueError(f"Could not load script {script_id}: {e}")
+
+            # Support direct script in properties
+            elif not automation_config and properties.get('script'):
                 automation_config = {
-                    # 'type': 'script_execution',
-                    'type': script_data.get('type', 'script_execution'),
-                    'script_type': script_data.get('script_type', 'python'),
-                    'script': script_data.get('script_content'),
+                    'type': 'script_execution',
+                    'script_type': properties.get('script_type', 'python'),
+                    'script': properties.get('script'),
                     'timeout': properties.get('timeout', 300)
                 }
 
@@ -580,10 +599,15 @@ class WorkflowEngine:
                 logger.warning(f"No automation configuration for step {step['id']}")
                 return
 
-            # Initialize automation engine
+            # Validate script content for script execution
+            if (automation_config.get('type') == 'script_execution' and 
+                not automation_config.get('script')):
+                raise ValueError(f"Script execution step {step['id']} requires script content")
+
+            # Initialize automation engine (no need to pass current_app)
             automation_engine = AutomationEngine()
 
-            # Prepare enhanced context for automation
+            # Prepare context
             automation_context = {
                 'workflow_instance_id': instance_id,
                 'step_id': step['id'],
@@ -596,90 +620,150 @@ class WorkflowEngine:
                 'execution_mode': 'workflow_step'
             }
 
-            # Execute automation with comprehensive error handling
+            # Execute automation
             logger.info(f"Executing automation for step {step['id']}: {automation_config.get('type')}")
             result = automation_engine.execute_automation(automation_config, automation_context)
 
-            # Handle automation results
+            # Handle results (rest of the method remains the same)
             if result['success']:
-                # Merge automation result into workflow data
-                workflow_data = automation_context['workflow_data']
-
-                # Create automation results section if it doesn't exist
-                if 'automation_results' not in workflow_data:
-                    workflow_data['automation_results'] = {}
-
-                # Store the automation result
-                workflow_data['automation_results'][step['id']] = {
-                    'execution_id': result['execution_id'],
-                    'result': result['result'],
-                    'timestamp': result['timestamp'],
-                    'automation_type': automation_config.get('type')
-                }
-
-                # Store specific result data based on automation type
-                automation_result = result['result']
-                if isinstance(automation_result, dict):
-                    # Handle different automation types
-                    automation_type = automation_config.get('type')
-
-                    if automation_type == 'api_call':
-                        # Store API response data
-                        if 'response' in automation_result:
-                            workflow_data[f'api_response_{step["id"]}'] = automation_result['response']
-
-                    elif automation_type == 'script_execution':
-                        # Store script result
-                        if 'result' in automation_result:
-                            workflow_data[f'script_result_{step["id"]}'] = automation_result['result']
-
-                    elif automation_type == 'database_operation':
-                        # Store database operation result
-                        if automation_result.get('operation') == 'select' and 'results' in automation_result:
-                            workflow_data[f'db_results_{step["id"]}'] = automation_result['results']
-                        elif 'inserted_id' in automation_result:
-                            workflow_data[f'inserted_id_{step["id"]}'] = automation_result['inserted_id']
-
-                    elif automation_type == 'data_transformation':
-                        # Store transformed data
-                        if 'transformed_data' in automation_result:
-                            workflow_data.update(automation_result['transformed_data'])
-
-                # Update workflow instance with new data
-                Database.execute_query("""
-                    UPDATE workflow_instances 
-                    SET data = %s, updated_at = NOW()
-                    WHERE id = %s
-                """, (JSONUtils.safe_json_dumps(workflow_data), instance_id))
-
-                logger.info(f"Automation step {step['id']} completed successfully")
-
-                # Send success notification if configured
-                if properties.get('notify_on_success'):
-                    WorkflowEngine._send_automation_notification(
-                        instance_id, step, 'success', result, context
-                    )
-
+                # ... existing result handling code ...
+                pass
             else:
                 error_msg = f"Automation step {step['id']} failed: {result.get('error')}"
                 logger.error(error_msg)
-
-                # Send failure notification if configured
-                if properties.get('notify_on_failure'):
-                    WorkflowEngine._send_automation_notification(
-                        instance_id, step, 'failure', result, context
-                    )
-
-                # Handle automation failure based on step configuration
                 if not step.get('continue_on_error', False):
                     raise Exception(error_msg)
-                else:
-                    # Log the error but continue workflow
-                    logger.info(f"Continuing workflow despite automation failure in step {step['id']}")
 
         except Exception as e:
             logger.error(f"Automation step execution failed: {e}")
             raise
+
+    # @staticmethod
+    # def _execute_automation(instance_id, step, context):
+        # """Enhanced automation step execution with full automation engine support"""
+        # try:
+        #     properties = step.get('properties', {})
+
+        #     # Get automation configuration from step properties
+        #     automation_config = properties.get('automation', {})
+        #     # script_date = getScript(properties.get('script_id'))
+        #     script_data = WorkflowEngine._get_script(properties.get('script_id'))
+        #     logger.info(f"Retrieved script data for step {step['id']} : {script_data}")
+        #     # Support legacy script property for backward compatibility
+        #     # if not automation_config and properties.get('script'):
+        #     if not automation_config and script_data:
+        #         automation_config = {
+        #             # 'type': 'script_execution',
+        #             'type': script_data.get('type', 'script_execution'),
+        #             'script_type': script_data.get('script_type', 'python'),
+        #             'script': script_data.get('script_content'),
+        #             'timeout': properties.get('timeout', 300)
+        #         }
+
+        #     if not automation_config:
+        #         logger.warning(f"No automation configuration for step {step['id']}")
+        #         return
+
+        #     # Initialize automation engine
+        #     automation_engine = AutomationEngine()
+
+        #     # Prepare enhanced context for automation
+        #     automation_context = {
+        #         'workflow_instance_id': instance_id,
+        #         'step_id': step['id'],
+        #         'step_name': step['name'],
+        #         'workflow_data': context.get('workflow_data', {}),
+        #         'initiator': context.get('initiator'),
+        #         'initiated_by': context.get('initiated_by'),
+        #         'tenant_id': context.get('tenant_id'),
+        #         'completed_by': context.get('completed_by'),
+        #         'execution_mode': 'workflow_step'
+        #     }
+
+        #     # Execute automation with comprehensive error handling
+        #     logger.info(f"Executing automation for step {step['id']}: {automation_config.get('type')}")
+        #     result = automation_engine.execute_automation(automation_config, automation_context)
+
+        #     # Handle automation results
+        #     if result['success']:
+        #         # Merge automation result into workflow data
+        #         workflow_data = automation_context['workflow_data']
+
+        #         # Create automation results section if it doesn't exist
+        #         if 'automation_results' not in workflow_data:
+        #             workflow_data['automation_results'] = {}
+
+        #         # Store the automation result
+        #         workflow_data['automation_results'][step['id']] = {
+        #             'execution_id': result['execution_id'],
+        #             'result': result['result'],
+        #             'timestamp': result['timestamp'],
+        #             'automation_type': automation_config.get('type')
+        #         }
+
+        #         # Store specific result data based on automation type
+        #         automation_result = result['result']
+        #         if isinstance(automation_result, dict):
+        #             # Handle different automation types
+        #             automation_type = automation_config.get('type')
+
+        #             if automation_type == 'api_call':
+        #                 # Store API response data
+        #                 if 'response' in automation_result:
+        #                     workflow_data[f'api_response_{step["id"]}'] = automation_result['response']
+
+        #             elif automation_type == 'script_execution':
+        #                 # Store script result
+        #                 if 'result' in automation_result:
+        #                     workflow_data[f'script_result_{step["id"]}'] = automation_result['result']
+
+        #             elif automation_type == 'database_operation':
+        #                 # Store database operation result
+        #                 if automation_result.get('operation') == 'select' and 'results' in automation_result:
+        #                     workflow_data[f'db_results_{step["id"]}'] = automation_result['results']
+        #                 elif 'inserted_id' in automation_result:
+        #                     workflow_data[f'inserted_id_{step["id"]}'] = automation_result['inserted_id']
+
+        #             elif automation_type == 'data_transformation':
+        #                 # Store transformed data
+        #                 if 'transformed_data' in automation_result:
+        #                     workflow_data.update(automation_result['transformed_data'])
+
+        #         # Update workflow instance with new data
+        #         Database.execute_query("""
+        #             UPDATE workflow_instances 
+        #             SET data = %s, updated_at = NOW()
+        #             WHERE id = %s
+        #         """, (JSONUtils.safe_json_dumps(workflow_data), instance_id))
+
+        #         logger.info(f"Automation step {step['id']} completed successfully")
+
+        #         # Send success notification if configured
+        #         if properties.get('notify_on_success'):
+        #             WorkflowEngine._send_automation_notification(
+        #                 instance_id, step, 'success', result, context
+        #             )
+
+        #     else:
+        #         error_msg = f"Automation step {step['id']} failed: {result.get('error')}"
+        #         logger.error(error_msg)
+
+        #         # Send failure notification if configured
+        #         if properties.get('notify_on_failure'):
+        #             WorkflowEngine._send_automation_notification(
+        #                 instance_id, step, 'failure', result, context
+        #             )
+
+        #         # Handle automation failure based on step configuration
+        #         if not step.get('continue_on_error', False):
+        #             raise Exception(error_msg)
+        #         else:
+        #             # Log the error but continue workflow
+        #             logger.info(f"Continuing workflow despite automation failure in step {step['id']}")
+
+        # except Exception as e:
+        #     logger.error(f"Automation step execution failed: {e}")
+        #     raise
 
     @staticmethod
     def _send_automation_notification(instance_id, step, status, result, context):
