@@ -557,13 +557,13 @@ class WorkflowEngine:
                 WorkflowEngine._handle_workflow_failure(instance_id, step_id, str(e))
                 raise
             
-            
     @staticmethod
     def _execute_automation(instance_id, step, context):
-        """Enhanced automation step execution with result handling, retries, and context updates."""
+        """Enhanced automation step execution with result handling, retries, context updates, and conditional auto-advance."""
         try:
             properties = step.get('properties', {})
             automation = properties.get('automation', {})
+            auto_advance_config = properties.get('autoAdvance', False)  # bool or condition object
 
             if not automation or automation.get('script_id') is None:
                 logger.warning(f"No automation configuration for step {step['id']}")
@@ -594,7 +594,6 @@ class WorkflowEngine:
                 raise ValueError(f"Script execution step {step['id']} requires script content")
 
             automation_engine = AutomationEngine()
-
             automation_context = {
                 'workflow_instance_id': instance_id,
                 'step_id': step['id'],
@@ -619,36 +618,61 @@ class WorkflowEngine:
                 if result.get('success'):
                     logger.info(f"Automation step {step['id']} succeeded on attempt {attempts}")
 
-                    # Save outputs into workflow context for later steps
-                    # if 'outputs' in result:
-                    #     context.setdefault('automation_outputs', {})[step['id']] = result['outputs']
-                    #     context['workflow_data'].update(result['outputs'])
+                    # Save outputs into workflow context and DB
+                    outputs = result.get('outputs', {})
+                    if isinstance(outputs, dict):
+                        context.setdefault('automation_outputs', {})[step['id']] = outputs
+                        context['workflow_data'].update(outputs)
+                        Database.execute_query("""
+                            UPDATE workflow_instances
+                            SET data = %s, updated_at = NOW()
+                            WHERE id = %s
+                        """, (JSONUtils.safe_stringify_json(context['workflow_data']), instance_id))
 
-                    # Update workflow instance DB/logs
-                    # WorkflowEngine._update_step_status(
-                    #     instance_id, step['id'], status='completed', result=result
-                    # )
+                    # Mark step as completed
+                    WorkflowEngine._update_step_status(instance_id, step['id'], status='completed', result=result)
 
-                    # Optional: trigger events or notifications
-                    # WorkflowEngine._trigger_event('automation_step_completed', {
-                    #     'instance_id': instance_id,
-                    #     'step_id': step['id'],
-                    #     'outputs': result.get('outputs')
-                    # })
-                    # return True
+                    # Send automation completion notification
+                    WorkflowEngine._send_automation_notification(
+                        instance_id, step, status='completed', result=result, context=context
+                    )
+
+                    # Check auto-advance logic
+                    should_advance = False
+                    if isinstance(auto_advance_config, bool):
+                        should_advance = auto_advance_config
+                    elif isinstance(auto_advance_config, dict) and "condition" in auto_advance_config:
+                        try:
+                            should_advance = WorkflowEngine._evaluate_condition_expression(
+                                auto_advance_config["condition"], outputs
+                            )
+                            logger.info(f"Auto-advance condition evaluated to {should_advance}")
+                        except Exception as ce:
+                            logger.error(f"Error evaluating auto-advance condition: {ce}")
+
+                    if should_advance:
+                        workflow_instance = WorkflowEngine._get_workflow_instance(instance_id)
+                        workflow = WorkflowEngine._get_workflow(workflow_instance['workflow_id'])
+                        definition = JSONUtils.safe_parse_json(workflow['definition'])
+
+                        next_step = WorkflowEngine._get_next_step_debug(definition, step['id'], outputs)
+                        if next_step:
+                            logger.info(f"Auto-advancing to next step {next_step['id']} ({next_step['name']})")
+                            WorkflowEngine._execute_step(instance_id, next_step, definition, context)
+                        else:
+                            logger.info(f"No next step found — completing workflow")
+                            WorkflowEngine._complete_workflow(instance_id)
+
+                    return True
 
                 else:
                     logger.error(f"Automation step {step['id']} failed on attempt {attempts}: {result.get('error')}")
-
-                    # Log the failed attempt
-                    WorkflowEngine._log_step_error(
-                        instance_id, step['id'], result.get('error'), attempt=attempts
-                    )
+                    WorkflowEngine._log_step_error(instance_id, step['id'], result.get('error'), attempt=attempts)
 
                     if not automation_config.get('retry_on_error', False) or attempts >= max_attempts:
-                        # Mark as failed and stop workflow if continue_on_error is False
-                        WorkflowEngine._update_step_status(
-                            instance_id, step['id'], status='failed', result=result
+                        WorkflowEngine._update_step_status(instance_id, step['id'], status='failed', result=result)
+                        WorkflowEngine._send_automation_notification(
+                            instance_id, step, status='failed', result=result, context=context
                         )
                         if not step.get('continue_on_error', False):
                             raise Exception(f"Automation step {step['id']} failed after {attempts} attempts")
@@ -656,10 +680,44 @@ class WorkflowEngine:
 
         except Exception as e:
             logger.error(f"Automation step execution failed: {e}")
-            # WorkflowEngine._update_step_status(
-            #     instance_id, step.get('id', 'unknown'), status='failed', result={'error': str(e)}
-            # )
+            WorkflowEngine._update_step_status(
+                instance_id, step.get('id', 'unknown'),
+                status='failed',
+                result={'error': str(e)}
+            )
             raise
+        
+    @staticmethod
+    def _update_step_status(instance_id, step_id, status, result=None):
+        """
+        Update the status of a workflow step in the database.
+        
+        :param instance_id: Workflow instance ID
+        :param step_id: Step ID
+        :param status: New status ('completed', 'failed', 'pending', etc.)
+        :param result: Optional dictionary of execution result/output
+        """
+        try:
+            logger.info(f"Updating step {step_id} in instance {instance_id} to status '{status}'")
+            
+            # Prepare result JSON
+            result_json = None
+            if result is not None:
+                result_json = JSONUtils.safe_stringify_json(result)
+
+            # Update step record in DB
+            Database.execute_query("""
+                UPDATE workflow_instance_steps
+                SET status = %s,
+                    result = %s,
+                    updated_at = NOW()
+                WHERE workflow_instance_id = %s AND step_id = %s
+            """, (status, result_json, instance_id, step_id))
+
+        except Exception as e:
+            logger.error(f"Failed to update status for step {step_id} in instance {instance_id}: {e}")
+            raise
+
 
     # @staticmethod
     # def _execute_automation(instance_id, step, context):
